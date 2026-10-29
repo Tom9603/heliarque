@@ -1,0 +1,2284 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0F16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Héliarque">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25' r='75%25'%3E%3Cstop offset='0' stop-color='%2300E5FF'/%3E%3Cstop offset='.55' stop-color='%233B82F6'/%3E%3Cstop offset='1' stop-color='%230B1B36'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='20' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='30' ry='8' fill='none' stroke='%2300E5FF' stroke-width='3' transform='rotate(-20 32 32)'/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Héliarque</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Jeu de stratégie spatiale par navigateur : bâtissez une station autour d’une étoile mourante.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  /* Mise en page mobile d’abord : bandeau de la station, HUD collant, illustration propre à chaque section, une colonne de cartes, dock en bas. Palette fournie : bleu nuit, acier, bleu vif et cyan ; vert, ambre, rouge et violet pour les états. Thème sombre unique, par choix. */
+  --void:#0B0F16;
+  --sky:#0F1E2E;
+  --hud:#0B1521;
+  --card:#0F1E2E;
+  --card-2:#152A42;
+  --card-3:#1F3B5B;
+  --line:#1F3B5B;
+  --ink:#E8EEF7;
+  --ink-2:#9CA3AF;
+  --ink-3:#7A8394;
+  --vesper:#3B82F6;
+  --vesper-2:#00E5FF;
+  --on-accent:#061322;
+  --on-medal:#08111D;
+  --ore:#9CA3AF;
+  --ice:#00E5FF;
+  --data:#A855F7;
+  --energy:#F59E0B;
+  --pop:#22C55E;
+  --danger:#EF4444;
+  --ok:#22C55E;
+  --star:rgba(255,255,255,.6);
+  --hl:rgba(255,255,255,.34);
+  --shade:rgba(10,8,30,.28);
+  --hi:rgba(255,255,255,.05);
+  --scrim:rgba(8,10,26,.62);
+  --shadow:rgba(4,6,20,.5);
+  --f-display:"Exo 2","Avenir Next",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:22px;
+  --r-s:15px;
+  --dock-h:68px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15.5px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+body.noscroll{overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--hud)}
+.stars{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;background-image:radial-gradient(1.3px 1.3px at 8% 12%,var(--star),transparent 70%),radial-gradient(1px 1px at 22% 64%,var(--star),transparent 70%),radial-gradient(1.5px 1.5px at 37% 28%,var(--star),transparent 70%),radial-gradient(1px 1px at 51% 82%,var(--star),transparent 70%),radial-gradient(1.2px 1.2px at 66% 44%,var(--star),transparent 70%),radial-gradient(1px 1px at 79% 9%,var(--star),transparent 70%),radial-gradient(1.4px 1.4px at 91% 71%,var(--star),transparent 70%),radial-gradient(1px 1px at 14% 92%,var(--star),transparent 70%);background-size:320px 380px}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;touch-action:manipulation}
+input{font:inherit}
+.muted{color:var(--ink-3)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--vesper-2);outline-offset:3px}
+
+/* ---------- ciel de Vesper ---------- */
+.bridge{position:relative;overflow:hidden}
+.bridge canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bridge-in{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-block:22px 20px;min-height:124px}
+.ident{min-width:0}
+.brand{font-size:13.5px;font-weight:600;color:var(--vesper-2)}
+.station-name{font-size:clamp(32px,8.5vw,48px);line-height:1;margin:6px 0 10px;letter-spacing:-.025em;overflow-wrap:anywhere}
+.sub{color:var(--ink-2);font-size:14.5px}
+.sub b{color:var(--vesper-2);font-weight:700}
+.icon-btn{appearance:none;flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklab,var(--void) 55%,transparent);border:1px solid color-mix(in oklab,var(--ink) 14%,transparent);color:var(--ink);cursor:pointer}
+.icon-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+
+/* ---------- HUD ---------- */
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in oklab,var(--hud) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.hud-in{display:grid;gap:9px;padding-block:10px}
+.res{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.r{--c:var(--ink-2);min-width:0;display:grid;gap:1px}
+.r .top{display:flex;align-items:center;gap:5px;min-width:0}
+.ri{width:15px;height:15px;flex:none;color:var(--c);fill:currentColor}
+.r .v{font-weight:700;font-size:15px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r .s{font-size:11.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r.full .v{color:var(--energy)}
+.r.warn .s{color:var(--danger);font-weight:600}
+.meter{height:3px;border-radius:3px;background:var(--card-2);overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;width:0;border-radius:3px;background:var(--c);transition:width .8s linear}
+.r.nometer .meter{visibility:hidden}
+.ticker{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.ticker::-webkit-scrollbar{display:none}
+.tk{appearance:none;flex:1 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;background:var(--card);border:0;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;--c:var(--ink-2)}
+.tk svg{width:16px;height:16px;fill:none;stroke:var(--c);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round;flex:none}
+.tk .muted{font-weight:500}
+.tk.idle{color:var(--ink-3);font-weight:500;background:color-mix(in oklab,var(--card) 55%,transparent)}
+.tk.idle svg{stroke:var(--ink-3)}
+.threat{appearance:none;width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;border:0;background:linear-gradient(90deg,color-mix(in oklab,var(--danger) 32%,var(--card)),color-mix(in oklab,var(--danger) 10%,var(--card)));color:var(--ink);font-size:14px;text-align:left;cursor:pointer}
+.threat b{margin-left:auto;font-weight:800;white-space:nowrap}
+.threat .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--danger);animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.2}}
+
+/* ---------- contenu ---------- */
+.app{padding-block:24px calc(var(--dock-h) + 40px + env(safe-area-inset-bottom,0px))}
+.view{display:grid;gap:16px;min-width:0}
+.view-head h2{font-size:30px;letter-spacing:-.02em}
+.view-head p{color:var(--ink-2);margin-top:6px;max-width:58ch}
+.note{font-size:14.5px;color:var(--ink-2);background:color-mix(in oklab,var(--vesper) 10%,var(--card));border-radius:var(--r-s);padding:13px 15px}
+.empty{color:var(--ink-3);font-size:14.5px}
+.panel{background:var(--card);border-radius:var(--r);padding:16px;min-width:0;box-shadow:inset 0 1px 0 var(--hi)}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
+.panel-h h3{font-size:18px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:999px;background:var(--card-2);font-size:12.5px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.pill.hot{background:color-mix(in oklab,var(--vesper) 24%,var(--card-2));color:var(--vesper-2)}
+.jobs{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.job{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;--c:var(--vesper)}
+.mini{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklab,var(--c) 24%,var(--card-2))}
+.mini svg{width:21px;height:21px;fill:none;stroke:var(--c);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.job-main{min-width:0;display:grid;gap:7px}
+.job-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.job-n{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.job-n .muted{font-weight:500}
+.eta{font-weight:800;font-size:14px;white-space:nowrap}
+.eta.muted{color:var(--ink-3);font-weight:500}
+.bar{height:7px;border-radius:7px;background:var(--card-3);overflow:hidden;--c:var(--vesper)}
+.job .bar,.mcard .bar{--c:inherit}
+.bar i{display:block;height:100%;width:0;border-radius:7px;background:linear-gradient(90deg,color-mix(in oklab,var(--c) 55%,var(--card)),var(--c))}
+.x{appearance:none;width:36px;height:36px;border-radius:50%;border:0;background:var(--card-2);color:var(--ink-3);cursor:pointer;font-size:19px;line-height:1;display:grid;place-items:center}
+.x:hover{color:var(--danger)}
+.status{display:grid;gap:16px}
+.rings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ring-box{display:flex;gap:12px;align-items:center;min-width:0;--c:var(--ink-2)}
+.ring-box > div{min-width:0}
+.ring{width:56px;height:56px;flex:none}
+.ring-bg{fill:none;stroke:var(--card-3);stroke-width:5.5}
+.ring-fg{fill:none;stroke:var(--c);stroke-width:5.5;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.ring-box.warn .ring-fg{stroke:var(--danger)}
+.ring-k{font-size:13px;color:var(--ink-3)}
+.ring-v{font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.15}
+.ring-n{font-size:12.5px;color:var(--ink-2)}
+.ring-box.warn .ring-n{color:var(--danger);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--card-2);font-size:13.5px;color:var(--ink-2)}
+.chip b{color:var(--ink)}
+
+/* ---------- cartes ---------- */
+.cards{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.card{--c:var(--ink-2);position:relative;isolation:isolate;overflow:hidden;background:var(--card);border-radius:var(--r);padding:18px 16px 16px;display:flex;flex-direction:column;gap:13px;min-width:0;box-shadow:inset 0 1px 0 var(--hi),0 16px 32px -20px var(--shadow)}
+.card::before{content:"";position:absolute;z-index:-1;top:-100px;left:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in oklab,var(--c) 24%,transparent),transparent);pointer-events:none}
+.card.locked{background:color-mix(in oklab,var(--card) 72%,var(--void))}
+.card.locked::before{opacity:.3}
+.card.locked .medal{filter:grayscale(.9) brightness(.75)}
+.card.locked .desc,.card.locked .gain{opacity:.7}
+.card-top{display:flex;gap:14px;align-items:center}
+.card-title{min-width:0;flex:1}
+.card h3{font-size:20px;overflow-wrap:anywhere}
+.lvl{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.medal{width:58px;height:58px;border-radius:50%;flex:none;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,color-mix(in oklab,var(--c) 50%,white) 0%,var(--c) 50%,color-mix(in oklab,var(--c) 55%,var(--void)) 100%);box-shadow:0 10px 22px -8px color-mix(in oklab,var(--c) 60%,transparent)}
+.medal svg{width:29px;height:29px;fill:none;stroke:var(--on-medal);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round}
+.desc{color:var(--ink-2);font-size:14.5px}
+.gain{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;padding:12px 14px;border-radius:var(--r-s);background:color-mix(in oklab,var(--card-2) 82%,transparent)}
+.gain .from{color:var(--ink-3);font-weight:700;font-size:15px}
+.gain .arrow{color:var(--ink-3)}
+.gain .to{font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.1;color:color-mix(in oklab,var(--c) 70%,var(--ink))}
+.gain .unit{color:var(--ink-2);font-size:14px}
+.gain small{flex-basis:100%;color:var(--ink-3);font-size:13px;margin-top:3px}
+.done-note{color:var(--ok);font-weight:700}
+.req{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--ink-3)}
+.req .pill.ok{color:var(--ok)}
+.req .pill.no{color:var(--ink);background:color-mix(in oklab,var(--danger) 20%,var(--card-2))}
+.price{display:flex;flex-wrap:wrap;gap:6px}
+.card .price{margin-top:auto}
+.cost,.dur{display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 9px;border-radius:999px;background:var(--card-2);font-size:14px;font-weight:700;color:var(--ink);--c:var(--ink-2)}
+.cost.short{color:var(--danger);box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--danger) 50%,transparent)}
+.dur{color:var(--ink-2);font-weight:600;--c:var(--ink-3);background:transparent;padding-left:4px}
+.wait{font-size:13px;color:var(--ink-3);text-align:center;margin-top:-5px}
+.wait:empty{display:none}
+.stats{display:flex;flex-wrap:wrap;gap:6px}
+.stat{display:inline-flex;gap:5px;align-items:baseline;padding:5px 12px;border-radius:999px;background:var(--card-2);font-size:13px;color:var(--ink-3)}
+.stat b{color:var(--ink);font-weight:800}
+.qrow{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.quick{display:flex;gap:6px}
+.chipbtn{appearance:none;flex:1;min-height:42px;padding:0 12px;border-radius:999px;background:var(--card-2);border:0;color:var(--ink-2);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.chipbtn:hover{color:var(--ink);background:var(--card-3)}
+
+/* ---------- boutons et champs ---------- */
+.btn{appearance:none;cursor:pointer;border:0;border-radius:999px;background:var(--card-2);color:var(--ink);font-family:var(--f-body);font-weight:800;font-size:15.5px;padding:0 22px;min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;transition:transform .12s ease,background .2s ease}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:hover:not(:disabled){background:var(--card-3)}
+.btn.primary{background:linear-gradient(135deg,var(--vesper-2),var(--vesper));color:var(--on-accent);box-shadow:0 12px 26px -14px var(--vesper)}
+.btn.primary:hover:not(:disabled){background:linear-gradient(135deg,var(--vesper-2),var(--vesper-2))}
+.btn.danger{background:color-mix(in oklab,var(--danger) 18%,var(--card-2));color:var(--danger)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn.block{width:100%}
+.stepper{display:grid;grid-template-columns:50px minmax(0,1fr) 50px;border-radius:999px;background:var(--card-2);overflow:hidden}
+.stepper button{appearance:none;min-height:48px;background:transparent;border:0;color:var(--ink);font-size:23px;cursor:pointer}
+.stepper button:active{background:var(--card-3)}
+.stepper input{border:0;background:transparent;text-align:center;font-family:var(--f-body);font-weight:800;font-size:18px;color:var(--ink);min-width:0;width:100%;-moz-appearance:textfield;appearance:textfield}
+.stepper.sm{grid-template-columns:38px 40px 38px}
+.stepper.sm button{min-height:40px;font-size:20px}
+.stepper.sm input{font-size:16px}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.field{display:grid;gap:7px;font-size:14px;color:var(--ink-2)}
+.field input{background:var(--card);border:2px solid transparent;border-radius:var(--r-s);color:var(--ink);font-size:17px;font-weight:600;padding:12px 14px;min-height:52px;width:100%}
+.field input:focus{border-color:var(--vesper);outline:none}
+
+/* ---------- secteur ---------- */
+.sector{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.map-wrap{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:radial-gradient(circle at 50% 50%,color-mix(in oklab,var(--vesper) 22%,transparent) 0%,transparent 42%),radial-gradient(circle at 18% 82%,color-mix(in oklab,var(--data) 20%,transparent) 0%,transparent 40%),radial-gradient(circle at 86% 14%,color-mix(in oklab,var(--vesper-2) 12%,transparent) 0%,transparent 36%),var(--void)}
+.viewhead{display:grid;gap:12px;margin-bottom:16px}
+.banner{position:relative;height:150px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--void),var(--card));border:1px solid var(--line)}
+.banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.banner img:not([src]){visibility:hidden}
+.banner-txt{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 12px;background:linear-gradient(180deg,transparent,color-mix(in oklab,var(--void) 88%,transparent))}
+.banner-txt h2{font-size:27px;letter-spacing:.01em;text-shadow:0 2px 14px var(--shadow)}
+.view-lead{color:var(--ink-2);max-width:60ch}
+.card,.panel,.quest-hero{border:1px solid var(--line)}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 10px;margin-top:4px}
+.sec-h h3{font-size:20px}
+.sec-h span{font-size:13px;color:var(--ink-3)}
+.grid-t{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 10px}
+.tl{appearance:none;border:0;background:none;padding:0;color:var(--ink);text-align:left;cursor:pointer;display:grid;align-content:start;gap:7px;min-width:0;--c:var(--ink-2)}
+.thumb{position:relative;display:block;aspect-ratio:1;width:100%;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,var(--card-2),var(--void));border:1px solid var(--line);box-shadow:0 12px 22px -16px var(--shadow)}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.thumb img:not([src]){visibility:hidden}
+.tl:hover .thumb img{transform:scale(1.05)}
+.tl:active .thumb{transform:scale(.97)}
+.tl:focus-visible{outline:none}
+.tl:focus-visible .thumb{outline:2px solid var(--vesper-2);outline-offset:2px}
+.lvb{position:absolute;right:6px;bottom:8px;min-width:28px;height:24px;padding:0 8px;border-radius:999px;display:grid;place-items:center;background:color-mix(in oklab,var(--void) 78%,transparent);font-size:13px;font-weight:800;color:var(--ink);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--c) 60%,transparent)}
+.upb{position:absolute;left:6px;top:6px;width:24px;height:24px;border-radius:50%;display:none;place-items:center;background:var(--ok);color:var(--on-accent);box-shadow:0 4px 10px -2px var(--shadow)}
+.tl.can .upb{display:grid}
+.upb svg{width:13px;height:13px;fill:currentColor}
+.qb{position:absolute;left:6px;bottom:8px;padding:2px 8px;border-radius:999px;background:var(--vesper);color:var(--ink);font-size:11.5px;font-weight:800}
+.tbar{position:absolute;left:0;right:0;bottom:0;height:4px;background:color-mix(in oklab,var(--void) 70%,transparent)}
+.tbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--vesper),var(--vesper-2))}
+.tl.busy .thumb{border-color:var(--vesper-2);box-shadow:0 0 0 1px var(--vesper-2),0 0 20px -4px var(--vesper-2)}
+.tl.locked .thumb img{filter:grayscale(.85) brightness(.5)}
+.lock{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink-2)}
+.lock svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8}
+.tname{font-size:13.5px;font-weight:700;line-height:1.25;overflow-wrap:anywhere;padding-inline:2px}
+.tl.locked .tname{color:var(--ink-3)}
+.item-hero{height:180px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,var(--card-2),var(--void))}
+.item-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.item-hero img:not([src]){visibility:hidden}
+.sheet .gain,.sheet .cost,.sheet .stat,.sheet .stepper,.sheet .chipbtn{background:var(--card)}
+.sheet .dur{background:transparent}
+.map{width:100%;height:auto;display:block;max-width:600px;margin:0 auto;touch-action:manipulation}
+.bg-star{fill:var(--star)}
+.orbit{fill:none;stroke:color-mix(in oklab,var(--ink) 8%,transparent);stroke-width:1}
+.range{fill:color-mix(in oklab,var(--vesper) 6%,transparent);stroke:color-mix(in oklab,var(--vesper) 55%,transparent);stroke-width:1.3;stroke-dasharray:4 6}
+.body{cursor:pointer;outline:none}
+.body .hit{fill:transparent}
+.body:focus-visible .hit{stroke:var(--vesper-2);stroke-width:2}
+.f-ore{fill:var(--ore)}.f-ice{fill:var(--ice)}.f-data{fill:var(--data)}.f-danger{fill:var(--danger)}.f-vesper{fill:var(--vesper)}.f-pop{fill:var(--pop)}
+.dim{opacity:.72}
+.hl{fill:var(--hl)}
+.b-sel{fill:color-mix(in oklab,var(--energy) 14%,transparent);stroke:var(--energy);stroke-width:2}
+.b-tgt{fill:none;stroke:var(--energy);stroke-width:1.5;stroke-dasharray:3 4}
+.b-unk{fill:color-mix(in oklab,var(--ink) 4%,transparent);stroke:color-mix(in oklab,var(--ink) 25%,transparent);stroke-width:1.2;stroke-dasharray:2 3}
+.b-q{fill:var(--ink-3);font-size:11px;font-weight:800;text-anchor:middle;font-family:var(--f-body)}
+.b-dust{fill:color-mix(in oklab,var(--ink) 30%,transparent)}
+.b-ring{fill:none;stroke:var(--vesper-2);stroke-width:2;opacity:.85}
+.b-wreck{fill:var(--ink-3);stroke:var(--sky);stroke-width:1}
+.b-badge{fill:var(--ink)}
+.b-lvl{fill:var(--void);font-size:10px;font-weight:800;text-anchor:middle;font-family:var(--f-body)}
+.b-anom{fill:none;stroke:var(--data);stroke-width:1.6;stroke-dasharray:2.5 3;opacity:.8}
+.b-anom2{fill:none;stroke:var(--data);stroke-width:2.2;stroke-linecap:round}
+.b-done{opacity:.4}
+.b-out{stroke:var(--void);stroke-width:1.5}
+.b-dome{fill:var(--void)}
+.trail{stroke:var(--energy);stroke-width:1.5;stroke-dasharray:2 5;stroke-linecap:round;opacity:.75;fill:none}
+.fdot{fill:var(--energy);transition:transform 1s linear}
+.cell-panel{display:grid;gap:14px}
+.cell-top{display:flex;gap:14px;align-items:center}
+.cell-top > div{min-width:0}
+.cell-art{width:76px;height:76px;flex:none;border-radius:50%;background:radial-gradient(circle,color-mix(in oklab,var(--ink) 7%,transparent),transparent 70%)}
+.cell-panel h3{font-size:22px;overflow-wrap:anywhere}
+.eyebrow{font-size:13px;color:var(--ink-3);font-weight:600}
+.facts{display:grid;gap:8px;font-size:14.5px;color:var(--ink-2)}
+.facts b{color:var(--ink)}
+.missions{display:grid;gap:8px}
+.mission .hint{font-size:13px;color:var(--ink-3);margin-top:5px;text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.legend span{display:inline-flex;align-items:center;gap:4px;padding:3px 13px 3px 4px;border-radius:999px;background:var(--card);font-size:13px;color:var(--ink-2)}
+.legend svg{width:28px;height:28px}
+
+/* ---------- flottes, journal ---------- */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.big{font-family:var(--f-display);font-weight:700;font-size:32px;line-height:1.05}
+.k{font-size:13px;color:var(--ink-3)}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r-s);background:var(--card-2);min-width:0;--c:var(--ink-2)}
+.tile > div{min-width:0}
+.tile .medal{width:44px;height:44px}
+.tile .medal svg{width:23px;height:23px}
+.tile b{display:block;font-family:var(--f-display);font-size:24px;line-height:1}
+.tile span{font-size:13px;color:var(--ink-2)}
+.mlist{display:grid;gap:12px}
+.mcard{display:grid;gap:9px;padding:14px;border-radius:var(--r-s);background:var(--card-2);--c:var(--energy)}
+.mcard-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mcard h4{font-size:17px}
+.mcard p{font-size:13.5px;color:var(--ink-2)}
+.quest-hero{position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r);padding:22px 18px;background:linear-gradient(140deg,color-mix(in oklab,var(--vesper) 30%,var(--card)),var(--card) 72%);display:grid;gap:8px}
+.quest-hero::after{content:"";position:absolute;z-index:-1;right:-60px;top:-60px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 38% 38%,var(--vesper-2),var(--vesper) 42%,transparent 70%);opacity:.5}
+.quest-hero .eyebrow{color:var(--ink-2)}
+.quest-hero h3{font-size:26px;letter-spacing:-.02em;max-width:22ch}
+.quest-hero p{color:var(--ink-2);max-width:40ch}
+.rewards{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.qlist{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.qlist li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;align-items:center;padding:8px 2px}
+.qcheck{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--card-3);font-size:13px;font-weight:800;color:var(--on-accent)}
+.qlist li.done .qcheck{background:var(--ok);border-color:var(--ok)}
+.qlist li.cur .qcheck{border-color:var(--vesper);box-shadow:0 0 0 4px color-mix(in oklab,var(--vesper) 22%,transparent)}
+.qlist h4{font-family:var(--f-body);font-size:15px;font-weight:700}
+.qlist li.done h4{color:var(--ink-3);font-weight:500}
+.qlist .rw{font-size:12.5px;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--card-3);border-radius:2px}
+.timeline li{position:relative;padding:0 0 16px 26px;font-size:14.5px;color:var(--ink);--c:var(--ink-3)}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{content:"";position:absolute;left:0;top:5px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 4px var(--card)}
+.sheet .timeline li::before{box-shadow:0 0 0 4px var(--sky)}
+.timeline .when{display:block;font-size:12.5px;color:var(--ink-3)}
+.timeline .when b{color:var(--c);font-weight:700}
+.k-build{--c:var(--ore)}.k-research{--c:var(--data)}.k-yard{--c:var(--ice)}.k-fleet{--c:var(--energy)}.k-raid{--c:var(--danger)}.k-quest{--c:var(--pop)}.k-info{--c:var(--ink-2)}
+.colophon{margin-top:30px;font-size:12.5px;color:var(--ink-3);text-align:center}
+
+/* ---------- dock ---------- */
+.dock{position:fixed;z-index:25;left:0;right:0;bottom:0;background:color-mix(in oklab,var(--hud) 92%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line);border-radius:24px 24px 0 0;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.dock-in{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));max-width:720px;margin:0 auto;padding:0 4px}
+.dk{appearance:none;background:none;border:0;min-height:var(--dock-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-3);font-size:11.5px;font-weight:700;position:relative;cursor:pointer;min-width:0;padding:0}
+.dki{width:54px;height:32px;border-radius:999px;display:grid;place-items:center;transition:background .2s ease}
+.dk svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.dk[aria-current="page"]{color:var(--ink)}
+.dk[aria-current="page"] .dki{background:color-mix(in oklab,var(--vesper) 26%,transparent)}
+.dk[aria-current="page"] svg{stroke:var(--vesper-2)}
+.dk .bd{position:absolute;top:7px;left:calc(50% + 10px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--vesper);color:var(--on-accent);font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px var(--hud)}
+.dk .bd.red{background:var(--danger)}
+
+/* ---------- feuilles et toasts ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:var(--scrim);padding-top:calc(28px + env(safe-area-inset-top,0px))}
+.sheet{position:relative;width:100%;max-height:100%;overflow:auto;overscroll-behavior:contain;background:var(--sky);border-radius:28px 28px 0 0;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:30px calc(22px + env(safe-area-inset-bottom,0px));display:grid;gap:16px;box-shadow:0 -20px 60px var(--shadow);animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.sheet::before{content:"";position:absolute;top:11px;left:50%;width:42px;height:5px;margin-left:-21px;border-radius:5px;background:var(--card-3)}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet h2{font-size:28px;letter-spacing:-.02em}
+.sheet-h{display:grid;gap:4px}
+.sheet-art{height:132px;border-radius:20px;background:radial-gradient(circle at 80% 125%,var(--vesper-2) 0,var(--vesper) 22%,color-mix(in oklab,var(--vesper) 30%,var(--sky)) 42%,transparent 64%),radial-gradient(1.3px 1.3px at 20% 30%,var(--star),transparent),radial-gradient(1px 1px at 45% 62%,var(--star),transparent),radial-gradient(1.5px 1.5px at 60% 20%,var(--star),transparent),radial-gradient(1px 1px at 12% 75%,var(--star),transparent),radial-gradient(1.2px 1.2px at 34% 12%,var(--star),transparent),linear-gradient(180deg,var(--void),var(--card))}
+.sheet-art.bright{background:radial-gradient(circle at 50% 120%,var(--ink) 0,var(--vesper-2) 20%,var(--vesper) 38%,color-mix(in oklab,var(--vesper) 30%,var(--sky)) 58%,transparent 78%),linear-gradient(180deg,var(--void),var(--card))}
+.sheet-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.sheet-actions.one{grid-template-columns:1fr}
+.fc-rows{display:grid;gap:8px}
+.fc-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto auto;gap:10px;align-items:center;background:var(--card);border-radius:var(--r-s);padding:8px 10px;--c:var(--ink-2)}
+.fc-row .medal{width:40px;height:40px}
+.fc-row .medal svg{width:21px;height:21px}
+.fc-n{min-width:0;display:grid;font-size:14.5px;line-height:1.25}
+.fc-n b{font-weight:700}
+.fc-n .muted{font-size:12.5px}
+.fc-row .chipbtn{flex:none;min-height:40px;padding:0 12px}
+.fc-sum{display:grid;gap:6px;font-size:14px;color:var(--ink-2);background:var(--card);border-radius:var(--r-s);padding:12px 14px}
+.fc-sum b{color:var(--ink)}
+.fc-sum .bad{color:var(--danger);font-weight:700}
+.speeds{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;border:0;padding:0;margin:0;min-width:0}
+.speeds legend{font-size:14px;color:var(--ink-2);margin-bottom:7px;padding:0}
+.speed{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 14px;align-items:center;padding:12px 14px;border-radius:var(--r-s);background:var(--card);cursor:pointer;box-shadow:inset 0 0 0 2px transparent;transition:box-shadow .15s ease,background .15s ease}
+.speed input{position:absolute;opacity:0;pointer-events:none}
+.speed:has(input:checked){box-shadow:inset 0 0 0 2px var(--vesper);background:color-mix(in oklab,var(--vesper) 11%,var(--card))}
+.speed:has(input:focus-visible){outline:2px solid var(--vesper-2);outline-offset:2px}
+.speed .mul{grid-row:span 2;font-family:var(--f-display);font-weight:700;font-size:24px;color:var(--vesper-2);width:48px}
+.speed b{font-size:16px}
+.speed span:last-child{font-size:13.5px;color:var(--ink-2)}
+.lede{color:var(--ink-2);font-size:15.5px}
+.danger-zone{border-top:1px solid var(--line);padding-top:16px;display:grid;gap:10px}
+.toasts{position:fixed;z-index:60;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(var(--dock-h) + 12px + env(safe-area-inset-bottom,0px));display:grid;gap:8px;pointer-events:none}
+.toast{display:flex;gap:11px;align-items:flex-start;background:var(--card-2);border-radius:18px;padding:12px 15px;font-size:14px;box-shadow:0 16px 36px var(--shadow);animation:up .24s ease-out;pointer-events:auto;--c:var(--ink-3)}
+.toast .tdot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none;margin-top:6px}
+.toast b{display:block;font-size:12.5px;color:var(--c);font-weight:800}
+
+@media (min-width:700px){
+  .r .v{font-size:18px}
+  .r .s{font-size:12px}
+  .ri{width:17px;height:17px}
+  .bridge-in{min-height:150px;padding-block:28px 24px}
+  .banner{height:200px}
+  .grid-t{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 14px}
+  .item-hero{height:220px}
+  .banner-txt{padding:44px 22px 16px}
+  .banner-txt h2{font-size:34px}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .modal{align-items:center;padding:24px}
+  .sheet{width:min(560px,100%);border-radius:28px;padding:28px 26px 24px;max-height:calc(100% - 20px)}
+  .sheet::before{display:none}
+  .speeds{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .speed{grid-template-columns:minmax(0,1fr)}
+  .speed .mul{grid-row:auto}
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .toasts{left:auto;width:380px}
+}
+@media (min-width:980px){
+  .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid-t{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .sector{grid-template-columns:minmax(0,1fr) 320px}
+  .dock{left:50%;right:auto;width:min(680px,calc(100% - 32px));transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));border:1px solid var(--line);border-radius:999px;padding:0 6px;box-shadow:0 18px 40px var(--shadow)}
+  .toasts{bottom:calc(var(--dock-h) + 34px)}
+  .app{padding-bottom:calc(var(--dock-h) + 56px)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" aria-hidden="true"></div>
+<header class="bridge">
+  <canvas id="star" aria-hidden="true"></canvas>
+  <div class="wrap bridge-in">
+    <div class="ident">
+      <p class="brand">Héliarque</p>
+      <h1 class="station-name" id="station-name">Kestrel-7</h1>
+      <p class="sub"><span data-bind="score">0</span> points · Vesper brille à <b data-bind="lum">12 %</b></p>
+    </div>
+    <button class="icon-btn" data-act="settings" aria-label="Paramètres de la station"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="3.5"/><circle cx="14" cy="14" r="8"/><path d="M14 2.5v3.5M14 22v3.5M2.5 14H6M22 14h3.5M5.9 5.9l2.4 2.4M19.7 19.7l2.4 2.4M22.1 5.9l-2.4 2.4M8.3 19.7l-2.4 2.4"/></svg></button>
+  </div>
+</header>
+
+<div class="hud">
+  <div class="wrap hud-in">
+    <div class="res" id="res"></div>
+    <div class="ticker" id="ticker"></div>
+    <div id="threat"></div>
+  </div>
+</div>
+
+<svg id="defs" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false"></svg>
+<main class="wrap app">
+  <header class="viewhead" id="viewhead"></header>
+  <div class="view" id="view"></div>
+  <p class="colophon">Héliarque, jeu de stratégie original · <span data-bind="savemode">Partie enregistrée dans ce navigateur</span></p>
+</main>
+
+<nav class="dock" aria-label="Sections"><div class="dock-in" id="dock"></div></nav>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const HOUR = 3600000, MIN = 60000;
+const LS_SAVE = 'heliarque.save.v1', LS_TAB = 'heliarque.tab';
+const RADIUS = 4;
+const SPEEDS = [
+  { v: 1, name: 'Standard', d: 'Le rythme d’un jeu par navigateur : on revient plusieurs fois par jour.' },
+  { v: 4, name: 'Rapide', d: 'Tout va quatre fois plus vite.' },
+  { v: 16, name: 'Éclair', d: 'Une partie complète en quelques soirées.' },
+];
+
+let st = null, ver = 0, dirty = true, live = false, tab = 'station', sel = null, fc = null;
+let cloud = null, saveMode = 'local', lastSavedAt = 0, threatShown = false, awayLog = null;
+let pointerDown = false, saveTimer = null, modalKind = null, pendingView = false;
+const qty = {};
+
+/* ================= formatage ================= */
+const NF = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+const NF1 = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
+const NF2 = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+const NBSP = ' ';
+function fmt(n) { n = Math.round(n || 0); const a = Math.abs(n); if (a >= 1e9) return NF2.format(n / 1e9) + NBSP + 'G'; if (a >= 1e6) return NF2.format(n / 1e6) + NBSP + 'M'; return NF.format(n); }
+function fmtS(n) { n = Math.floor(n || 0); const a = Math.abs(n); if (a >= 1e9) return NF1.format(n / 1e9) + NBSP + 'G'; if (a >= 1e6) return NF2.format(n / 1e6) + NBSP + 'M'; if (a >= 1e5) return NF.format(n / 1e3) + NBSP + 'k'; if (a >= 1e4) return NF1.format(n / 1e3) + NBSP + 'k'; return NF.format(n); }
+function pct(x) { return Math.round(x * 100) + NBSP + '%'; }
+function fmtDur(ms) {
+  let s = Math.max(0, Math.ceil(ms / 1000));
+  if (s < 60) return s + NBSP + 's';
+  const d = Math.floor(s / 86400); s -= d * 86400;
+  const h = Math.floor(s / 3600); s -= h * 3600;
+  const m = Math.floor(s / 60); s -= m * 60;
+  if (d) return d + NBSP + 'j ' + h + NBSP + 'h';
+  if (h) return h + NBSP + 'h ' + String(m).padStart(2, '0');
+  return m + NBSP + 'min ' + String(s).padStart(2, '0');
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+function clampInt(v, lo, hi) { v = Math.floor(+v); if (!isFinite(v)) v = lo; return Math.max(lo, Math.min(hi, v)); }
+function clock(t) { const d = new Date(t); return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
+
+/* ================= icônes ================= */
+const ICONS = {
+  drill: '<path d="M8 4h12v5l-6 15-6-15z"/><path d="M8 9h12M11 14h6"/>',
+  ice: '<path d="M14 3l9 5.5v11L14 25l-9-5.5v-11z"/><path d="M14 3v22M5 8.5l18 11M23 8.5l-18 11"/>',
+  sail: '<path d="M14 2l10 12-10 12L4 14z"/><path d="M14 2v24M4 14h20"/>',
+  hab: '<path d="M3 22a11 11 0 0 1 22 0z"/><path d="M2 22h24M11 22v-5h6v5M8 13l2 2M20 13l-2 2"/>',
+  lab: '<path d="M10 3h8M12 3v8L5 24h18l-7-13V3"/><path d="M8.5 18h11"/>',
+  depot: '<path d="M3 9l11-5 11 5v14H3z"/><path d="M3 9h22M9 23v-8h10v8M9 19h10"/>',
+  works: '<circle cx="14" cy="14" r="4.5"/><path d="M14 3v5M14 20v5M3 14h5M20 14h5M6.2 6.2l3.5 3.5M18.3 18.3l3.5 3.5M21.8 6.2l-3.5 3.5M9.7 18.3l-3.5 3.5"/>',
+  yard: '<path d="M3 24h22M6 24V5h3v19M9 7h14l-3 4H9"/><path d="M19 11v5M16 16h6v4h-6z"/>',
+  radar: '<path d="M6 20A10 10 0 0 1 18 6z"/><path d="M12 13l7-7M19 6l3-3M8 25h10M13 20v5"/>',
+  bastion: '<path d="M14 3l10 4v7c0 6-4.5 10-10 12C8.5 24 4 20 4 14V7z"/><path d="M14 8v13M9 12h10"/>',
+  beacon: '<circle cx="14" cy="14" r="4"/><circle cx="14" cy="14" r="9" stroke-dasharray="2.5 3"/><path d="M14 1v3M14 24v3M1 14h3M24 14h3"/>',
+  ion: '<path d="M3 14h11M9 8l6 6-6 6"/><path d="M17 8l6 6-6 6"/>',
+  plasma: '<path d="M5 23L19 9"/><path d="M15 6h7v7"/><circle cx="6.5" cy="21.5" r="2.5"/>',
+  auto: '<rect x="6" y="9" width="16" height="13" rx="1"/><path d="M14 4v5M10 14h.01M18 14h.01M10 18h8M3 13v5M25 13v5"/>',
+  drone: '<path d="M14 4l7 10-7 10-7-10z"/><path d="M7 14H3M21 14h4M14 10v8"/>',
+  scout: '<path d="M14 3l5 21-5-5-5 5z"/>',
+  lancer: '<path d="M14 3l9 20-9-5-9 5z"/><path d="M14 3v15"/>',
+  hauler: '<path d="M8 4h12v20H8z"/><path d="M8 10h12M8 16h12M14 1v3M11 24l-1 3M17 24l1 3"/>',
+  corvette: '<path d="M14 2l9 12-3 11H8L5 14z"/><path d="M9 18h10"/>',
+  seed: '<circle cx="14" cy="11" r="7"/><path d="M10 17l-3 8M18 17l3 8M14 18v8M11 9a3 3 0 0 1 3-2"/>',
+  warden: '<path d="M14 2l11 9-3 14H6L3 11z"/><path d="M14 2v23M7 15h14"/>',
+  hexmap: '<path d="M14 3l9.5 5.5v11L14 25l-9.5-5.5v-11z"/><path d="M14 9.5l4.5 2.6v5.2L14 20l-4.5-2.7v-5.2z"/>',
+  sheet: '<path d="M7 3h14v22H7z"/><path d="M11 8h6M11 12h6M11 16h4"/>',
+};
+function svg(name) { return `<svg viewBox="0 0 28 28" aria-hidden="true">${ICONS[name] || ''}</svg>`; }
+function icon(name) { return `<span class="ico">${svg(name)}</span>`; }
+
+/* ================= règles du jeu ================= */
+const MOD = {
+  drill: { name: 'Foreuse', color: 'ore', icon: 'drill', desc: 'Ronge les astéroïdes arrimés au moyeu et en tire le minerai.',
+    cost: l => ({ ore: 60 * 1.55 ** (l - 1), ice: 15 * 1.55 ** (l - 1) }), prod: l => 90 * l * 1.12 ** l, energy: l => 9 * l * 1.1 ** l, staff: l => 5 * l * 1.08 ** l },
+  ice: { name: 'Collecteur de glace', color: 'ice', icon: 'ice', desc: 'Capte les cristaux des queues cométaires et les comprime en blocs.',
+    cost: l => ({ ore: 70 * 1.6 ** (l - 1), ice: 20 * 1.6 ** (l - 1) }), prod: l => 55 * l * 1.11 ** l, energy: l => 11 * l * 1.1 ** l, staff: l => 4 * l * 1.08 ** l },
+  sail: { name: 'Voile solaire', color: 'energy', icon: 'sail', desc: 'Des kilomètres de film réfléchissant pour boire la lumière pâle de Vesper.',
+    cost: l => ({ ore: 65 * 1.5 ** (l - 1), ice: 30 * 1.5 ** (l - 1) }), out: l => 24 * l * 1.1 ** l, staff: l => 2 * l * 1.08 ** l },
+  hab: { name: 'Habitat', color: 'pop', icon: 'hab', desc: 'Anneaux pressurisés où vivent les colons. Plus d’espace, plus de bras.',
+    cost: l => ({ ore: 80 * 1.65 ** (l - 1), ice: 60 * 1.65 ** (l - 1) }), cap: l => 25 + 25 * l * 1.15 ** l },
+  lab: { name: 'Laboratoire', color: 'data', icon: 'lab', req: { b: { hab: 2 } }, desc: 'Analyse les signaux du secteur et produit des données de recherche.',
+    cost: l => ({ ore: 150 * 1.7 ** (l - 1), ice: 220 * 1.7 ** (l - 1) }), prod: l => 22 * l * 1.1 ** l, energy: l => 14 * l * 1.1 ** l, staff: l => 6 * l * 1.08 ** l },
+  depot: { name: 'Entrepôt', color: 'ore', icon: 'depot', desc: 'Soutes blindées : plus de minerai et de glace en réserve, et une part du stock à l’abri des pillards.',
+    cost: l => ({ ore: 200 * 1.85 ** (l - 1), ice: 80 * 1.85 ** (l - 1) }), store: l => 3000 * 1.65 ** l },
+  works: { name: 'Ateliers d’assemblage', color: 'energy', icon: 'works', req: { b: { hab: 2 } }, desc: 'Bras robotisés et imprimantes orbitales. Chaque niveau raccourcit les chantiers de 12 %.',
+    cost: l => ({ ore: 250 * 1.9 ** (l - 1), ice: 120 * 1.9 ** (l - 1) }) },
+  yard: { name: 'Chantier orbital', color: 'ice', icon: 'yard', req: { b: { works: 1 } }, desc: 'Cale sèche en apesanteur pour assembler des coques. Chaque niveau accélère la cadence de 20 %.',
+    cost: l => ({ ore: 300 * 1.8 ** (l - 1), ice: 180 * 1.8 ** (l - 1) }) },
+  radar: { name: 'Antenne profonde', color: 'data', icon: 'radar', req: { b: { lab: 1 } }, desc: 'Écoute le secteur : élargit la zone cartographiée et repère plus tôt les corsaires.',
+    cost: l => ({ ore: 180 * 1.7 ** (l - 1), ice: 140 * 1.7 ** (l - 1), data: 20 * 1.7 ** (l - 1) }) },
+  bastion: { name: 'Bastion orbital', color: 'danger', icon: 'bastion', req: { b: { yard: 1 } }, desc: 'Tourelles et plaques de blindage autour du moyeu. Combat à chaque raid, puis se répare.',
+    cost: l => ({ ore: 400 * 1.75 ** (l - 1), ice: 300 * 1.75 ** (l - 1) }), atk: l => 30 * l * 1.2 ** l, hull: l => 400 * l * 1.25 ** l },
+  beacon: { name: 'Allumeur stellaire', color: 'energy', icon: 'beacon', max: 5, req: { b: { yard: 6, lab: 8, works: 5 }, t: { stellar: 3 } }, desc: 'Mégastructure qui injecte de la matière au cœur de Vesper. Cinq étages pour rallumer l’étoile.',
+    cost: l => ({ ore: 60000 * 2 ** (l - 1), ice: 40000 * 2 ** (l - 1), data: 5000 * 2 ** (l - 1) }) },
+};
+const MOD_ORDER = ['drill', 'ice', 'sail', 'hab', 'lab', 'depot', 'works', 'yard', 'radar', 'bastion', 'beacon'];
+
+const TECH = {
+  deep: { name: 'Forage profond', icon: 'drill', color: 'ore', req: { b: { lab: 1 } }, desc: 'Têtes de forage à résonance.', eff: l => `+${8 * l}${NBSP}% de minerai`, cost: l => ({ data: 50 * 1.75 ** (l - 1), ore: 120 * 1.75 ** (l - 1) }) },
+  cryo: { name: 'Cryogénie', icon: 'ice', color: 'ice', req: { b: { lab: 1 } }, desc: 'Compression à froid des blocs de glace.', eff: l => `+${8 * l}${NBSP}% de glace`, cost: l => ({ data: 50 * 1.75 ** (l - 1), ice: 120 * 1.75 ** (l - 1) }) },
+  photon: { name: 'Rendement photonique', icon: 'sail', color: 'energy', req: { b: { lab: 2 } }, desc: 'Films plus fins, angles mieux calculés.', eff: l => `+${8 * l}${NBSP}% d’énergie`, cost: l => ({ data: 90 * 1.75 ** (l - 1), ore: 100 * 1.75 ** (l - 1), ice: 100 * 1.75 ** (l - 1) }) },
+  hold: { name: 'Soutes modulaires', icon: 'depot', color: 'ore', req: { b: { lab: 2, yard: 1 } }, desc: 'Des cales qui se déplient en vol.', eff: l => `+${15 * l}${NBSP}% de soute`, cost: l => ({ data: 100 * 1.75 ** (l - 1), ore: 180 * 1.75 ** (l - 1) }) },
+  ion: { name: 'Propulsion ionique', icon: 'ion', color: 'energy', req: { b: { lab: 2, yard: 1 } }, desc: 'Moteurs à grille pour toutes les coques.', eff: l => `+${10 * l}${NBSP}% de vitesse`, cost: l => ({ data: 120 * 1.75 ** (l - 1), ice: 220 * 1.75 ** (l - 1) }) },
+  auto: { name: 'Automatisation', icon: 'auto', color: 'pop', req: { b: { lab: 3 } }, desc: 'Des machines prennent les postes ingrats.', eff: l => `−${Math.round((1 - 0.93 ** l) * 100)}${NBSP}% de colons requis`, cost: l => ({ data: 160 * 1.75 ** (l - 1), ore: 200 * 1.75 ** (l - 1) }) },
+  armor: { name: 'Blindage composite', icon: 'bastion', color: 'ice', req: { b: { lab: 3, yard: 2 } }, desc: 'Céramique et glace stratifiées.', eff: l => `+${10 * l}${NBSP}% de coque`, cost: l => ({ data: 200 * 1.75 ** (l - 1), ore: 320 * 1.75 ** (l - 1) }) },
+  plasma: { name: 'Lances à plasma', icon: 'plasma', color: 'danger', req: { b: { lab: 4 }, t: { armor: 2 } }, desc: 'Armement de la flotte et du Bastion.', eff: l => `+${10 * l}${NBSP}% de puissance de feu`, cost: l => ({ data: 260 * 1.75 ** (l - 1), ice: 300 * 1.75 ** (l - 1) }) },
+  stellar: { name: 'Théorie stellaire', icon: 'beacon', color: 'energy', req: { b: { lab: 6 }, t: { photon: 4 } }, desc: 'Modélise le cœur de Vesper. Le niveau 3 débloque l’Allumeur.', eff: l => l >= 3 ? 'Allumeur débloqué' : `${l}/3 vers l’Allumeur`, cost: l => ({ data: 1500 * 1.9 ** (l - 1), ore: 2000 * 1.9 ** (l - 1), ice: 2000 * 1.9 ** (l - 1) }) },
+};
+const TECH_ORDER = ['deep', 'cryo', 'photon', 'hold', 'ion', 'auto', 'armor', 'plasma', 'stellar'];
+
+const SHIP = {
+  drone: { name: 'Drone foreur', pl: 'Drones foreurs', icon: 'drone', color: 'ore', req: { b: { yard: 1 } }, cost: { ore: 110, ice: 50 }, atk: 1, hull: 25, speed: 1, cargo: 150, desc: 'Extrait la matière des astéroïdes, des comètes et des épaves.' },
+  scout: { name: 'Éclaireur', pl: 'Éclaireurs', icon: 'scout', color: 'data', req: { b: { yard: 1 } }, cost: { ore: 40, ice: 90 }, atk: 0, hull: 10, speed: 3, cargo: 10, desc: 'Rapide et discret. Cartographie les cases inconnues et étudie les anomalies.' },
+  lancer: { name: 'Lancier', pl: 'Lanciers', icon: 'lancer', color: 'danger', req: { b: { yard: 1 } }, cost: { ore: 280, ice: 110 }, atk: 20, hull: 70, speed: 1.6, cargo: 30, desc: 'Chasseur léger, peu coûteux, redoutable en essaim.' },
+  hauler: { name: 'Barge', pl: 'Barges', icon: 'hauler', color: 'ore', req: { b: { yard: 2 }, t: { hold: 1 } }, cost: { ore: 600, ice: 450 }, atk: 2, hull: 150, speed: 0.8, cargo: 1200, desc: 'Une soute immense pour les extractions et les butins.' },
+  corvette: { name: 'Corvette', pl: 'Corvettes', icon: 'corvette', color: 'danger', req: { b: { yard: 3 }, t: { ion: 2 } }, cost: { ore: 950, ice: 520, data: 40 }, atk: 70, hull: 260, speed: 1.3, cargo: 80, desc: 'Coque polyvalente, le cœur d’une flotte d’assaut.' },
+  seed: { name: 'Semeur', pl: 'Semeurs', icon: 'seed', color: 'pop', req: { b: { yard: 3, hab: 4 } }, cost: { ore: 2200, ice: 2600, data: 300 }, colonists: 25, atk: 0, hull: 200, speed: 0.7, cargo: 0, desc: 'Emporte 25 colons pour fonder un avant-poste sur un astéroïde ou une comète.' },
+  warden: { name: 'Gardien', pl: 'Gardiens', icon: 'warden', color: 'danger', req: { b: { yard: 5 }, t: { plasma: 3, armor: 3 } }, cost: { ore: 3500, ice: 2200, data: 250 }, atk: 260, hull: 1100, speed: 0.9, cargo: 200, desc: 'Croiseur lourd. Lent, mais il brise les nids corsaires.' },
+};
+const SHIP_ORDER = ['drone', 'scout', 'lancer', 'hauler', 'corvette', 'seed', 'warden'];
+const ARMED = ['lancer', 'corvette', 'warden'];
+const PIRATE = {
+  skiff: { name: 'Écorcheur', pl: 'Écorcheurs', atk: 14, hull: 55, salvage: [150, 60] },
+  breaker: { name: 'Briseur', pl: 'Briseurs', atk: 55, hull: 240, salvage: [600, 250] },
+  maw: { name: 'Gueule-de-fer', pl: 'Gueules-de-fer', atk: 240, hull: 1200, salvage: [2600, 1100] },
+};
+const MISSION = {
+  explore: { name: 'Explorer', need: 'scout', hint: 'Requiert un Éclaireur à quai.' },
+  extract: { name: 'Extraire', need: 'drone', hint: 'Requiert un Drone foreur à quai.' },
+  salvage: { name: 'Récupérer', need: 'drone', hint: 'Requiert un Drone foreur à quai.' },
+  attack: { name: 'Attaquer', need: 'armed', hint: 'Requiert un vaisseau armé : Lancier, Corvette ou Gardien.' },
+  outpost: { name: 'Fonder un avant-poste', need: 'seed', hint: 'Requiert un Semeur à quai.' },
+};
+const TYPE_NAME = { home: 'Station', empty: 'Vide spatial', asteroid: 'Astéroïde', comet: 'Comète', wreck: 'Épave', debris: 'Champ de débris', nest: 'Nid corsaire', anomaly: 'Anomalie', depleted: 'Gisement épuisé' };
+const RES_NAME = { ore: 'minerai', ice: 'glace', data: 'données', pop: 'colons' };
+const KIND = { build: 'Construction', research: 'Recherche', yard: 'Chantier', fleet: 'Flotte', raid: 'Raid', quest: 'Objectif', info: 'Station' };
+
+const QUESTS = [
+  { id: 'q1', title: 'Réveiller les foreuses', text: 'Montez la Foreuse au niveau 3.', ok: () => lvl('drill') >= 3, reward: { ore: 150 } },
+  { id: 'q2', title: 'De l’eau pour la station', text: 'Montez le Collecteur de glace au niveau 3.', ok: () => lvl('ice') >= 3, reward: { ice: 150 } },
+  { id: 'q3', title: 'Tendre les voiles', text: 'Montez la Voile solaire au niveau 3.', ok: () => lvl('sail') >= 3, reward: { ore: 120, ice: 120 } },
+  { id: 'q4', title: 'Faire de la place', text: 'Agrandissez l’Habitat au niveau 2.', ok: () => lvl('hab') >= 2, reward: { ore: 250 } },
+  { id: 'q5', title: 'Écouter le secteur', text: 'Construisez le Laboratoire.', ok: () => lvl('lab') >= 1, reward: { data: 60 } },
+  { id: 'q6', title: 'Premier brevet', text: 'Recherchez Forage profond.', ok: () => tech('deep') >= 1, reward: { ore: 300 } },
+  { id: 'q7', title: 'Bras mécaniques', text: 'Construisez les Ateliers d’assemblage.', ok: () => lvl('works') >= 1, reward: { ice: 250 } },
+  { id: 'q8', title: 'Une cale sèche', text: 'Construisez le Chantier orbital.', ok: () => lvl('yard') >= 1, reward: { ore: 250, ice: 150 } },
+  { id: 'q9', title: 'Des yeux dans le noir', text: 'Envoyez un Éclaireur explorer une case.', ok: () => st.stats.explored >= 1, reward: { data: 120 } },
+  { id: 'q10', title: 'Première récolte', text: 'Rapportez du minerai, de la glace ou des débris à la station.', ok: () => st.stats.extracted >= 1, reward: { ships: { drone: 2 } } },
+  { id: 'q11', title: 'Hérisser le moyeu', text: 'Construisez le Bastion orbital.', ok: () => lvl('bastion') >= 1, reward: { ore: 500 } },
+  { id: 'q12', title: 'Tenir la ligne', text: 'Repoussez un raid corsaire.', ok: () => st.stats.raidsWon >= 1, reward: { data: 300 } },
+  { id: 'q13', title: 'Brûler le nid', text: 'Détruisez un nid corsaire.', ok: () => st.stats.nests >= 1, reward: { ore: 1500, ice: 1000 } },
+  { id: 'q14', title: 'Semer au loin', text: 'Fondez un avant-poste avec un Semeur.', ok: () => st.stats.outposts >= 1, reward: { data: 800 } },
+  { id: 'q15', title: 'Lire le cœur de Vesper', text: 'Recherchez Théorie stellaire au niveau 3.', ok: () => tech('stellar') >= 3, reward: { ore: 5000, ice: 5000 } },
+  { id: 'q16', title: 'Première étincelle', text: 'Construisez le premier étage de l’Allumeur stellaire.', ok: () => lvl('beacon') >= 1, reward: { data: 2000 } },
+  { id: 'q17', title: 'Rallumer Vesper', text: 'Achevez les cinq étages de l’Allumeur stellaire.', ok: () => lvl('beacon') >= 5, reward: {} },
+];
+
+/* ================= aléatoire ================= */
+function mulberry(a) { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return [a, ((t ^ (t >>> 14)) >>> 0) / 4294967296]; }
+function makeRng(seed) { let a = seed >>> 0; return () => { const [n, v] = mulberry(a); a = n; return v; }; }
+function rnd() { const [n, v] = mulberry(st.rng); st.rng = n; return v; }
+
+/* ================= helpers d’état ================= */
+const lvl = id => st.b[id] || 0;
+const tech = id => st.tech[id] || 0;
+const pendingB = id => lvl(id) + st.q.build.filter(j => j.id === id).length;
+const pendingT = id => tech(id) + st.q.research.filter(j => j.id === id).length;
+function cost(c) { const o = {}; for (const k in c) { const v = Math.round(c[k]); if (v > 0) o[k] = v; } return o; }
+function mulCost(c, n) { const o = {}; for (const k in c) o[k] = c[k] * n; return o; }
+function getRes(k) { return k === 'pop' ? st.pop : (st.res[k] || 0); }
+function afford(c) { for (const k in c) if (getRes(k) < c[k] - 1e-9) return false; return true; }
+function pay(c) { for (const k in c) { if (k === 'pop') st.pop -= c[k]; else { st.res[k] -= c[k]; st.stats.spent += c[k]; } } }
+function refund(c) { for (const k in c) { if (k === 'pop') st.pop += c[k]; else { st.res[k] += c[k]; st.stats.spent -= c[k]; } } }
+function costAttr(c) { return Object.entries(c).map(([k, v]) => k + ':' + v).join(','); }
+function parseCost(s) { const o = {}; if (!s) return o; for (const p of s.split(',')) { const [k, v] = p.split(':'); o[k] = +v; } return o; }
+function reqOk(req) { if (!req) return true; for (const k in req.b || {}) if (lvl(k) < req.b[k]) return false; for (const k in req.t || {}) if (tech(k) < req.t[k]) return false; return true; }
+function reqHtml(req) {
+  if (!req) return '';
+  const items = [];
+  for (const k in req.b || {}) items.push(`<span class="${lvl(k) >= req.b[k] ? 'r-ok' : 'r-no'}">${esc(MOD[k].name)} ${req.b[k]}</span>`);
+  for (const k in req.t || {}) items.push(`<span class="${tech(k) >= req.t[k] ? 'r-ok' : 'r-no'}">${esc(TECH[k].name)} ${req.t[k]}</span>`);
+  return `<div class="req"><span>Requiert</span>${items.join('')}</div>`;
+}
+const staffMul = () => 0.93 ** tech('auto');
+const storeCap = () => MOD.depot.store(lvl('depot'));
+const protectedAmt = () => 500 + 0.05 * storeCap();
+const radarRange = () => 1 + lvl('radar');
+const maxOutposts = () => 1 + Math.floor(lvl('radar') / 2);
+const lumAt = l => Math.min(1, 0.12 + 0.176 * l);
+const warnMsAt = l => (4 + 3 * l) * MIN / st.speed;
+const score = () => Math.floor(Math.max(0, st.stats.spent) / 1000);
+function outpostYield(c) { const ore = c.outpost === 'ore'; return (ore ? 200 : 150) * (1 + 0.3 * c.d) * (1 + 0.08 * tech(ore ? 'deep' : 'cryo')); }
+
+function rates() {
+  const b = st.b, sp = st.speed, sm = staffMul();
+  const need = (MOD.drill.staff(b.drill) + MOD.ice.staff(b.ice) + MOD.sail.staff(b.sail) + MOD.lab.staff(b.lab)) * sm;
+  const staff = need > 0 ? Math.min(1, st.pop / need) : 1;
+  const eProd = MOD.sail.out(b.sail) * staff * (1 + 0.08 * tech('photon'));
+  const eCons = MOD.drill.energy(b.drill) + MOD.ice.energy(b.ice) + MOD.lab.energy(b.lab);
+  const eff = eCons > 0 ? Math.min(1, eProd / eCons) : 1;
+  const k = staff * eff;
+  let oOre = 0, oIce = 0;
+  for (const key of st.outk) { const c = st.map[key]; if (!c || !c.outpost) continue; const v = outpostYield(c); if (c.outpost === 'ore') oOre += v; else oIce += v; }
+  return {
+    ore: (30 + MOD.drill.prod(b.drill) * k * (1 + 0.08 * tech('deep')) + oOre) * sp,
+    ice: (15 + MOD.ice.prod(b.ice) * k * (1 + 0.08 * tech('cryo')) + oIce) * sp,
+    data: MOD.lab.prod(b.lab) * k * sp,
+    eProd, eCons, eff, staff, need, cap: MOD.hab.cap(b.hab), store: storeCap(),
+  };
+}
+function sumCost(c) { return (c.ore || 0) + (c.ice || 0) + (c.data || 0) * 3; }
+function bTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 * 0.88 ** lvl('works') / st.speed; }
+function rTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 / (1 + 0.1 * lvl('lab')) / st.speed; }
+function sTime(id) { return (6 + Math.pow(sumCost(SHIP[id].cost) / 5, 0.8)) * 1000 / (1 + 0.2 * Math.max(0, lvl('yard') - 1)) / st.speed; }
+function shipCost(id, n) { const c = { ...SHIP[id].cost }; if (SHIP[id].colonists) c.pop = SHIP[id].colonists; return mulCost(c, n); }
+function maxAfford(id) { const c = shipCost(id, 1); let m = 9999; for (const k in c) m = Math.min(m, Math.floor(getRes(k) / c[k])); return Math.max(0, m); }
+const shipAtk = id => SHIP[id].atk * (1 + 0.1 * tech('plasma'));
+const shipHull = id => SHIP[id].hull * (1 + 0.1 * tech('armor'));
+const shipSpeed = id => SHIP[id].speed * (1 + 0.1 * tech('ion'));
+const shipCargo = id => SHIP[id].cargo * (1 + 0.15 * tech('hold'));
+const bastionAtk = () => MOD.bastion.atk(lvl('bastion')) * (1 + 0.1 * tech('plasma'));
+const bastionHull = () => MOD.bastion.hull(lvl('bastion')) * (1 + 0.1 * tech('armor'));
+function shipName(id, n) { return n > 1 ? SHIP[id].pl : SHIP[id].name; }
+function listText(map, defs) { return Object.keys(defs).filter(k => map[k] > 0).map(k => `${fmt(map[k])} ${map[k] > 1 ? defs[k].pl : defs[k].name}`).join(', '); }
+function fleetCargo(ships) { let c = 0; for (const k in ships) c += (ships[k] || 0) * shipCargo(k); return c; }
+function fleetPower(ships) { let a = 0, h = 0; for (const k in ships) { a += (ships[k] || 0) * shipAtk(k); h += (ships[k] || 0) * shipHull(k); } return { a, h }; }
+function compPower(comp) { let a = 0, h = 0; for (const k in comp) { a += comp[k] * PIRATE[k].atk; h += comp[k] * PIRATE[k].hull; } return { a, h }; }
+function travelMs(d, ships) { let v = Infinity; for (const k in ships) if (ships[k] > 0) v = Math.min(v, shipSpeed(k)); if (!isFinite(v)) v = 1; return d * 90000 / v / st.speed; }
+function gain(c) {
+  const cap = storeCap(); let lost = 0;
+  for (const k in c) {
+    const v = c[k] || 0; if (!v) continue;
+    if (k === 'data') { st.res.data += v; continue; }
+    const room = Math.max(0, cap - st.res[k]); const add = Math.min(room, v);
+    st.res[k] += add; lost += v - add;
+  }
+  return lost;
+}
+function aliveNests() { let n = 0; for (const k in st.map) if (st.map[k].type === 'nest') n++; return n; }
+
+/* ================= carte du secteur ================= */
+const DIRS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+function hexDist(q, r) { return (Math.abs(q) + Math.abs(r) + Math.abs(q + r)) / 2; }
+const NAMES = {
+  wreck: ['Tarsis', 'Mélusine', 'Anse-Bleue', 'Corvidé', 'Pénitence', 'Saint-Elme', 'Lumen', 'Ondine', 'Héron', 'Calliope'],
+  nest: ['Nid de la Faille', 'Repaire Mâchefer', 'Nid Écarlate', 'Antre Sans-Lune', 'Nid des Cendres', 'Repaire Rouille', 'Nid Vipère', 'Antre du Croc'],
+  anomaly: ['Signal fantôme', 'Écho de Vesper', 'Balise muette', 'Sphère froide', 'Distorsion Hélix', 'Murmure gravitationnel'],
+};
+function corsairComp(P, R) {
+  const pw = k => PIRATE[k].atk + PIRATE[k].hull / 4;
+  const c = { skiff: 0, breaker: 0, maw: 0 }; let rem = P;
+  if (P > 5000) { c.maw = Math.floor(rem * (0.3 + 0.2 * R()) / pw('maw')); rem -= c.maw * pw('maw'); }
+  if (P > 800) { c.breaker = Math.floor(rem * (0.4 + 0.2 * R()) / pw('breaker')); rem -= c.breaker * pw('breaker'); }
+  c.skiff = Math.max(1, Math.round(rem / pw('skiff')));
+  return c;
+}
+function genMap(seed) {
+  const R = makeRng(seed); const cells = {};
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  for (let q = -RADIUS; q <= RADIUS; q++) {
+    for (let r = Math.max(-RADIUS, -q - RADIUS); r <= Math.min(RADIUS, -q + RADIUS); r++) {
+      const d = hexDist(q, r); const c = { q, r, d, type: 'empty' };
+      if (d === 0) { c.type = 'home'; c.known = true; }
+      else {
+        const x = R(); const pn = d >= 2 ? 0.06 + 0.04 * d : 0;
+        if (x < pn) c.type = 'nest';
+        else if (x < pn + 0.23) c.type = 'asteroid';
+        else if (x < pn + 0.40) c.type = 'comet';
+        else if (x < pn + 0.50) c.type = 'wreck';
+        else if (x < pn + 0.58) c.type = 'anomaly';
+      }
+      cells[q + ',' + r] = c;
+    }
+  }
+  const ring1 = shuffle(Object.values(cells).filter(c => c.d === 1));
+  if (!ring1.some(c => c.type === 'asteroid')) ring1[0].type = 'asteroid';
+  if (!ring1.some(c => c.type === 'comet')) ring1.find(c => c.type !== 'asteroid').type = 'comet';
+  const ring2 = Object.values(cells).filter(c => c.d === 2);
+  if (!ring2.some(c => c.type === 'nest')) shuffle(ring2)[0].type = 'nest';
+  let nests = Object.values(cells).filter(c => c.type === 'nest').length;
+  for (const c of shuffle(Object.values(cells).filter(c => c.d >= 3 && c.type === 'empty'))) { if (nests >= 4) break; c.type = 'nest'; nests++; }
+  const nestNames = shuffle(NAMES.nest.slice());
+  const pick = a => a[Math.floor(R() * a.length)];
+  for (const k in cells) {
+    const c = cells[k], d = c.d, f = () => 0.7 + 0.6 * R();
+    if (c.type === 'asteroid') { c.ore = Math.round(2500 * (1 + 0.8 * d) * f()); c.name = `Astéroïde ${String.fromCharCode(65 + Math.floor(R() * 26))}-${100 + Math.floor(R() * 900)}`; }
+    else if (c.type === 'comet') { c.ice = Math.round(2000 * (1 + 0.8 * d) * f()); c.name = `Comète C/${10 + Math.floor(R() * 89)}`; }
+    else if (c.type === 'wreck') { c.ore = Math.round(600 * (1 + d) * f()); c.ice = Math.round(400 * (1 + d) * f()); c.data = Math.round(60 * (1 + d) * f()); c.name = `Épave « ${pick(NAMES.wreck)} »`; }
+    else if (c.type === 'anomaly') { c.data = Math.round(180 * d * (0.8 + 0.4 * R())); c.name = pick(NAMES.anomaly); }
+    else if (c.type === 'nest') {
+      c.lvl = Math.max(1, Math.min(6, Math.round(d * 1.1 + R() * 1.2 - 1.2)));
+      c.garrison = corsairComp(110 * 2.1 ** (c.lvl - 1), R);
+      c.loot = { ore: 900 * 2 ** c.lvl, ice: 700 * 2 ** c.lvl, data: 120 * 2 ** c.lvl };
+      c.name = nestNames.pop() || 'Nid corsaire';
+    }
+  }
+  return cells;
+}
+function visible(c) { return c.known || c.d <= radarRange(); }
+function cellTitle(c) { if (c.type === 'home') return st.name; return visible(c) ? (c.name || TYPE_NAME[c.type]) : 'Zone non cartographiée'; }
+function neighbors(c) { return DIRS.map(([dq, dr]) => st.map[(c.q + dq) + ',' + (c.r + dr)]).filter(Boolean); }
+function ruinName(n) { return /^[AEÉIOU]/.test(n) ? `Ruines de l’${n}` : `Ruines du ${n}`; }
+
+/* ================= nouvelle partie ================= */
+function newGame() {
+  const now = Date.now();
+  const seed = (Math.random() * 4294967296) >>> 0;
+  return {
+    v: 1, founded: false, name: 'Kestrel-7', speed: 1, created: now, t: now, seed, rng: (seed ^ 0x9e3779b9) >>> 0,
+    res: { ore: 600, ice: 400, data: 0 }, pop: 18,
+    b: { drill: 1, ice: 1, sail: 1, hab: 1, lab: 0, depot: 0, works: 0, yard: 0, radar: 0, bastion: 0, beacon: 0 },
+    tech: {}, ships: {},
+    q: { build: [], research: [], yard: [] },
+    fleets: [], fid: 1,
+    map: genMap(seed), outk: [],
+    raid: null, log: [], quests: {},
+    stats: { spent: 0, explored: 0, extracted: 0, raidsWon: 0, raidsLost: 0, nests: 0, outposts: 0 },
+    won: false, wonSeen: false,
+  };
+}
+function migrate(s) {
+  const base = newGame();
+  for (const k of ['res', 'b', 'q', 'stats']) s[k] = Object.assign({}, base[k], s[k] || {});
+  for (const k of ['tech', 'ships', 'quests']) s[k] = s[k] || {};
+  s.q.build = s.q.build || []; s.q.research = s.q.research || []; s.q.yard = s.q.yard || [];
+  s.fleets = s.fleets || []; s.log = s.log || []; s.outk = s.outk || [];
+  if (!s.map) s.map = genMap(s.seed || 1);
+  if (!s.speed) s.speed = 1;
+  return s;
+}
+
+/* ================= moteur de simulation ================= */
+function produce(dt) {
+  const r = rates(), h = dt / HOUR;
+  for (const k of ['ore', 'ice']) if (st.res[k] < r.store) st.res[k] = Math.min(r.store, st.res[k] + r[k] * h);
+  st.res.data += r.data * h;
+  if (st.pop < r.cap) st.pop = Math.min(r.cap, st.pop + (0.9 * st.pop * (1 - st.pop / r.cap) + 2.5) * h * st.speed);
+}
+function nextEvent() {
+  let t = Infinity, kind = null, ref = null;
+  const b = st.q.build[0]; if (b && b.end < t) { t = b.end; kind = 'build'; }
+  const r = st.q.research[0]; if (r && r.end < t) { t = r.end; kind = 'research'; }
+  const y = st.q.yard[0]; if (y) { const tt = y.start + (y.done + 1) * y.each; if (tt < t) { t = tt; kind = 'yard'; } }
+  for (const f of st.fleets) { const tt = f.phase === 'out' ? f.arrive : f.back; if (tt < t) { t = tt; kind = 'fleet'; ref = f; } }
+  if (st.raid && st.raid.at < t) { t = st.raid.at; kind = 'raid'; }
+  return { t, kind, ref };
+}
+function advanceTo(T) {
+  if (!st.founded) { st.t = T; return; }
+  let guard = 0;
+  while (guard++ < 200000) {
+    const ev = nextEvent();
+    const target = Math.min(T, ev.t);
+    while (st.t < target) { const step = Math.min(MIN, target - st.t); produce(step); st.t += step; }
+    if (ev.kind && ev.t <= T) { handle(ev); bump(); } else break;
+  }
+  if (st.t < T) st.t = T;
+}
+function startJob(j, t, kind) { j.start = t; j.end = t + (kind === 'build' ? bTime(j.cost) : rTime(j.cost)); }
+function handle(ev) {
+  const t = ev.t;
+  if (ev.kind === 'build') {
+    const j = st.q.build.shift(); st.b[j.id] = j.lvl;
+    log('build', `${MOD[j.id].name} : niveau ${j.lvl} atteint.`);
+    if (j.id === 'beacon' && j.lvl >= 5) st.won = true;
+    if (st.q.build[0]) startJob(st.q.build[0], t, 'build');
+  } else if (ev.kind === 'research') {
+    const j = st.q.research.shift(); st.tech[j.id] = j.lvl;
+    log('research', `${TECH[j.id].name} : niveau ${j.lvl} maîtrisé.`);
+    if (st.q.research[0]) startJob(st.q.research[0], t, 'research');
+  } else if (ev.kind === 'yard') {
+    const y = st.q.yard[0]; y.done++; st.ships[y.id] = (st.ships[y.id] || 0) + 1;
+    if (y.done >= y.n) { st.q.yard.shift(); log('yard', `Livraison du chantier : ${fmt(y.n)} ${shipName(y.id, y.n)}.`); if (st.q.yard[0]) st.q.yard[0].start = t; }
+  } else if (ev.kind === 'fleet') {
+    if (ev.ref.phase === 'out') fleetArrive(ev.ref, t); else fleetHome(ev.ref, t);
+  } else if (ev.kind === 'raid') {
+    resolveRaid(); scheduleRaid(t);
+  }
+}
+
+/* ================= combat ================= */
+function playerGroups(ships, withBastion) {
+  const g = [];
+  for (const id of SHIP_ORDER) { const n = ships[id] || 0; if (n > 0) g.push({ key: id, n, atk: shipAtk(id), hull: shipHull(id), w: 1, wound: 0 }); }
+  if (withBastion && lvl('bastion') > 0) g.push({ key: 'bastion', n: 1, atk: bastionAtk(), hull: bastionHull(), w: 8, wound: 0, fixed: true });
+  return g;
+}
+function pirateGroups(comp) { return Object.keys(PIRATE).filter(k => comp[k] > 0).map(k => ({ key: k, n: comp[k], atk: PIRATE[k].atk, hull: PIRATE[k].hull, w: 1, wound: 0 })); }
+function hit(groups, dmg) {
+  const W = groups.reduce((s, g) => s + g.n * g.w, 0); if (W <= 0) return;
+  for (const g of groups) {
+    const share = dmg * g.n * g.w / W;
+    g.wound += share;
+    const k = Math.min(g.n, Math.floor(g.wound / g.hull));
+    g.n -= k; g.wound -= k * g.hull; if (g.n === 0) g.wound = 0;
+  }
+}
+function battle(A, D) {
+  const a0 = A.map(g => g.n), d0 = D.map(g => g.n); let rounds = 0;
+  while (rounds < 6) {
+    const aA = A.filter(g => g.n > 0), aD = D.filter(g => g.n > 0);
+    if (!aA.length || !aD.length) break;
+    rounds++;
+    const dA = aA.reduce((s, g) => s + g.n * g.atk, 0) * (0.85 + 0.3 * rnd());
+    const dD = aD.reduce((s, g) => s + g.n * g.atk, 0) * (0.85 + 0.3 * rnd());
+    hit(aD, dA); hit(aA, dD);
+  }
+  const lossA = {}, lossD = {};
+  A.forEach((g, i) => { if (!g.fixed && a0[i] - g.n > 0) lossA[g.key] = a0[i] - g.n; });
+  D.forEach((g, i) => { if (!g.fixed && d0[i] - g.n > 0) lossD[g.key] = d0[i] - g.n; });
+  return { rounds, attDead: !A.some(g => g.n > 0), defDead: !D.some(g => g.n > 0), lossA, lossD, D };
+}
+function scheduleRaid(from) {
+  const gap = (35 + 40 * rnd()) * MIN / st.speed;
+  const P = (60 + 7 * Math.pow(score(), 0.9)) * (1 + 0.08 * aliveNests()) * (0.8 + 0.4 * rnd());
+  st.raid = { at: from + gap, comp: corsairComp(P, rnd) };
+}
+function resolveRaid() {
+  const raid = st.raid; st.raid = null;
+  const rep = battle(pirateGroups(raid.comp), playerGroups(st.ships, true));
+  for (const k in rep.lossD) st.ships[k] -= rep.lossD[k];
+  const killed = listText(rep.lossA, PIRATE), lost = listText(rep.lossD, SHIP);
+  if (rep.attDead) {
+    let ore = 0, ice = 0;
+    for (const k in rep.lossA) { ore += PIRATE[k].salvage[0] * rep.lossA[k]; ice += PIRATE[k].salvage[1] * rep.lossA[k]; }
+    ore = Math.round(ore * 0.4); ice = Math.round(ice * 0.4); gain({ ore, ice });
+    st.stats.raidsWon++;
+    log('raid', `Raid repoussé. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}. Débris récupérés : ${fmt(ore)} minerai, ${fmt(ice)} glace.`);
+  } else if (rep.defDead) {
+    const prot = protectedAmt(), stolen = {};
+    for (const k of ['ore', 'ice']) { stolen[k] = Math.floor(Math.max(0, st.res[k] - prot) * 0.3); st.res[k] -= stolen[k]; }
+    st.stats.raidsLost++;
+    log('raid', `Les corsaires ont percé les défenses${lost ? ' (pertes : ' + lost + ')' : ''} et emporté ${fmt(stolen.ore)} minerai et ${fmt(stolen.ice)} glace.`);
+  } else {
+    log('raid', `Les corsaires battent en retraite après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.`);
+  }
+}
+
+/* ================= flottes ================= */
+function turnBack(f, t, p0) { f.phase = 'back'; f.bs = t; f.p0 = p0; f.back = t + f.dur * p0; }
+function removeFleet(f) { st.fleets = st.fleets.filter(x => x !== f); }
+function fleetEmpty(f) { return !Object.values(f.ships).some(n => n > 0); }
+function fleetArrive(f, t) {
+  const c = st.map[f.k]; const cap = fleetCargo(f.ships); let note = '';
+  const title = c.name || TYPE_NAME[c.type];
+  if (f.m === 'explore') {
+    c.known = true; neighbors(c).forEach(n => { n.known = true; });
+    st.stats.explored++;
+    if (c.type === 'anomaly' && !c.studied) { c.studied = true; f.cargo.data = (f.cargo.data || 0) + c.data; note = `${title} étudiée : ${fmt(c.data)} données à rapporter.`; }
+    else note = `Case ${c.q}:${c.r} cartographiée : ${(c.name || TYPE_NAME[c.type]).toLowerCase() === 'vide spatial' ? 'rien que du vide' : (c.name || TYPE_NAME[c.type])}.`;
+  } else if (f.m === 'extract') {
+    const kind = c.type === 'asteroid' ? 'ore' : c.type === 'comet' ? 'ice' : null;
+    if (!(f.ships.drone > 0)) note = 'Aucun Drone foreur dans la flotte : extraction impossible.';
+    else if (!kind || !(c[kind] > 0)) note = `${title} : gisement introuvable ou épuisé.`;
+    else {
+      const take = Math.floor(Math.min(cap, c[kind])); c[kind] -= take; f.cargo[kind] = (f.cargo[kind] || 0) + take; f.got = true;
+      note = `${fmt(take)} ${RES_NAME[kind]} chargés sur ${title}.`;
+      if (c[kind] <= 0 && !c.outpost) { c.was = c.type; c.type = 'depleted'; c.name = (c.was === 'comet' ? 'Comète dissipée' : 'Astéroïde épuisé'); note += ' Le gisement est épuisé.'; }
+    }
+  } else if (f.m === 'salvage') {
+    if (!(f.ships.drone > 0)) note = 'Aucun Drone foreur dans la flotte : récupération impossible.';
+    else if (c.type !== 'wreck' && c.type !== 'debris') note = 'Il n’y a plus rien à récupérer ici.';
+    else {
+      const tot = (c.ore || 0) + (c.ice || 0) + (c.data || 0); const k = tot > 0 ? Math.min(1, cap / tot) : 0; const got = {};
+      for (const r of ['ore', 'ice', 'data']) { got[r] = Math.floor((c[r] || 0) * k); c[r] = (c[r] || 0) - got[r]; f.cargo[r] = (f.cargo[r] || 0) + got[r]; }
+      f.got = true;
+      note = `Récupéré sur ${title} : ${fmt(got.ore)} minerai, ${fmt(got.ice)} glace, ${fmt(got.data)} données.`;
+      if ((c.ore || 0) + (c.ice || 0) + (c.data || 0) < 1) { c.type = 'empty'; c.name = null; note += ' Le site est vidé.'; }
+    }
+  } else if (f.m === 'attack') {
+    if (c.type !== 'nest') note = 'Le nid a disparu avant votre arrivée.';
+    else {
+      const rep = battle(playerGroups(f.ships, false), pirateGroups(c.garrison));
+      for (const k in rep.lossA) f.ships[k] -= rep.lossA[k];
+      rep.D.forEach(g => { c.garrison[g.key] = g.n; });
+      const killed = listText(rep.lossD, PIRATE), lost = listText(rep.lossA, SHIP);
+      if (rep.defDead) {
+        st.stats.nests++;
+        const room = fleetCargo(f.ships); const tot = c.loot.ore + c.loot.ice + c.loot.data; const k = tot > 0 ? Math.min(1, room / tot) : 0;
+        const take = {}; for (const r of ['ore', 'ice', 'data']) { take[r] = Math.floor(c.loot[r] * k); f.cargo[r] = (f.cargo[r] || 0) + take[r]; }
+        const old = c.name;
+        c.type = 'debris'; c.name = ruinName(old);
+        c.ore = c.loot.ore - take.ore + 300 * c.lvl; c.ice = c.loot.ice - take.ice + 200 * c.lvl; c.data = c.loot.data - take.data;
+        delete c.garrison; delete c.loot;
+        note = `${old} détruit après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}. Butin chargé : ${fmt(take.ore)} minerai, ${fmt(take.ice)} glace, ${fmt(take.data)} données.`;
+      } else if (rep.attDead) note = `Flotte anéantie devant ${title}. Abattus : ${killed || 'aucun'}.`;
+      else note = `Assaut repoussé par ${title} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.`;
+    }
+  } else if (f.m === 'outpost') {
+    if (!(f.ships.seed > 0)) note = 'Aucun Semeur dans la flotte.';
+    else if (!(c.type === 'asteroid' || c.type === 'comet') || c.outpost) note = `${title} ne peut plus accueillir d’avant-poste.`;
+    else if (st.outk.length >= maxOutposts()) note = 'Plafond d’avant-postes atteint : améliorez l’Antenne profonde.';
+    else {
+      c.outpost = c.type === 'asteroid' ? 'ore' : 'ice'; st.outk.push(f.k); f.ships.seed--; st.stats.outposts++;
+      note = `Avant-poste fondé sur ${title} : +${fmt(outpostYield(c) * st.speed)} ${RES_NAME[c.outpost]}/h.`;
+    }
+  }
+  log(fleetEmpty(f) && f.m === 'attack' ? 'raid' : 'fleet', note);
+  if (fleetEmpty(f)) { removeFleet(f); return; }
+  turnBack(f, t, 1);
+}
+function fleetHome(f) {
+  for (const k in f.ships) if (f.ships[k] > 0) st.ships[k] = (st.ships[k] || 0) + f.ships[k];
+  const got = Object.keys(f.cargo).filter(k => f.cargo[k] > 0);
+  const lost = gain(f.cargo);
+  if (f.got && got.length) st.stats.extracted++;
+  const txt = got.length ? ` avec ${got.map(k => fmt(f.cargo[k]) + ' ' + RES_NAME[k]).join(', ')}` : '';
+  log('fleet', `Flotte ${f.id} rentrée à quai${txt}.${lost > 0 ? ' Entrepôt plein : ' + fmt(lost) + ' unités perdues.' : ''}`);
+  removeFleet(f);
+}
+
+/* ================= actions du joueur ================= */
+function doBuild(id) {
+  const m = MOD[id]; if (!reqOk(m.req)) return;
+  const P = pendingB(id); if (m.max && P >= m.max) return;
+  if (st.q.build.length >= 3) return toast('La file de construction est pleine (3 chantiers).', 'info');
+  const c = cost(m.cost(P + 1)); if (!afford(c)) return toast('Ressources insuffisantes.', 'info');
+  pay(c); const j = { id, lvl: P + 1, cost: c }; st.q.build.push(j);
+  if (st.q.build.length === 1) startJob(j, st.t, 'build');
+}
+function cancelQueue(list, i, kind) {
+  const j = list[i]; if (!j) return list;
+  const removed = list.filter((x, k) => k >= i && x.id === j.id);
+  removed.forEach(x => refund(x.cost));
+  const out = list.filter(x => !removed.includes(x));
+  if (i === 0 && out[0]) startJob(out[0], st.t, kind);
+  const name = kind === 'build' ? MOD[j.id].name : TECH[j.id].name;
+  log('info', `${kind === 'build' ? 'Chantier' : 'Recherche'} annulé${kind === 'build' ? '' : 'e'} : ${name} niveau ${j.lvl}${removed.length > 1 ? ' et suivants' : ''}. Ressources restituées.`);
+  return out;
+}
+function doResearch(id) {
+  const t = TECH[id]; if (!reqOk(t.req)) return;
+  if (st.q.research.length >= 2) return toast('Deux recherches sont déjà programmées.', 'info');
+  const P = pendingT(id); const c = cost(t.cost(P + 1)); if (!afford(c)) return toast('Ressources insuffisantes.', 'info');
+  pay(c); const j = { id, lvl: P + 1, cost: c }; st.q.research.push(j);
+  if (st.q.research.length === 1) startJob(j, st.t, 'research');
+}
+function doShips(id, n) {
+  const s = SHIP[id]; if (!reqOk(s.req)) return; n = Math.floor(n); if (!(n >= 1)) return;
+  if (st.q.yard.length >= 5) return toast('Le chantier accepte cinq commandes à la fois.', 'info');
+  const c = shipCost(id, n); if (!afford(c)) return toast(c.pop && st.pop < c.pop ? 'Pas assez de colons pour armer ces Semeurs.' : 'Ressources insuffisantes.', 'info');
+  pay(c); const y = { id, n, done: 0, each: sTime(id), unit: shipCost(id, 1) }; st.q.yard.push(y);
+  if (st.q.yard.length === 1) y.start = st.t;
+}
+function cancelYard(i) {
+  const y = st.q.yard[i]; if (!y) return;
+  refund(mulCost(y.unit, y.n - y.done)); st.q.yard.splice(i, 1);
+  if (i === 0 && st.q.yard[0]) st.q.yard[0].start = st.t;
+  log('info', `Commande annulée : ${fmt(y.n - y.done)} ${shipName(y.id, y.n - y.done)}. Ressources restituées.`);
+}
+function fcCheck() {
+  if (!fc) return { ok: false, msg: '' };
+  const c = st.map[fc.k], s = fc.sel; const n = k => s[k] || 0;
+  const total = Object.values(s).reduce((a, b) => a + (b || 0), 0);
+  for (const k in s) if (n(k) > (st.ships[k] || 0)) return { ok: false, msg: 'Vous n’avez pas autant de vaisseaux à quai.' };
+  if (!total) return { ok: false, msg: 'Choisissez au moins un vaisseau.' };
+  if (fc.m === 'explore' && !n('scout')) return { ok: false, msg: 'Il faut au moins un Éclaireur.' };
+  if ((fc.m === 'extract' || fc.m === 'salvage') && !n('drone')) return { ok: false, msg: 'Il faut au moins un Drone foreur.' };
+  if (fc.m === 'attack' && !ARMED.some(k => n(k))) return { ok: false, msg: 'Il faut au moins un vaisseau armé.' };
+  if (fc.m === 'outpost') {
+    if (!n('seed')) return { ok: false, msg: 'Il faut un Semeur.' };
+    const going = st.fleets.filter(f => f.m === 'outpost' && f.phase === 'out').length;
+    if (st.outk.length + going >= maxOutposts()) return { ok: false, msg: `Plafond de ${maxOutposts()} avant-poste${maxOutposts() > 1 ? 's' : ''} atteint. Améliorez l’Antenne profonde.` };
+    if (c.outpost) return { ok: false, msg: 'Cette case a déjà un avant-poste.' };
+  }
+  return { ok: true, msg: '' };
+}
+function launch() {
+  const chk = fcCheck(); if (!chk.ok) { toast(chk.msg, 'info'); return false; }
+  const c = st.map[fc.k]; const ships = {};
+  for (const k in fc.sel) if (fc.sel[k] > 0) { ships[k] = fc.sel[k]; st.ships[k] -= fc.sel[k]; }
+  const dur = travelMs(c.d, ships);
+  const f = { id: st.fid++, ships, m: fc.m, k: fc.k, depart: st.t, arrive: st.t + dur, dur, phase: 'out', cargo: {} };
+  st.fleets.push(f);
+  const where = visible(c) && c.name ? c.name : 'la case ' + c.q + ':' + c.r;
+  log('fleet', `Flotte ${f.id} en route : ${MISSION[f.m].name.toLowerCase()} ${where}. Arrivée dans ${fmtDur(dur)}.`);
+  return true;
+}
+function recall(id) {
+  const f = st.fleets.find(x => x.id === id); if (!f || f.phase !== 'out') return;
+  const p = clamp01((st.t - f.depart) / (f.arrive - f.depart));
+  turnBack(f, st.t, p); f.recalled = true;
+  log('fleet', `Flotte ${f.id} rappelée. Retour dans ${fmtDur(f.back - st.t)}.`);
+}
+function found(name, speed) {
+  const now = Date.now();
+  st.name = (name || '').trim().slice(0, 24) || 'Kestrel-7';
+  st.speed = speed; st.created = now; st.t = now; st.founded = true;
+  st.raid = { at: now + 40 * MIN / speed, comp: corsairComp(70, rnd) };
+  log('info', `La station ${st.name} est fondée en orbite de Vesper. Les corsaires de la Faille rôdent : préparez vos défenses.`);
+}
+
+/* ================= objectifs ================= */
+function checkQuests() {
+  if (!st.founded) return;
+  for (const q of QUESTS) {
+    if (st.quests[q.id] || !q.ok()) continue;
+    st.quests[q.id] = st.t;
+    const rw = q.reward || {};
+    for (const k of ['ore', 'ice', 'data']) if (rw[k]) st.res[k] += rw[k];
+    if (rw.ships) for (const k in rw.ships) st.ships[k] = (st.ships[k] || 0) + rw.ships[k];
+    log('quest', `Objectif accompli : ${q.title}.${rewardText(rw) ? ' Récompense : ' + rewardText(rw) + '.' : ''}`);
+    bump();
+  }
+}
+function rewardText(rw) {
+  const p = [];
+  for (const k of ['ore', 'ice', 'data']) if (rw[k]) p.push(`+${fmt(rw[k])} ${RES_NAME[k]}`);
+  if (rw.ships) for (const k in rw.ships) p.push(`+${rw.ships[k]} ${shipName(k, rw.ships[k])}`);
+  return p.join(', ');
+}
+
+/* ================= journal ================= */
+function log(k, m) {
+  st.log.unshift({ t: st.t, k, m }); if (st.log.length > 80) st.log.length = 80;
+  if (live) toast(m, k); else if (awayLog) awayLog.push({ k, m });
+}
+function bump() { ver++; dirty = true; }
+
+/* ================= sauvegarde ================= */
+function saveNow() {
+  if (!st || !st.founded) return;
+  lastSavedAt = Date.now();
+  try { localStorage.setItem(LS_SAVE, JSON.stringify({ v: 1, savedAt: lastSavedAt, state: st })); } catch (e) { /* stockage indisponible */ }
+  queueCloud();
+}
+function scheduleSave() { if (saveTimer) return; saveTimer = setTimeout(() => { saveTimer = null; saveNow(); }, 1500); }
+function queueCloud() {
+  if (!cloud || cloud.timer) return;
+  const wait = Math.max(0, 8000 - (Date.now() - cloud.last));
+  cloud.timer = setTimeout(() => { if (cloud) cloud.timer = null; flushCloud(); }, wait);
+}
+async function flushCloud() {
+  if (!cloud || !st.founded) return;
+  if (cloud.busy) { cloud.again = true; return; }
+  cloud.busy = true; cloud.last = Date.now();
+  try {
+    await cloud.ref.set({ v: 1, savedAt: lastSavedAt || Date.now(), json: JSON.stringify(st) });
+    saveMode = 'cloud';
+  } catch (e) {
+    const code = e && e.code;
+    if (['invalid_argument', 'not_granted', 'revoked', 'capability_disabled', 'capability_removed', 'quota_exceeded', 'transform_error'].includes(code)) { cloud = null; saveMode = 'local'; }
+    else if (cloud) cloud.again = true;
+  } finally {
+    if (cloud) { cloud.busy = false; if (cloud.again) { cloud.again = false; queueCloud(); } }
+    updateSaveMode();
+  }
+}
+async function initCloud() {
+  const C = window.claude;
+  if (!C || typeof C.use !== 'function') return;
+  try {
+    const [db, user] = await Promise.all([C.use('db'), C.use('user')]);
+    if (!db || !user) return;
+    const uid = await user.id(); if (!uid) return;
+    const ref = db.collection('data/users/' + uid).doc('save');
+    const snap = await ref.get();
+    cloud = { ref, busy: false, again: false, last: 0, timer: null };
+    let remote = null;
+    if (snap.exists) { const d = snap.data(); if (d && typeof d.json === 'string') { try { remote = { savedAt: +d.savedAt || 0, state: JSON.parse(d.json) }; } catch (e) { remote = null; } } }
+    saveMode = 'cloud';
+    if (remote && remote.state && remote.state.v === 1 && remote.state.founded && (!st.founded || remote.savedAt > lastSavedAt)) adopt(remote.state, remote.savedAt);
+    else if (st.founded && (!remote || lastSavedAt > remote.savedAt)) flushCloud();
+    updateSaveMode();
+  } catch (e) { cloud = null; }
+}
+function adopt(s, savedAt) {
+  st = migrate(s); lastSavedAt = savedAt;
+  if (modalKind === 'welcome') closeModal();
+  catchUp(true);
+  saveLocalOnly();
+  renderAll();
+}
+function saveLocalOnly() { try { localStorage.setItem(LS_SAVE, JSON.stringify({ v: 1, savedAt: lastSavedAt, state: st })); } catch (e) { /* ignoré */ } }
+function updateSaveMode() {
+  const txt = saveMode === 'cloud' ? 'Partie enregistrée sur votre compte, sur tous vos appareils' : 'Partie enregistrée dans ce navigateur';
+  $$('[data-bind="savemode"]').forEach(el => { el.textContent = txt; });
+}
+
+/* ================= rendu ================= */
+const TABS = [
+  { id: 'station', label: 'Station', icon: 'hab' },
+  { id: 'research', label: 'Labo', icon: 'lab' },
+  { id: 'yard', label: 'Chantier', icon: 'yard' },
+  { id: 'sector', label: 'Secteur', icon: 'hexmap' },
+  { id: 'fleets', label: 'Flottes', icon: 'lancer' },
+  { id: 'journal', label: 'Journal', icon: 'sheet' },
+];
+const RICON = {
+  ore: '<path d="M2.4 10.6l1.9-5.4 5.4-2.7 3.9 4-1 6.5-6.8 1.5z"/><path d="M9.7 2.5L8.4 8.3l5.2-1.8M8.4 8.3l-2.6 6.3" fill="none" style="stroke:var(--shade)" stroke-width="1.1"/>',
+  ice: '<path d="M8 .8l4.8 5.4L8 15.2 3.2 6.2z"/><path d="M3.2 6.2h9.6M8 .8v14.4" fill="none" style="stroke:var(--shade)" stroke-width="1.1"/>',
+  data: '<path d="M7.4 1c.7 3.6 1.8 4.7 5.4 5.4-3.6.7-4.7 1.8-5.4 5.4-.7-3.6-1.8-4.7-5.4-5.4 3.6-.7 4.7-1.8 5.4-5.4z"/><circle cx="12.8" cy="12.6" r="1.6"/>',
+  energy: '<path d="M9.6.8L3 9.2h4.2L6.3 15.2 13 6.6H8.7z"/>',
+  pop: '<circle cx="8" cy="4.7" r="2.9"/><path d="M2.4 14.8c.5-3.4 2.7-5.2 5.6-5.2s5.1 1.8 5.6 5.2z"/>',
+  time: '<circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.5V8l2.5 1.7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+};
+function ri(k) { return `<svg class="ri" viewBox="0 0 16 16" aria-hidden="true">${RICON[k] || ''}</svg>`; }
+function medal(name) { return `<span class="medal">${svg(name)}</span>`; }
+function head(title, text) { return `<div class="view-head"><h2>${title}</h2>${text ? `<p>${text}</p>` : ''}</div>`; }
+function reqPills(req) {
+  if (!req) return '';
+  const items = [];
+  for (const k in req.b || {}) { const ok = lvl(k) >= req.b[k]; items.push(`<span class="pill ${ok ? 'ok' : 'no'}">${ok ? '✓ ' : ''}${esc(MOD[k].name)} ${req.b[k]}</span>`); }
+  for (const k in req.t || {}) { const ok = tech(k) >= req.t[k]; items.push(`<span class="pill ${ok ? 'ok' : 'no'}">${ok ? '✓ ' : ''}${esc(TECH[k].name)} ${req.t[k]}</span>`); }
+  return `<div class="req"><span>Il faut</span>${items.join('')}</div>`;
+}
+function costHtml(c, t) {
+  return `<div class="price">${Object.entries(c).map(([k, v]) => `<span class="cost" data-k="${k}" data-v="${v}" style="--c:var(--${k})" title="${RES_NAME[k]}">${ri(k)}${fmt(v)}</span>`).join('')}${t != null ? `<span class="dur" title="Durée">${ri('time')}${fmtDur(t)}</span>` : ''}</div>`;
+}
+function resChips(o) { return Object.entries(o).filter(([, v]) => v > 0).map(([k, v]) => `<span class="cost" style="--c:var(--${k})" title="${RES_NAME[k]}">${ri(k)}${fmt(v)}</span>`).join(''); }
+function rewardChips(rw) {
+  if (!rw) return '';
+  const res = {}; for (const k of ['ore', 'ice', 'data']) if (rw[k]) res[k] = rw[k];
+  let h = resChips(res);
+  if (rw.ships) for (const k in rw.ships) h += `<span class="pill">+${rw.ships[k]} ${shipName(k, rw.ships[k])}</span>`;
+  return h ? `<div class="rewards">${h}</div>` : '';
+}
+function gainHtml(from, to, unit, note) {
+  return `<div class="gain">${from != null ? `<span class="from">${from}</span><span class="arrow" aria-hidden="true">→</span>` : ''}<span class="to">${to}</span>${unit ? `<span class="unit">${unit}</span>` : ''}${note ? `<small>${note}</small>` : ''}</div>`;
+}
+function modEffect(id, a, b) {
+  const m = MOD[id], sp = st.speed, sm = staffMul(), f = a > 0;
+  const red = l => Math.round((1 - 0.88 ** l) * 100) + NBSP + '%';
+  switch (id) {
+    case 'drill': return gainHtml(f ? fmt(m.prod(a) * sp) : null, fmt(m.prod(b) * sp), 'minerai par heure', `Au niveau ${b} : ${fmt(m.energy(b))} d’énergie et ${fmt(m.staff(b) * sm)} colons`);
+    case 'ice': return gainHtml(f ? fmt(m.prod(a) * sp) : null, fmt(m.prod(b) * sp), 'glace par heure', `Au niveau ${b} : ${fmt(m.energy(b))} d’énergie et ${fmt(m.staff(b) * sm)} colons`);
+    case 'sail': { const k = 1 + 0.08 * tech('photon'); return gainHtml(f ? fmt(m.out(a) * k) : null, fmt(m.out(b) * k), 'd’énergie', `Au niveau ${b} : ${fmt(m.staff(b) * sm)} colons`); }
+    case 'hab': return gainHtml(fmt(m.cap(a)), fmt(m.cap(b)), 'colons au maximum');
+    case 'lab': return gainHtml(f ? fmt(m.prod(a) * sp) : null, fmt(m.prod(b) * sp), 'données par heure', `Recherches ${b * 10}${NBSP}% plus rapides · ${fmt(m.energy(b))} d’énergie · ${fmt(m.staff(b) * sm)} colons`);
+    case 'depot': return gainHtml(fmt(m.store(a)), fmt(m.store(b)), 'de capacité', 'Pour le minerai comme pour la glace.');
+    case 'works': return gainHtml(f ? '−' + red(a) : null, '−' + red(b), 'sur la durée des chantiers');
+    case 'yard': return b > 1 ? gainHtml(a > 1 ? '+' + (a - 1) * 20 + NBSP + '%' : null, '+' + (b - 1) * 20 + NBSP + '%', 'de cadence') : gainHtml(null, 'Débloque', 'les premiers vaisseaux');
+    case 'radar': return gainHtml(String(a + 1), String(b + 1), 'sauts de portée', `Raids repérés ${fmtDur(warnMsAt(b))} avant leur arrivée`);
+    case 'bastion': return gainHtml(f ? fmt(m.atk(a)) : null, fmt(m.atk(b)), 'de puissance de feu', `Coque au niveau ${b} : ${fmt(m.hull(b))}`);
+    case 'beacon': return gainHtml(pct(lumAt(a)), pct(lumAt(b)), 'd’éclat pour Vesper');
+  }
+  return '';
+}
+function modCard(id) {
+  const m = MOD[id], L = lvl(id), P = pendingB(id), N = P + 1;
+  const maxed = m.max && P >= m.max, ok = reqOk(m.req), full = st.q.build.length >= 3;
+  const c = cost(m.cost(N)); const queued = P - L;
+  const label = maxed ? 'Niveau maximal' : !ok ? 'Verrouillé' : full ? 'File pleine' : (P === 0 ? 'Construire' : `Améliorer au niveau ${N}`);
+  const blocked = !ok || maxed || full;
+  return `<article class="card ${ok ? '' : 'locked'}" style="--c:var(--${m.color})">
+    <div class="card-top">${medal(m.icon)}<div class="card-title"><h3>${m.name}</h3><p class="lvl"><span class="pill">${L ? 'Niveau ' + L : 'À construire'}${m.max ? ' sur ' + m.max : ''}</span>${queued ? `<span class="pill hot">+${queued} en file</span>` : ''}</p></div></div>
+    <p class="desc">${m.desc}</p>
+    ${maxed ? '<p class="done-note">Tous les niveaux sont achevés.</p>' : modEffect(id, P, N)}
+    ${ok ? '' : reqPills(m.req)}
+    ${maxed ? '' : `${costHtml(c, bTime(c))}<button class="btn block ${blocked ? '' : 'primary'}" data-act="build" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${label}</button><p class="wait" data-wait="${costAttr(c)}"></p>`}
+  </article>`;
+}
+function techCard(id) {
+  const t = TECH[id], L = tech(id), P = pendingT(id), N = P + 1;
+  const ok = reqOk(t.req), full = st.q.research.length >= 2; const c = cost(t.cost(N)); const queued = P - L;
+  const blocked = !ok || full;
+  return `<article class="card ${ok ? '' : 'locked'}" style="--c:var(--${t.color})">
+    <div class="card-top">${medal(t.icon)}<div class="card-title"><h3>${t.name}</h3><p class="lvl"><span class="pill">${L ? 'Niveau ' + L : 'Inconnue'}</span>${queued ? `<span class="pill hot">+${queued} en file</span>` : ''}</p></div></div>
+    <p class="desc">${t.desc}</p>
+    ${gainHtml(P ? t.eff(P) : null, t.eff(N), '')}
+    ${ok ? '' : reqPills(t.req)}
+    ${costHtml(c, rTime(c))}<button class="btn block ${blocked ? '' : 'primary'}" data-act="research" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'File pleine' : (P ? `Rechercher le niveau ${N}` : 'Rechercher')}</button><p class="wait" data-wait="${costAttr(c)}"></p>
+  </article>`;
+}
+function shipFoot(id) {
+  const n = qty[id] || 1, c = shipCost(id, n), ok = reqOk(SHIP[id].req), full = st.q.yard.length >= 5;
+  const blocked = !ok || full;
+  return `${costHtml(c, sTime(id) * n)}<button class="btn block ${blocked ? '' : 'primary'}" data-act="ships" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'Chantier complet' : `Fabriquer ${fmt(n)} ${shipName(id, n)}`}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
+}
+function shipCard(id) {
+  const s = SHIP[id], ok = reqOk(s.req), have = st.ships[id] || 0, n = qty[id] || 1;
+  return `<article class="card ${ok ? '' : 'locked'}" style="--c:var(--${s.color})" id="ship-${id}">
+    <div class="card-top">${medal(s.icon)}<div class="card-title"><h3>${s.name}</h3><p class="lvl"><span class="pill">${have ? fmt(have) + ' à quai' : 'Aucun à quai'}</span></p></div></div>
+    <p class="desc">${s.desc}</p>
+    <div class="stats"><span class="stat">Feu <b>${fmt(shipAtk(id))}</b></span><span class="stat">Coque <b>${fmt(shipHull(id))}</b></span><span class="stat">Vitesse <b>${NF1.format(shipSpeed(id))}</b></span><span class="stat">Soute <b>${fmt(shipCargo(id))}</b></span></div>
+    ${ok ? '' : reqPills(s.req)}
+    ${ok ? `<div class="qrow"><div class="stepper"><button type="button" data-act="qty-step" data-id="${id}" data-d="-1" aria-label="Un de moins">−</button><input id="qty-${id}" data-qty="${id}" type="number" inputmode="numeric" min="1" max="9999" value="${n}" aria-label="Quantité de ${s.pl}"><button type="button" data-act="qty-step" data-id="${id}" data-d="1" aria-label="Un de plus">+</button></div><div class="quick"><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="5">×5</button><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="10">×10</button><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="max">Max</button></div></div>` : ''}
+    <div id="sf-${id}" style="display:contents">${shipFoot(id)}</div>
+  </article>`;
+}
+/* ---- grille de vignettes et fiche détaillée ---- */
+const LOCK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const UP_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l5.5 7H10v4H6v-4H2.5z"/></svg>';
+function itemState(kind, id) {
+  if (kind === 'mod') {
+    const m = MOD[id], L = lvl(id), P = pendingB(id), maxed = !!(m.max && P >= m.max), ok = reqOk(m.req);
+    const j = st.q.build[0];
+    return { name: m.name, color: m.color, ok, badge: L, queued: P - L, need: maxed ? '' : costAttr(cost(m.cost(P + 1))), block: !ok || maxed || st.q.build.length >= 3, busy: j && j.id === id ? j : null };
+  }
+  if (kind === 'tech') {
+    const t = TECH[id], L = tech(id), P = pendingT(id), ok = reqOk(t.req), j = st.q.research[0];
+    return { name: t.name, color: t.color, ok, badge: L, queued: P - L, need: costAttr(cost(t.cost(P + 1))), block: !ok || st.q.research.length >= 2, busy: j && j.id === id ? j : null };
+  }
+  const s = SHIP[id], ok = reqOk(s.req), y0 = st.q.yard[0];
+  const queued = st.q.yard.filter(b => b.id === id).reduce((a, b) => a + b.n - b.done, 0);
+  return { name: s.name, color: s.color, ok, badge: st.ships[id] || 0, queued, need: costAttr(shipCost(id, 1)), block: !ok || st.q.yard.length >= 5, busy: y0 && y0.id === id ? { start: y0.start + y0.done * y0.each, end: y0.start + (y0.done + 1) * y0.each } : null };
+}
+function tileHtml(kind, id) {
+  const it = itemState(kind, id);
+  return `<button class="tl${it.ok ? '' : ' locked'}${it.busy ? ' busy' : ''}" data-act="item" data-kind="${kind}" data-id="${id}" style="--c:var(--${it.color})"${it.need && !it.block ? ` data-can="${it.need}"` : ''} aria-label="${esc(it.name)}, ${kind === 'ship' ? fmt(it.badge) + ' à quai' : 'niveau ' + it.badge}">
+    <span class="thumb">${thumbImg(kind, id)}${it.ok ? '' : `<span class="lock">${LOCK_SVG}</span>`}<span class="upb" aria-hidden="true">${UP_SVG}</span>${it.queued > 0 ? `<span class="qb">+${fmt(it.queued)}</span>` : ''}<span class="lvb">${fmt(it.badge)}</span>${it.busy ? `<span class="tbar"><i data-prog="${it.busy.start},${it.busy.end}"></i></span>` : ''}</span>
+    <span class="tname">${it.name}</span>
+  </button>`;
+}
+let itemSel = null;
+function openItem(kind, id) {
+  if (!(kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : SHIP[id])) return;
+  advanceTo(Date.now());
+  itemSel = { kind, id };
+  openModal('item', itemSheet());
+  paintThumbs(); updateDynamic();
+}
+function refreshItemSheet() {
+  if (modalKind !== 'item' || !itemSel) return;
+  const sh = $('#sheet'), a = document.activeElement;
+  if (a && a.tagName === 'INPUT' && sh.contains(a)) return;
+  const top = sh.scrollTop; sh.innerHTML = itemSheet(); sh.scrollTop = top; paintThumbs();
+}
+function itemSheet() {
+  const { kind, id } = itemSel;
+  const hero = `<div class="item-hero">${thumbImg(kind, id, true)}</div>`;
+  const close = '<button class="btn block" data-act="close">Fermer</button>';
+  if (kind === 'mod') {
+    const m = MOD[id], L = lvl(id), P = pendingB(id), N = P + 1, maxed = m.max && P >= m.max, ok = reqOk(m.req), full = st.q.build.length >= 3;
+    const c = cost(m.cost(N)), blocked = !ok || maxed || full;
+    const label = maxed ? 'Niveau maximal' : !ok ? 'Verrouillé' : full ? 'File pleine (3 chantiers)' : (P === 0 ? 'Construire' : `Améliorer au niveau ${N}`);
+    return `${hero}<div class="sheet-h"><p class="eyebrow">${L ? 'Niveau ' + L : 'Pas encore construit'}${m.max ? ' sur ' + m.max : ''}${P - L ? ` · +${P - L} en file` : ''}</p><h2>${m.name}</h2></div>
+      <p class="desc">${m.desc}</p>
+      ${maxed ? '<p class="done-note">Tous les niveaux sont achevés.</p>' : modEffect(id, P, N)}
+      ${ok ? '' : reqPills(m.req)}
+      ${maxed ? '' : `${costHtml(c, bTime(c))}<button class="btn block ${blocked ? '' : 'primary'}" data-act="build" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${label}</button><p class="wait" data-wait="${costAttr(c)}"></p>`}
+      ${close}`;
+  }
+  if (kind === 'tech') {
+    const t = TECH[id], L = tech(id), P = pendingT(id), N = P + 1, ok = reqOk(t.req), full = st.q.research.length >= 2;
+    const c = cost(t.cost(N)), blocked = !ok || full;
+    return `${hero}<div class="sheet-h"><p class="eyebrow">${L ? 'Niveau ' + L : 'Pas encore étudiée'}${P - L ? ` · +${P - L} en file` : ''}</p><h2>${t.name}</h2></div>
+      <p class="desc">${t.desc}</p>
+      ${gainHtml(P ? t.eff(P) : null, t.eff(N), '')}
+      ${ok ? '' : reqPills(t.req)}
+      ${costHtml(c, rTime(c))}<button class="btn block ${blocked ? '' : 'primary'}" data-act="research" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'Deux recherches déjà prévues' : (P ? `Rechercher le niveau ${N}` : 'Rechercher')}</button><p class="wait" data-wait="${costAttr(c)}"></p>
+      ${close}`;
+  }
+  const s = SHIP[id], ok = reqOk(s.req), have = st.ships[id] || 0, n = qty[id] || 1;
+  return `${hero}<div class="sheet-h"><p class="eyebrow">${have ? fmt(have) + ' à quai' : 'Aucun à quai'}</p><h2>${s.name}</h2></div>
+    <p class="desc">${s.desc}</p>
+    <div class="stats"><span class="stat">Feu <b>${fmt(shipAtk(id))}</b></span><span class="stat">Coque <b>${fmt(shipHull(id))}</b></span><span class="stat">Vitesse <b>${NF1.format(shipSpeed(id))}</b></span><span class="stat">Soute <b>${fmt(shipCargo(id))}</b></span></div>
+    ${ok ? '' : reqPills(s.req)}
+    ${ok ? `<div class="qrow"><div class="stepper"><button type="button" data-act="qty-step" data-id="${id}" data-d="-1" aria-label="Un de moins">−</button><input id="qty-${id}" data-qty="${id}" type="number" inputmode="numeric" min="1" max="9999" value="${n}" aria-label="Quantité de ${s.pl}"><button type="button" data-act="qty-step" data-id="${id}" data-d="1" aria-label="Un de plus">+</button></div><div class="quick"><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="5">×5</button><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="10">×10</button><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="max">Max</button></div></div>` : ''}
+    <div id="sf-${id}" style="display:contents">${shipFoot(id)}</div>
+    ${close}`;
+}
+function jobRow(name, meta, active, act, i, color, ic) {
+  return `<li class="job" style="--c:${color}"><span class="mini">${svg(ic)}</span><div class="job-main"><div class="job-row"><span class="job-n">${name} <span class="muted">${meta}</span></span>${active ? `<span class="eta" data-eta="${active.end}"></span>` : '<span class="eta muted">en attente</span>'}</div>${active ? `<div class="bar"><i data-prog="${active.start},${active.end}"></i></div>` : ''}</div><button class="x" data-act="${act}" data-i="${i}" aria-label="Annuler ${esc(name)}">×</button></li>`;
+}
+function panelQ(title, count, rows, empty) {
+  return `<section class="panel"><div class="panel-h"><h3>${title}</h3><span class="pill">${count}</span></div>${rows ? `<ul class="jobs">${rows}</ul>` : `<p class="empty">${empty}</p>`}</section>`;
+}
+function queueHtml(kind) {
+  if (kind === 'build') {
+    const q = st.q.build;
+    return panelQ('En construction', `${q.length} sur 3`, q.length ? q.map((j, i) => jobRow(MOD[j.id].name, 'niveau ' + j.lvl, i === 0 ? j : null, 'cancel-build', i, `var(--${MOD[j.id].color})`, MOD[j.id].icon)).join('') : null, 'Aucun chantier en cours. Choisissez une amélioration ci-dessous.');
+  }
+  if (kind === 'research') {
+    const q = st.q.research;
+    return panelQ('En recherche', `${q.length} sur 2`, q.length ? q.map((j, i) => jobRow(TECH[j.id].name, 'niveau ' + j.lvl, i === 0 ? j : null, 'cancel-research', i, `var(--${TECH[j.id].color})`, TECH[j.id].icon)).join('') : null, 'Le laboratoire attend un projet.');
+  }
+  const q = st.q.yard;
+  return panelQ('En cale sèche', `${q.length} sur 5`, q.length ? q.map((y, i) => {
+    const active = i === 0 ? { start: y.start + y.done * y.each, end: y.start + (y.done + 1) * y.each } : null;
+    const meta = i === 0 ? `${fmt(y.done)} sur ${fmt(y.n)}` : `×${fmt(y.n)}`;
+    return jobRow(SHIP[y.id].pl, meta, active, 'cancel-yard', i, `var(--${SHIP[y.id].color})`, SHIP[y.id].icon);
+  }).join('') : null, 'Aucune coque en cours d’assemblage.');
+}
+function ring(id) { return `<svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" class="ring-bg"/><circle cx="22" cy="22" r="18" class="ring-fg" id="${id}" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 22 22)"/></svg>`; }
+const VIEWS = {
+  station() {
+    return `${queueHtml('build')}
+    <div class="sec-h"><h3>Modules</h3><span>Touchez un module pour l’améliorer</span></div>
+    <div class="grid-t">${MOD_ORDER.map(id => tileHtml('mod', id)).join('')}</div>
+    <section class="panel status">
+      <div class="rings">
+        <div class="ring-box" style="--c:var(--energy)">${ring('ring-energy')}<div><p class="ring-k">Énergie utilisée</p><p class="ring-v" data-bind="v-energy"></p><p class="ring-n" data-bind="v-energy-n"></p></div></div>
+        <div class="ring-box" style="--c:var(--pop)">${ring('ring-staff')}<div><p class="ring-k">Colons au travail</p><p class="ring-v" data-bind="v-staff"></p><p class="ring-n" data-bind="v-staff-n"></p></div></div>
+      </div>
+      <div class="chips"><span class="chip">À l’abri des pillards <b data-bind="v-prot"></b></span><span class="chip">Avant-postes <b data-bind="v-out"></b></span></div>
+    </section>`;
+  },
+  research() {
+    return `${lvl('lab') ? '' : '<p class="note">Construisez d’abord le Laboratoire dans l’onglet Station. Il demande un Habitat de niveau 2.</p>'}
+    ${queueHtml('research')}
+    <div class="sec-h"><h3>Technologies</h3><span>Touchez une technologie pour la rechercher</span></div>
+    <div class="grid-t">${TECH_ORDER.map(id => tileHtml('tech', id)).join('')}</div>`;
+  },
+  yard() {
+    return `${lvl('yard') ? '' : '<p class="note">Construisez d’abord le Chantier orbital dans l’onglet Station.</p>'}
+    ${queueHtml('yard')}
+    <div class="sec-h"><h3>Vaisseaux</h3><span>Touchez un vaisseau pour le fabriquer</span></div>
+    <div class="grid-t">${SHIP_ORDER.map(id => tileHtml('ship', id)).join('')}</div>`;
+  },
+  sector() {
+    const leg = [['asteroid', 'Astéroïde'], ['comet', 'Comète'], ['wreck', 'Épave'], ['nest', 'Nid corsaire'], ['anomaly', 'Anomalie'], ['unknown', 'Inexploré']];
+    return `<div class="sector"><div class="map-wrap">${mapSvg()}</div><section class="panel cell-panel">${cellPanel()}</section></div>
+    <div class="legend">${leg.map(([t, n]) => `<span><svg viewBox="-23 -23 46 46" aria-hidden="true">${bodyGlyph({ type: t, lvl: 1 }, t !== 'unknown')}</svg>${n}</span>`).join('')}<span><svg viewBox="-21 -21 42 42" aria-hidden="true"><circle r="7.5" class="f-pop b-out"/><path d="M-3.8 2a3.8 3.8 0 0 1 7.6 0z" class="b-dome"/></svg>Avant-poste</span><span><svg viewBox="-21 -21 42 42" aria-hidden="true"><circle r="14" class="range"/></svg>Portée de l’antenne</span></div>`;
+  },
+  fleets() {
+    const docked = SHIP_ORDER.filter(id => (st.ships[id] || 0) > 0);
+    const def = fleetPower(st.ships);
+    const ba = lvl('bastion') ? bastionAtk() : 0, bh = lvl('bastion') ? bastionHull() : 0;
+    return `<section class="panel"><div class="panel-h"><h3>Défense de la station</h3></div>
+      <div class="duo"><div><p class="k">Puissance de feu</p><p class="big" style="color:var(--danger)">${fmt(def.a + ba)}</p></div><div><p class="k">Coque totale</p><p class="big" style="color:var(--ice)">${fmt(def.h + bh)}</p></div></div>
+      <p class="muted" style="margin-top:10px;font-size:13.5px">Vaisseaux à quai${lvl('bastion') ? ' et Bastion orbital' : ''} réunis : ils combattent ensemble à chaque raid.</p>
+    </section>
+    <section class="panel"><div class="panel-h"><h3>À quai</h3></div>
+      ${docked.length ? `<div class="tiles">${docked.map(id => { const n = st.ships[id]; return `<div class="tile" style="--c:var(--${SHIP[id].color})">${medal(SHIP[id].icon)}<div><b>${fmt(n)}</b><span>${shipName(id, n)}</span></div></div>`; }).join('')}</div>` : '<p class="empty">Aucun vaisseau à quai pour l’instant.</p>'}
+    </section>
+    <section class="panel"><div class="panel-h"><h3>En mission</h3><span class="pill">${st.fleets.length}</span></div>
+      ${st.fleets.length ? `<div class="mlist">${st.fleets.map(fleetCard).join('')}</div>` : '<p class="empty">Aucune flotte en vol.</p>'}
+    </section>`;
+  },
+  journal() {
+    const done = QUESTS.filter(q => st.quests[q.id]).length;
+    const cur = QUESTS.find(q => !st.quests[q.id]);
+    return `${cur ? `<section class="quest-hero"><p class="eyebrow">Objectif ${QUESTS.indexOf(cur) + 1} sur ${QUESTS.length}</p><h3>${cur.title}</h3><p>${cur.text}</p>${rewardChips(cur.reward)}</section>` : '<section class="quest-hero"><p class="eyebrow">Mission accomplie</p><h3>Vesper brille à nouveau</h3><p>Tous les objectifs de la colonie sont remplis.</p></section>'}
+    <section class="panel"><div class="panel-h"><h3>Objectifs</h3><span class="pill">${done} sur ${QUESTS.length}</span></div>
+      <ol class="qlist">${QUESTS.map(q => `<li class="${st.quests[q.id] ? 'done' : q === cur ? 'cur' : ''}"><span class="qcheck" aria-hidden="true">${st.quests[q.id] ? '✓' : ''}</span><div><h4>${q.title}</h4>${rewardText(q.reward) ? `<p class="rw">${rewardText(q.reward)}</p>` : ''}</div></li>`).join('')}</ol>
+    </section>
+    <section class="panel"><div class="panel-h"><h3>Événements</h3></div>
+      ${st.log.length ? `<ul class="timeline">${st.log.map(e => `<li class="k-${e.k}"><span class="when">${clock(e.t)} · <b>${KIND[e.k] || ''}</b></span>${esc(e.m)}</li>`).join('')}</ul>` : '<p class="empty">Rien à signaler pour l’instant.</p>'}
+    </section>`;
+  },
+};
+function fleetCard(f) {
+  const c = st.map[f.k], out = f.phase === 'out';
+  const a = out ? f.depart : f.bs, b = out ? f.arrive : f.back;
+  return `<article class="mcard"><div class="mcard-h"><span class="pill ${out ? 'hot' : ''}">${out ? 'Aller' : 'Retour'} · ${MISSION[f.m].name}</span><span class="eta" data-eta="${b}"></span></div><h4>Flotte ${f.id} ${out ? '→' : '←'} ${esc(cellTitle(c))}</h4><p>${listText(f.ships, SHIP)}</p><div class="bar"><i data-prog="${a},${b}"></i></div>${out ? `<button class="btn block" data-act="recall" data-id="${f.id}">Rappeler la flotte</button>` : ''}</article>`;
+}
+
+/* ---- carte : un ciel plutôt qu’une grille ---- */
+const HS = 30, SQ3 = Math.sqrt(3), STEP = HS * SQ3;
+function hexXY(q, r) { return [HS * SQ3 * (q + r / 2), HS * 1.5 * r]; }
+function spikes(n, ro, rin) { const p = []; for (let i = 0; i < n * 2; i++) { const a = Math.PI * i / n - Math.PI / 2, r = i % 2 ? rin : ro; p.push((r * Math.cos(a)).toFixed(1) + ',' + (r * Math.sin(a)).toFixed(1)); } return p.join(' '); }
+const NEST_PTS = spikes(8, 15, 8.5);
+function mapDefs() {
+  const rg = (id, a, b, c) => `<radialGradient id="${id}" cx="38%" cy="34%" r="72%"><stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></radialGradient>`;
+  const halo = (id, c) => `<radialGradient id="${id}"><stop offset=".55" stop-color="${c}" stop-opacity=".5"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`;
+  return `<defs>${rg('p-home', '#9BE7FF', '#3B82F6', '#0B1B36')}${rg('p-rock', '#F4D3A1', '#B9772F', '#241306')}${rg('p-ice', '#F2FDFF', '#6FE3F5', '#12506E')}${rg('p-lava', '#FFB15C', '#C2261D', '#1A0505')}${rg('p-rad', '#EBD9FF', '#A855F7', '#1E0A35')}${rg('p-grey', '#E5E7EB', '#6B7280', '#111827')}${rg('p-gas', '#FDE2B0', '#F59E0B', '#3A1D04')}
+    <radialGradient id="p-shade" cx="30%" cy="28%" r="88%"><stop offset=".42" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".72"/></radialGradient>
+    ${halo('h-cyan', '#00E5FF')}${halo('h-red', '#EF4444')}${halo('h-purple', '#A855F7')}${halo('h-amber', '#F59E0B')}
+    <linearGradient id="g-tail" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00E5FF" stop-opacity=".8"/><stop offset="1" stop-color="#00E5FF" stop-opacity="0"/></linearGradient></defs>`;
+}
+function orb(r, grad, extra) { return `<circle r="${r}" fill="url(#${grad})"/>${extra || ''}<circle r="${r}" fill="url(#p-shade)"/>`; }
+function bodyGlyph(c, vis) {
+  if (!vis) return `<g opacity=".5">${orb(10, 'p-grey', '<circle cx="-3" cy="-2" r="2" fill="#000" fill-opacity=".2"/><circle cx="3.5" cy="3.5" r="1.4" fill="#000" fill-opacity=".2"/>')}</g><text y="4" class="b-q">?</text>`;
+  let g = '';
+  switch (c.type) {
+    case 'home': g = `<circle r="24" fill="url(#h-cyan)"/>${orb(14, 'p-home', '<path d="M-9-3c3-4 7-3 8 0s-2 6-5 5-5-2-3-5z" fill="#22C55E" fill-opacity=".6"/><path d="M3 3c3-1 6 0 6 3s-4 3-6 2z" fill="#22C55E" fill-opacity=".55"/><path d="M-11 6c5 2 11 1 16-2" stroke="#fff" stroke-opacity=".4" stroke-width="1.6" fill="none" stroke-linecap="round"/>')}<ellipse rx="23" ry="6" fill="none" stroke="#00E5FF" stroke-opacity=".75" stroke-width="1.5" transform="rotate(-18)"/>`; break;
+    case 'asteroid': g = `${orb(11, 'p-rock', '<circle cx="-3" cy="-2" r="2.8" fill="#000" fill-opacity=".22"/><circle cx="4" cy="4" r="2" fill="#000" fill-opacity=".2"/><circle cx="3" cy="-6" r="1.4" fill="#000" fill-opacity=".2"/>')}<g transform="translate(14 -10)">${orb(3, 'p-rock')}</g>`; break;
+    case 'comet': g = `<path d="M2-6L-21 14l5 5L7 0z" fill="url(#g-tail)"/><g transform="translate(5 -4)"><circle r="14" fill="url(#h-cyan)"/>${orb(8, 'p-ice', '<path d="M-5-1l4 1 2-3M0 0l1 4" stroke="#fff" stroke-opacity=".5" stroke-width="1" fill="none"/>')}</g>`; break;
+    case 'wreck': case 'debris': g = '<path d="M-14-2l9-5 4 6-9 5z" fill="url(#p-grey)" stroke="#0B0F16"/><path d="M1 1l11-4 2 7-10 3z" fill="url(#p-grey)" stroke="#0B0F16"/><path d="M-4 9l3-1 1 3-3 1z" fill="url(#p-grey)"/><circle cx="7" cy="-8" r="1.3" fill="#00E5FF" fill-opacity=".8"/>'; break;
+    case 'nest': g = `<circle r="23" fill="url(#h-red)"/>${orb(13, 'p-lava', '<path d="M-10-4l5 2 3-4 4 3 5-1M-7 6l4-2 4 3 6-2M-2-11l1 5" stroke="#F59E0B" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')}<circle cx="12" cy="-12" r="7" fill="#EF4444" stroke="#0B0F16" stroke-width="1.5"/><text x="12" y="-8.4" class="b-lvl">${c.lvl || 1}</text>`; break;
+    case 'anomaly': g = `<g opacity="${c.studied ? '.45' : '1'}"><circle r="21" fill="url(#h-purple)"/>${orb(9, 'p-rad', '<path d="M-6-1c2-3 6-3 8 0" stroke="#fff" stroke-opacity=".45" stroke-width="1.2" fill="none"/>')}<ellipse rx="17" ry="5" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-dasharray="3 3" transform="rotate(24)"/></g>`; break;
+    case 'depleted': g = `<g opacity=".7">${orb(6, 'p-grey')}</g><circle cx="9" cy="5" r="1.4" class="b-dust"/><circle cx="-8" cy="-6" r="1.1" class="b-dust"/>`; break;
+    default: g = '<circle r="1.8" class="b-dust"/>';
+  }
+  if (c.outpost) g += '<g transform="translate(-13 -13)"><circle r="6.5" class="f-pop b-out"/><path d="M-3.4 1.8a3.4 3.4 0 0 1 6.8 0z" class="b-dome"/></g>';
+  return g;
+}
+function mapSvg() {
+  const S = Math.ceil(STEP * (RADIUS + 0.62));
+  const R = makeRng((st.seed ^ 0x5bd1e995) >>> 0);
+  let stars = '';
+  for (let i = 0; i < 70; i++) stars += `<circle cx="${((R() * 2 - 1) * S).toFixed(1)}" cy="${((R() * 2 - 1) * S).toFixed(1)}" r="${(0.4 + R() * 0.9).toFixed(2)}" class="bg-star" opacity="${(0.25 + R() * 0.6).toFixed(2)}"/>`;
+  let orbits = '';
+  for (let d = 1; d <= RADIUS; d++) orbits += `<circle r="${(d * STEP).toFixed(1)}" class="orbit"/>`;
+  const rr = Math.min(RADIUS + 0.55, radarRange() + 0.5) * STEP;
+  const targeted = new Set(st.fleets.map(f => f.k));
+  let cells = '';
+  for (const k in st.map) {
+    const c = st.map[k], [x, y] = hexXY(c.q, c.r), vis = visible(c);
+    cells += `<g class="body" data-act="cell" data-k="${k}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(cellTitle(c))}, case ${c.q}:${c.r}"><circle r="${(HS * 0.86).toFixed(1)}" class="hit"/>${sel === k ? '<circle r="22" class="b-sel"/>' : ''}${targeted.has(k) ? '<circle r="19" class="b-tgt"/>' : ''}${bodyGlyph(c, vis)}</g>`;
+  }
+  const trails = st.fleets.map(f => { const c = st.map[f.k]; const [x, y] = hexXY(c.q, c.r); return `<line x1="0" y1="0" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="trail"/><circle r="4.5" class="fdot" data-f="${f.id}"/>`; }).join('');
+  return `<svg class="map" viewBox="${-S} ${-S} ${2 * S} ${2 * S}" role="group" aria-label="Carte du secteur"><g pointer-events="none">${stars}${orbits}<circle r="${rr.toFixed(1)}" class="range"/></g>${cells}<g pointer-events="none">${trails}</g></svg>`;
+}
+function missionsFor(c) {
+  const vis = visible(c), m = [];
+  if (c.type === 'home') return m;
+  if (!vis || (c.type === 'anomaly' && !c.studied)) m.push('explore');
+  if (vis && ((c.type === 'asteroid' && c.ore > 0) || (c.type === 'comet' && c.ice > 0))) m.push('extract');
+  if (vis && (c.type === 'wreck' || c.type === 'debris')) m.push('salvage');
+  if (vis && c.type === 'nest') m.push('attack');
+  if (vis && (c.type === 'asteroid' || c.type === 'comet') && !c.outpost) m.push('outpost');
+  return m;
+}
+function missionReady(m) {
+  const n = k => st.ships[k] || 0;
+  return MISSION[m].need === 'armed' ? ARMED.some(k => n(k) > 0) : n(MISSION[m].need) > 0;
+}
+function cellPanel() {
+  const c = st.map[sel];
+  if (!c) return `<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true"><circle r="10" class="b-unk"/><text y="4" class="b-q">?</text></svg><div><p class="eyebrow">Inspection</p><h3>Choisissez un astre</h3></div></div><p class="facts">Touchez un point de la carte pour voir ce qu’il contient. Les points d’interrogation sont hors de portée : envoyez-y un Éclaireur.</p>`;
+  const vis = visible(c), facts = [];
+  if (!vis) facts.push('<p>Hors de portée de l’Antenne profonde. Un Éclaireur peut aller voir.</p>');
+  else switch (c.type) {
+    case 'home': facts.push('<p>Votre station. Toutes les flottes partent d’ici.</p>'); break;
+    case 'empty': facts.push('<p>Rien que du vide et de la poussière d’étoile.</p>'); break;
+    case 'asteroid': facts.push('<p>Un gisement de minerai à extraire avec des Drones foreurs.</p>', `<div class="price">${resChips({ ore: c.ore })}</div>`); break;
+    case 'comet': facts.push('<p>Une réserve de glace à extraire avec des Drones foreurs.</p>', `<div class="price">${resChips({ ice: c.ice })}</div>`); break;
+    case 'wreck': case 'debris': facts.push('<p>De quoi récupérer avec des Drones foreurs :</p>', `<div class="price">${resChips({ ore: c.ore, ice: c.ice, data: c.data })}</div>`); break;
+    case 'nest': { const p = compPower(c.garrison); facts.push(`<p>Nid de niveau <b>${c.lvl}</b>, gardé par ${listText(c.garrison, PIRATE) || 'personne'}.</p>`, `<p>Feu <b>${fmt(p.a)}</b> · coque <b>${fmt(p.h)}</b></p>`, '<p>Butin estimé :</p>', `<div class="price">${resChips(c.loot)}</div>`); break; }
+    case 'anomaly': facts.push(c.studied ? '<p>Ce signal a déjà été étudié.</p>' : `<p>Un signal inexpliqué. Un Éclaireur pourrait en tirer environ <b>${fmt(c.data)}</b> données.</p>`); break;
+    case 'depleted': facts.push('<p>Il ne reste plus rien à extraire.</p>'); break;
+  }
+  if (c.outpost) facts.push(`<p>Avant-poste actif : <b>+${fmt(outpostYield(c) * st.speed)}</b> ${RES_NAME[c.outpost]} par heure.</p>`);
+  const here = st.fleets.filter(f => f.k === sel);
+  if (here.length) facts.push(`<p>En approche : ${here.map(f => 'flotte ' + f.id).join(', ')}.</p>`);
+  const ms = missionsFor(c);
+  return `<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true">${bodyGlyph(c, vis)}</svg><div><p class="eyebrow">Case ${c.q}:${c.r} · ${c.d ? c.d + ' saut' + (c.d > 1 ? 's' : '') : 'origine'}</p><h3>${esc(cellTitle(c))}</h3></div></div>
+    <div class="facts">${facts.join('')}</div>
+    ${ms.length ? `<div class="missions">${ms.map(m => { const ok = missionReady(m); return `<div class="mission"><button class="btn block ${ok ? 'primary' : ''}" data-act="mission" data-m="${m}" data-k="${sel}"${ok ? '' : ' disabled'}>${MISSION[m].name}</button>${ok ? '' : `<p class="hint">${MISSION[m].hint}</p>`}</div>`; }).join('')}</div>` : ''}`;
+}
+
+/* ---- HUD ---- */
+const RES_HUD = [['ore', 'Minerai'], ['ice', 'Glace'], ['data', 'Données'], ['energy', 'Énergie'], ['pop', 'Colons']];
+function renderRes() {
+  if (document.getElementById('v-ore')) return;
+  const defs = document.getElementById('defs'); if (defs) defs.innerHTML = mapDefs();
+  $('#res').innerHTML = RES_HUD.map(([k, n]) => `<div class="r${k === 'data' ? ' nometer' : ''}" id="r-${k}" style="--c:var(--${k})" role="group" aria-label="${n}" title="${n}"><div class="top">${ri(k)}<span class="v" id="v-${k}">0</span></div><div class="s" id="s-${k}"></div><div class="meter"><i id="m-${k}"></i></div></div>`).join('');
+}
+function renderTicker() {
+  const b = st.q.build[0], r = st.q.research[0], y = st.q.yard[0];
+  const tk = (tabId, ic, color, end, extra) => `<button class="tk ${end ? '' : 'idle'}" data-act="tab" data-id="${tabId}" style="--c:var(--${color})" aria-label="${TABS.find(t => t.id === tabId).label}">${svg(ic)}${end ? `<span data-eta="${end}"></span>${extra || ''}` : '<span>libre</span>'}</button>`;
+  const fl = st.fleets.length;
+  $('#ticker').innerHTML =
+    tk('station', 'hab', 'ore', b && b.end, st.q.build.length > 1 ? `<span class="muted">+${st.q.build.length - 1}</span>` : '') +
+    tk('research', 'lab', 'data', r && r.end) +
+    tk('yard', 'yard', 'ice', y && (y.start + (y.done + 1) * y.each), y ? `<span class="muted">${fmt(y.n - y.done)}</span>` : '') +
+    `<button class="tk ${fl ? '' : 'idle'}" data-act="tab" data-id="fleets" style="--c:var(--energy)" aria-label="Flottes">${svg('lancer')}<span>${fl ? fl + ' en vol' : 'à quai'}</span></button>`;
+}
+function threatVisible() { return !!(st.founded && st.raid && st.raid.at - Date.now() <= warnMsAt(lvl('radar'))); }
+function renderThreat() {
+  const el = $('#threat');
+  if (!threatVisible()) { el.innerHTML = ''; return; }
+  el.innerHTML = `<button class="threat" data-act="tab" data-id="fleets"><span class="dot" aria-hidden="true"></span><span>Raid corsaire en approche : ${listText(st.raid.comp, PIRATE)}</span><b data-eta="${st.raid.at}"></b></button>`;
+}
+function renderDock() {
+  const badge = id => {
+    if (id === 'station' && st.q.build.length) return `<span class="bd">${st.q.build.length}</span>`;
+    if (id === 'research' && st.q.research.length) return `<span class="bd">${st.q.research.length}</span>`;
+    if (id === 'yard' && st.q.yard.length) return `<span class="bd">${st.q.yard.length}</span>`;
+    if (id === 'fleets' && threatVisible()) return '<span class="bd red">!</span>';
+    if (id === 'fleets' && st.fleets.length) return `<span class="bd">${st.fleets.length}</span>`;
+    return '';
+  };
+  $('#dock').innerHTML = TABS.map(t => `<button class="dk" data-act="tab" data-id="${t.id}"${t.id === tab ? ' aria-current="page"' : ''}><span class="dki">${svg(t.icon)}</span><span>${t.label}</span>${badge(t.id)}</button>`).join('');
+}
+/* ---- en-tête illustré de chaque section ---- */
+const HEADS = {
+  station: { title: 'Station', text: () => 'Améliorez les modules du moyeu. Jusqu’à trois chantiers peuvent s’enchaîner.' },
+  research: { title: 'Laboratoire', text: () => 'Les recherches se paient surtout en données, produites par le Laboratoire. Deux projets peuvent s’enchaîner.' },
+  yard: { title: 'Chantier orbital', text: () => 'Commandez des vaisseaux. Ceux qui restent à quai défendent la station pendant les raids.' },
+  sector: { title: 'Secteur de la Faille', text: () => { const r = radarRange(); return `Touchez un astre pour l’inspecter et y envoyer une flotte. Votre antenne voit à ${r} saut${r > 1 ? 's' : ''}.`; } },
+  fleets: { title: 'Flottes', text: () => 'Vos vaisseaux et leurs missions. Pour en lancer une, touchez un astre dans l’onglet Secteur.' },
+  journal: { title: 'Journal de bord', text: () => 'Les objectifs de la colonie et les derniers événements.' },
+};
+let headKey = '', rzTimer = null;
+const BANNERS = {};
+function renderHead() {
+  const id = HEADS[tab] ? tab : 'station', h = HEADS[id], text = h.text(), key = id + '|' + text;
+  if (key === headKey) return;
+  headKey = key;
+  $('#viewhead').innerHTML = `<div class="banner" data-banner="${id}"><img alt="" aria-hidden="true"><div class="banner-txt"><h2>${h.title}</h2></div></div><p class="view-lead">${text}</p>`;
+  paintBanner();
+}
+function paintBanner() {
+  const el = $('#viewhead .banner'); if (!el) return;
+  const img = el.querySelector('img'), w = Math.round(el.clientWidth), h = Math.round(el.clientHeight);
+  if (!w || !h) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1), key = `${el.dataset.banner}:${w}x${h}@${dpr}`;
+  if (img.dataset.key === key) return;
+  if (!(key in BANNERS)) { try { BANNERS[key] = drawBanner(el.dataset.banner, w, h, dpr); } catch (e) { BANNERS[key] = ''; } }
+  if (BANNERS[key]) { img.src = BANNERS[key]; img.dataset.key = key; }
+}
+window.addEventListener('resize', () => { clearTimeout(rzTimer); rzTimer = setTimeout(paintBanner, 180); });
+
+/* Illustrations dessinées au canvas, dans la palette fournie. */
+const PAL = { void: '#0B0F16', navy: '#0F1E2E', steel: '#1F3B5B', blue: '#3B82F6', cyan: '#00E5FF', grey: '#9CA3AF', slate: '#6B7280', amber: '#F59E0B', red: '#EF4444', green: '#22C55E', purple: '#A855F7' };
+const TAU = Math.PI * 2;
+function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+function glow(ctx, x, y, r, c, a) { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(c, a)); g.addColorStop(1, rgba(c, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+function starsC(ctx, w, h, R, n) {
+  for (let i = 0; i < n; i++) {
+    const big = R() > .93, r = big ? 0.9 + R() * 0.9 : 0.25 + R() * 0.75;
+    ctx.fillStyle = `rgba(255,255,255,${(0.25 + R() * 0.7).toFixed(2)})`; ctx.beginPath(); ctx.arc(R() * w, R() * h, r, 0, TAU); ctx.fill();
+  }
+}
+function space(ctx, w, h, R, tints) {
+  const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, PAL.void); g.addColorStop(1, PAL.navy);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  for (const [x, y, r, c, a] of tints) glow(ctx, x * w, y * h, r * w, c, a);
+  starsC(ctx, w, h, R, Math.round(w * h / 700));
+}
+function planet(ctx, x, y, r, c1, c2, c3, atm, detail) {
+  if (atm) { const g = ctx.createRadialGradient(x, y, r * 0.92, x, y, r * 1.28); g.addColorStop(0, rgba(atm, 0.5)); g.addColorStop(1, rgba(atm, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 1.28, 0, TAU); ctx.fill(); }
+  ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.clip();
+  const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.05, x, y, r * 1.05);
+  g.addColorStop(0, c1); g.addColorStop(0.5, c2); g.addColorStop(1, c3);
+  ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  if (detail) detail();
+  const s = ctx.createRadialGradient(x - r * 0.4, y - r * 0.45, r * 0.35, x - r * 0.1, y - r * 0.1, r * 1.3);
+  s.addColorStop(0, 'rgba(0,0,0,0)'); s.addColorStop(0.6, 'rgba(0,0,0,.22)'); s.addColorStop(1, 'rgba(0,0,0,.82)');
+  ctx.fillStyle = s; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  ctx.restore();
+  if (atm) { ctx.strokeStyle = rgba(atm, 0.55); ctx.lineWidth = Math.max(1, r * 0.018); ctx.beginPath(); ctx.arc(x, y, r, Math.PI * 0.95, Math.PI * 1.7); ctx.stroke(); }
+}
+function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function shipShape(ctx, x, y, s, R) {
+  const tr = ctx.createLinearGradient(x - s * 4, y, x - s * 0.7, y); tr.addColorStop(0, rgba(PAL.cyan, 0)); tr.addColorStop(1, rgba(PAL.cyan, 0.45));
+  ctx.fillStyle = tr; ctx.fillRect(x - s * 4, y - s * 0.07, s * 3.3, s * 0.14);
+  glow(ctx, x - s * 0.78, y, s * 0.45, PAL.cyan, 0.85);
+  const g = ctx.createLinearGradient(x, y - s * 0.4, x, y + s * 0.4); g.addColorStop(0, '#C9D3E0'); g.addColorStop(0.5, PAL.slate); g.addColorStop(1, PAL.steel);
+  ctx.fillStyle = g; ctx.beginPath();
+  ctx.moveTo(x + s, y); ctx.lineTo(x - s * 0.25, y - s * 0.22); ctx.lineTo(x - s * 0.8, y - s * 0.42); ctx.lineTo(x - s * 0.62, y - s * 0.08);
+  ctx.lineTo(x - s * 0.8, y); ctx.lineTo(x - s * 0.62, y + s * 0.08); ctx.lineTo(x - s * 0.8, y + s * 0.42); ctx.lineTo(x - s * 0.25, y + s * 0.22); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = rgba(PAL.cyan, 0.35); ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = rgba(PAL.cyan, 0.9); ctx.fillRect(x + s * 0.2, y - s * 0.03, s * 0.18, s * 0.06);
+}
+function drawBanner(kind, w, h, dpr) {
+  const cv = document.createElement('canvas'); cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  const ctx = cv.getContext('2d'); if (!ctx) return '';
+  ctx.scale(dpr, dpr);
+  const R = makeRng(({ station: 11, research: 23, yard: 37, sector: 41, fleets: 53, journal: 67 })[kind] || 5);
+  const m = Math.min(w, h * 2.4);
+  if (kind === 'station') {
+    skyC(ctx, w, h, R, [0.1, 0.2]);
+    planet(ctx, w * 0.84, h * 0.24, h * 0.14, '#8EE6FF', PAL.blue, '#081A33', PAL.cyan, () => { for (let i = 0; i < 6; i++) { ctx.fillStyle = rgba(PAL.green, 0.45); ctx.beginPath(); ctx.ellipse(w * 0.84 + (R() - 0.5) * h * 0.2, h * 0.24 + (R() - 0.5) * h * 0.2, h * 0.03, h * 0.015, R() * 3, 0, TAU); ctx.fill(); } });
+    const gy = h * 0.68, s = h * 0.95, u = w / 10;
+    groundC(ctx, w, h, R, gy);
+    sailC(ctx, u * 0.7, gy, s * 0.6, -0.25); sailC(ctx, u * 1.6, gy + 2, s * 0.5, -0.25);
+    glow(ctx, u * 3, gy + 2, s * 0.12, PAL.amber, 0.8); derrick(ctx, u * 3, gy, s * 0.8);
+    tubeC(ctx, u * 3.2, u * 6.6, gy - s * 0.04, s * 0.035);
+    domeC(ctx, u * 4.6, gy, s * 0.22); domeC(ctx, u * 6.1, gy, s * 0.14);
+    dishC(ctx, u * 7.5, gy, s * 0.7);
+    containersC(ctx, u * 9.1, gy, s * 0.5, R);
+    for (let i = 0; i < 14; i++) glow(ctx, R() * w, gy + R() * (h - gy) * 0.6, 2.5, R() > 0.5 ? PAL.cyan : PAL.amber, 0.8);
+  } else if (kind === 'station-old') {
+    space(ctx, w, h, R, [[0.12, 0.25, 0.45, PAL.amber, 0.22], [0.75, 0.4, 0.6, PAL.blue, 0.2], [0.4, 0.9, 0.4, PAL.purple, 0.1]]);
+    glow(ctx, w * 0.13, h * 0.24, h * 0.9, PAL.amber, 0.35); glow(ctx, w * 0.13, h * 0.24, h * 0.16, '#FFE7B8', 0.95);
+    const pr = Math.max(w * 0.55, h * 1.1), px = w * 0.8, py = h + pr * 0.42;
+    planet(ctx, px, py, pr, '#8EE6FF', PAL.blue, '#081A33', PAL.cyan, () => {
+      for (let i = 0; i < 18; i++) { ctx.fillStyle = rgba(PAL.green, 0.3 + R() * 0.25); ctx.beginPath(); ctx.ellipse(px + (R() - 0.5) * pr * 1.6, py - pr * (0.55 + R() * 0.45), pr * (0.04 + R() * 0.12), pr * (0.02 + R() * 0.05), R() * 3, 0, TAU); ctx.fill(); }
+      for (let i = 0; i < 10; i++) { ctx.strokeStyle = `rgba(255,255,255,${(0.12 + R() * 0.2).toFixed(2)})`; ctx.lineWidth = 2 + R() * 4; ctx.beginPath(); const cy = py - pr * (0.6 + R() * 0.38); ctx.ellipse(px + (R() - 0.5) * pr, cy, pr * (0.1 + R() * 0.25), pr * 0.015, -0.1, 0, Math.PI); ctx.stroke(); }
+    });
+    const sx = w * 0.36, sy = h * 0.46, sr = Math.min(h * 0.24, w * 0.16);
+    glow(ctx, sx, sy, sr * 1.6, PAL.cyan, 0.18);
+    ctx.save(); ctx.translate(sx, sy); ctx.rotate(-0.22);
+    ctx.strokeStyle = rgba(PAL.grey, 0.9); ctx.lineWidth = Math.max(2, sr * 0.09); ctx.beginPath(); ctx.ellipse(0, 0, sr, sr * 0.34, 0, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = rgba(PAL.cyan, 0.7); ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(0, 0, sr * 1.04, sr * 0.37, 0, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = rgba(PAL.grey, 0.6); ctx.lineWidth = 1.5; for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + 0.4; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * sr, Math.sin(a) * sr * 0.34); ctx.stroke(); }
+    const hub = ctx.createLinearGradient(0, -sr * 0.3, 0, sr * 0.3); hub.addColorStop(0, '#D7DEE8'); hub.addColorStop(1, PAL.steel);
+    ctx.fillStyle = hub; rrect(ctx, -sr * 0.16, -sr * 0.42, sr * 0.32, sr * 0.84, sr * 0.08); ctx.fill();
+    for (let i = 0; i < 9; i++) { const a = R() * TAU; ctx.fillStyle = rgba(R() > 0.3 ? PAL.cyan : PAL.amber, 0.95); ctx.beginPath(); ctx.arc(Math.cos(a) * sr, Math.sin(a) * sr * 0.34, 1.4, 0, TAU); ctx.fill(); }
+    ctx.restore();
+  } else if (kind === 'research') {
+    const bg = ctx.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, PAL.void); bg.addColorStop(1, '#0A1626'); ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+    const vx = w * 0.5, vy = h * 0.46, fy = h * 0.72;
+    glow(ctx, vx, vy, m * 0.55, PAL.blue, 0.28);
+    ctx.strokeStyle = rgba(PAL.cyan, 0.14); ctx.lineWidth = 1;
+    for (let i = -12; i <= 12; i++) { ctx.beginPath(); ctx.moveTo(vx + i * 8, fy); ctx.lineTo(vx + i * w * 0.11, h); ctx.stroke(); }
+    for (let k = 0; k < 6; k++) { const y = fy + (h - fy) * (k / 6) ** 1.6; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    for (const side of [-1, 1]) for (let j = 0; j < 3; j++) {
+      const x = vx + side * (w * 0.2 + j * w * 0.12), pw = 10 + j * 9, top = h * (0.08 - j * 0.04), bot = fy + j * (h - fy) * 0.45;
+      const pg = ctx.createLinearGradient(x, 0, x + side * pw, 0); pg.addColorStop(0, PAL.steel); pg.addColorStop(1, PAL.void);
+      ctx.fillStyle = pg; ctx.fillRect(Math.min(x, x + side * pw), top, pw, bot - top);
+      ctx.fillStyle = rgba(PAL.cyan, 0.75); ctx.fillRect(x - (side > 0 ? 0 : 2), top + (bot - top) * 0.15, 2, (bot - top) * 0.6);
+    }
+    const beam = ctx.createLinearGradient(vx - h * 0.1, 0, vx + h * 0.1, 0); beam.addColorStop(0, rgba(PAL.cyan, 0)); beam.addColorStop(0.5, rgba(PAL.cyan, 0.28)); beam.addColorStop(1, rgba(PAL.cyan, 0));
+    ctx.fillStyle = beam; ctx.fillRect(vx - h * 0.1, 0, h * 0.2, fy);
+    ctx.fillStyle = rgba(PAL.cyan, 0.1); ctx.strokeStyle = rgba(PAL.cyan, 0.7); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(vx, fy, h * 0.34, h * 0.06, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    const cr = h * 0.17;
+    glow(ctx, vx, vy, cr * 2.4, PAL.cyan, 0.4);
+    ctx.globalAlpha = 0.9; planet(ctx, vx, vy, cr, '#E6FDFF', PAL.cyan, PAL.steel, null, () => {
+      ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1;
+      for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.ellipse(vx, vy, cr * Math.abs(i) / 3.2, cr, 0, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.moveTo(vx - cr, vy + i * cr / 3.5); ctx.lineTo(vx + cr, vy + i * cr / 3.5); ctx.stroke(); }
+    }); ctx.globalAlpha = 1;
+    ctx.strokeStyle = rgba(PAL.cyan, 0.65); ctx.lineWidth = 1.4;
+    for (const [rx, ry, rot] of [[1.7, 0.45, 0.3], [1.5, 0.35, -0.5], [1.95, 0.3, 1.2]]) { ctx.beginPath(); ctx.ellipse(vx, vy, cr * rx, cr * ry, rot, 0, TAU); ctx.stroke(); }
+    for (let i = 0; i < 40; i++) { ctx.fillStyle = rgba(PAL.cyan, 0.3 + R() * 0.6); ctx.fillRect(vx + (R() - 0.5) * w * 0.5, R() * fy, 1.5, 1.5); }
+  } else if (kind === 'yard') {
+    space(ctx, w, h, R, [[0.5, 0.3, 0.6, PAL.blue, 0.22]]);
+    const pr = Math.max(w * 0.9, h * 2); planet(ctx, w * 0.5, h + pr * 0.72, pr, '#5FB4FF', PAL.blue, '#05101F', PAL.cyan);
+    const gy = h * 0.16;
+    for (const tx of [w * 0.1, w * 0.9]) {
+      ctx.fillStyle = PAL.void; ctx.fillRect(tx - 7, gy - 10, 14, h);
+      ctx.strokeStyle = rgba(PAL.steel, 1); ctx.lineWidth = 1; ctx.strokeRect(tx - 7, gy - 10, 14, h);
+      for (let y = gy; y < h; y += 12) { ctx.beginPath(); ctx.moveTo(tx - 7, y); ctx.lineTo(tx + 7, y + 12); ctx.stroke(); }
+    }
+    ctx.fillStyle = PAL.void; ctx.fillRect(w * 0.1, gy - 4, w * 0.8, 9); ctx.strokeStyle = PAL.steel; ctx.strokeRect(w * 0.1, gy - 4, w * 0.8, 9);
+    for (let i = 0; i < 4; i++) {
+      const lx = w * (0.28 + i * 0.15);
+      const cone = ctx.createLinearGradient(0, gy, 0, h * 0.62); cone.addColorStop(0, rgba(PAL.cyan, 0.22)); cone.addColorStop(1, rgba(PAL.cyan, 0));
+      ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(lx - 4, gy + 5); ctx.lineTo(lx + 4, gy + 5); ctx.lineTo(lx + w * 0.06, h * 0.62); ctx.lineTo(lx - w * 0.06, h * 0.62); ctx.closePath(); ctx.fill();
+      glow(ctx, lx, gy + 6, 8, PAL.cyan, 0.9);
+    }
+    const hx = w * 0.18, hw = w * 0.64, hy = h * 0.5;
+    const hg = ctx.createLinearGradient(0, hy - h * 0.16, 0, hy + h * 0.14); hg.addColorStop(0, '#C9D3E0'); hg.addColorStop(0.45, PAL.slate); hg.addColorStop(1, PAL.steel);
+    ctx.fillStyle = hg; ctx.beginPath();
+    ctx.moveTo(hx, hy - h * 0.08); ctx.lineTo(hx + hw * 0.7, hy - h * 0.14); ctx.lineTo(hx + hw, hy); ctx.lineTo(hx + hw * 0.7, hy + h * 0.1); ctx.lineTo(hx, hy + h * 0.08); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = rgba(PAL.void, 0.45); ctx.lineWidth = 1;
+    for (let i = 1; i < 9; i++) { const x = hx + hw * 0.08 * i; ctx.beginPath(); ctx.moveTo(x, hy - h * 0.1); ctx.lineTo(x, hy + h * 0.09); ctx.stroke(); }
+    ctx.fillStyle = rgba(PAL.cyan, 0.9); for (let i = 0; i < 12; i++) ctx.fillRect(hx + hw * (0.1 + i * 0.05), hy - 2, 3, 2);
+    glow(ctx, hx - 4, hy, h * 0.14, PAL.blue, 0.7);
+    for (let i = 0; i < 14; i++) { const x = hx + hw * (0.2 + R() * 0.6), y = hy - h * (0.12 + R() * 0.05); glow(ctx, x, y, 4 + R() * 4, PAL.amber, 0.9); }
+  } else if (kind === 'sector') {
+    space(ctx, w, h, R, [[0.3, 0.5, 0.45, PAL.purple, 0.35], [0.62, 0.38, 0.42, PAL.blue, 0.35], [0.86, 0.72, 0.3, PAL.cyan, 0.16], [0.12, 0.85, 0.25, PAL.red, 0.12]]);
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 26; i++) glow(ctx, w * (0.1 + R() * 0.8), h * (0.15 + R() * 0.7), m * (0.05 + R() * 0.12), R() > 0.5 ? PAL.purple : PAL.blue, 0.07);
+    ctx.globalCompositeOperation = 'source-over';
+    starsC(ctx, w, h, R, Math.round(w * h / 1200));
+    ctx.strokeStyle = rgba(PAL.cyan, 0.25); ctx.setLineDash([4, 6]); ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(w * 0.5, h * 0.55, w * 0.38, h * 0.28, -0.12, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+    planet(ctx, w * 0.17, h * 0.6, h * 0.15, '#FFB15C', '#C2261D', '#1A0505', PAL.red, () => { ctx.strokeStyle = rgba(PAL.amber, 0.8); ctx.lineWidth = 1.2; for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(w * 0.17 + (R() - 0.5) * h * 0.25, h * 0.6 + (R() - 0.5) * h * 0.25); ctx.lineTo(w * 0.17 + (R() - 0.5) * h * 0.25, h * 0.6 + (R() - 0.5) * h * 0.25); ctx.stroke(); } });
+    planet(ctx, w * 0.5, h * 0.3, h * 0.09, '#F2FDFF', '#6FE3F5', '#12506E', PAL.cyan);
+    const gx = w * 0.82, gyy = h * 0.58, gr = h * 0.22;
+    planet(ctx, gx, gyy, gr, '#FDE2B0', PAL.amber, '#3A1D04', PAL.amber, () => { for (let i = -5; i <= 5; i++) { ctx.fillStyle = `rgba(${i % 2 ? '120,53,15' : '255,237,213'},${(0.12 + R() * 0.15).toFixed(2)})`; ctx.fillRect(gx - gr, gyy + i * gr * 0.18, gr * 2, gr * 0.09); } });
+    ctx.strokeStyle = rgba(PAL.amber, 0.6); ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(gx, gyy, gr * 1.6, gr * 0.32, -0.25, 0, TAU); ctx.stroke();
+  } else if (kind === 'fleets') {
+    space(ctx, w, h, R, [[0.7, 0.4, 0.55, PAL.blue, 0.25], [0.2, 0.2, 0.35, PAL.purple, 0.12]]);
+    const pr = Math.max(w * 0.6, h * 1.4); planet(ctx, w * 0.12, h + pr * 0.55, pr, '#8EE6FF', PAL.blue, '#081A33', PAL.cyan);
+    const s = Math.min(h * 0.2, w * 0.1);
+    const fleet = [[0.62, 0.42, 1.25], [0.44, 0.26, 0.7], [0.46, 0.62, 0.75], [0.3, 0.44, 0.55], [0.8, 0.22, 0.5], [0.82, 0.7, 0.55], [0.22, 0.2, 0.38], [0.2, 0.72, 0.4]];
+    for (const [fx, fy, k] of fleet.sort((a, b) => a[2] - b[2])) shipShape(ctx, w * fx, h * fy, s * k, R);
+  } else {
+    const bg = ctx.createLinearGradient(0, 0, w, h); bg.addColorStop(0, PAL.void); bg.addColorStop(1, PAL.navy); ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = rgba(PAL.cyan, 0.06); ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 22) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let y = 0; y < h; y += 22) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    const rx = Math.min(w * 0.2, h * 0.75), ry = h * 0.52, rr = h * 0.36;
+    glow(ctx, rx, ry, rr * 1.5, PAL.blue, 0.25);
+    ctx.strokeStyle = rgba(PAL.cyan, 0.35);
+    for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(rx, ry, rr * i / 3, 0, TAU); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(rx - rr, ry); ctx.lineTo(rx + rr, ry); ctx.moveTo(rx, ry - rr); ctx.lineTo(rx, ry + rr); ctx.stroke();
+    for (let i = 0; i < 24; i++) { ctx.fillStyle = rgba(PAL.cyan, 0.16 * (1 - i / 24)); ctx.beginPath(); ctx.moveTo(rx, ry); ctx.arc(rx, ry, rr, -0.9 - i * 0.05, -0.85 - i * 0.05); ctx.closePath(); ctx.fill(); }
+    for (const [a, d, c] of [[0.6, 0.7, PAL.red], [2.2, 0.45, PAL.amber], [4, 0.8, PAL.green], [5.2, 0.3, PAL.cyan]]) glow(ctx, rx + Math.cos(a) * rr * d, ry + Math.sin(a) * rr * d, 6, c, 0.95);
+    const px0 = rx + rr + w * 0.06, pw = w - px0 - w * 0.05;
+    if (pw > 60) for (let i = 0; i < 3; i++) {
+      const py = h * (0.14 + i * 0.27), ph = h * 0.21;
+      ctx.fillStyle = rgba(PAL.blue, 0.1); ctx.strokeStyle = rgba(PAL.blue, 0.55); rrect(ctx, px0, py, pw, ph, 8); ctx.fill(); ctx.stroke();
+      glow(ctx, px0 + 16, py + ph / 2, 5, [PAL.red, PAL.green, PAL.amber][i], 1);
+      ctx.fillStyle = 'rgba(232,238,247,.55)'; rrect(ctx, px0 + 30, py + ph * 0.3, pw * (0.35 + R() * 0.3), 4, 2); ctx.fill();
+      ctx.fillStyle = 'rgba(232,238,247,.25)'; rrect(ctx, px0 + 30, py + ph * 0.58, pw * (0.2 + R() * 0.4), 4, 2); ctx.fill();
+    }
+  }
+  return cv.toDataURL('image/jpeg', 0.86);
+}
+
+/* ---- vignettes illustrées des modules, recherches et vaisseaux ---- */
+const THUMBS = {};
+const PALC = { ore: PAL.grey, ice: PAL.cyan, data: PAL.purple, energy: PAL.amber, pop: PAL.green, danger: PAL.red, vesper: PAL.blue, 'ink-2': PAL.grey };
+function hashStr(s) { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function metal(ctx, x0, y0, x1, y1) { const g = ctx.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, '#DCE3EC'); g.addColorStop(0.45, '#7B8698'); g.addColorStop(1, PAL.steel); return g; }
+function skyC(ctx, w, h, R, sun, tint) {
+  space(ctx, w, h, R, [[0.8, 0.2, 0.7, PAL.blue, 0.2], [0.3, 0.4, 0.5, tint || PAL.purple, 0.12]]);
+  if (sun) { const M = Math.max(w, h); glow(ctx, w * sun[0], h * sun[1], M * 0.55, PAL.amber, 0.3); glow(ctx, w * sun[0], h * sun[1], M * 0.06, '#FFE7B8', 0.95); }
+}
+function groundC(ctx, w, h, R, y0) {
+  const g = ctx.createLinearGradient(0, y0, 0, h); g.addColorStop(0, '#34485F'); g.addColorStop(0.35, '#1A2738'); g.addColorStop(1, PAL.void);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(0, y0 + (R() - 0.5) * h * 0.05);
+  for (let i = 1; i <= 7; i++) ctx.lineTo(w * i / 7, y0 + (R() - 0.5) * h * 0.07);
+  ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+  const u = Math.min(w, h * 1.5);
+  for (let i = 0; i < 6; i++) {
+    const x = R() * w, y = y0 + (0.3 + R() * 0.65) * (h - y0), r = (0.03 + R() * 0.06) * u;
+    ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.32, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(156,163,175,.2)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(x, y + 1, r, r * 0.32, 0, 0, Math.PI); ctx.stroke();
+  }
+}
+function domeC(ctx, x, y, r) {
+  ctx.fillStyle = metal(ctx, x - r, y - r, x + r * 0.6, y); ctx.beginPath(); ctx.arc(x, y, r, Math.PI, TAU); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = rgba(PAL.cyan, 0.3); ctx.beginPath(); ctx.arc(x, y, r * 0.84, Math.PI * 1.12, Math.PI * 1.48); ctx.lineTo(x, y - r * 0.35); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = PAL.steel; ctx.fillRect(x - r, y - r * 0.2, r * 2, r * 0.2);
+  for (let i = 0; i < 6; i++) { ctx.fillStyle = rgba(i % 3 ? PAL.amber : PAL.cyan, 0.95); ctx.fillRect(x - r * 0.82 + i * r * 0.3, y - r * 0.15, r * 0.13, r * 0.09); }
+}
+function tubeC(ctx, x0, x1, y, t) { const g = ctx.createLinearGradient(0, y - t, 0, y + t); g.addColorStop(0, '#C9D3E0'); g.addColorStop(1, PAL.steel); ctx.fillStyle = g; ctx.fillRect(x0, y - t / 2, x1 - x0, t); }
+function derrick(ctx, x, y, s) {
+  const hw = s * 0.13, top = y - s * 0.62;
+  ctx.strokeStyle = '#A7B1C0'; ctx.lineWidth = Math.max(1.5, s * 0.02);
+  ctx.beginPath(); ctx.moveTo(x - hw, y); ctx.lineTo(x - hw * 0.25, top); ctx.lineTo(x + hw * 0.25, top); ctx.lineTo(x + hw, y); ctx.stroke();
+  ctx.lineWidth = Math.max(1, s * 0.01);
+  for (let i = 0; i < 6; i++) {
+    const t0 = i / 6, t1 = (i + 1) / 6, y0 = y - (y - top) * t0, y1 = y - (y - top) * t1;
+    ctx.beginPath(); ctx.moveTo(x - hw + hw * 0.75 * t0, y0); ctx.lineTo(x + hw - hw * 0.75 * t1, y1); ctx.moveTo(x + hw - hw * 0.75 * t0, y0); ctx.lineTo(x - hw + hw * 0.75 * t1, y1); ctx.stroke();
+  }
+  ctx.fillStyle = metal(ctx, x - hw * 0.4, top, x + hw * 0.4, top + s * 0.1); ctx.fillRect(x - hw * 0.4, top - s * 0.06, hw * 0.8, s * 0.08);
+  glow(ctx, x, top - s * 0.08, s * 0.06, PAL.red, 0.95);
+}
+function sailC(ctx, x, y, s, tilt) {
+  ctx.strokeStyle = '#7B8698'; ctx.lineWidth = Math.max(1.5, s * 0.02); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - s * 0.36); ctx.stroke();
+  const w2 = s * 0.32, h2 = s * 0.18;
+  ctx.save(); ctx.translate(x, y - s * 0.46); ctx.transform(1, tilt, 0, 1, 0, 0);
+  const g = ctx.createLinearGradient(-w2, -h2, w2, h2); g.addColorStop(0, '#1E4FB8'); g.addColorStop(0.5, PAL.blue); g.addColorStop(0.6, '#FFD08A'); g.addColorStop(0.72, PAL.blue); g.addColorStop(1, '#0F2A55');
+  ctx.fillStyle = g; ctx.fillRect(-w2, -h2, w2 * 2, h2 * 2);
+  ctx.strokeStyle = 'rgba(11,15,22,.55)'; ctx.lineWidth = 1;
+  for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.moveTo(-w2 + i * w2 / 3, -h2); ctx.lineTo(-w2 + i * w2 / 3, h2); ctx.stroke(); }
+  for (let j = 1; j < 3; j++) { ctx.beginPath(); ctx.moveTo(-w2, -h2 + j * h2 * 2 / 3); ctx.lineTo(w2, -h2 + j * h2 * 2 / 3); ctx.stroke(); }
+  ctx.strokeStyle = '#A7B1C0'; ctx.strokeRect(-w2, -h2, w2 * 2, h2 * 2);
+  ctx.restore();
+}
+function dishC(ctx, x, y, s) {
+  ctx.fillStyle = metal(ctx, x - s * 0.05, y - s * 0.3, x + s * 0.05, y); ctx.fillRect(x - s * 0.04, y - s * 0.32, s * 0.08, s * 0.32);
+  ctx.save(); ctx.translate(x, y - s * 0.38); ctx.rotate(-0.5);
+  ctx.fillStyle = metal(ctx, -s * 0.3, -s * 0.1, s * 0.3, s * 0.12); ctx.beginPath(); ctx.ellipse(0, 0, s * 0.3, s * 0.12, 0, 0, Math.PI); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#DCE3EC'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -s * 0.18); ctx.stroke();
+  glow(ctx, 0, -s * 0.19, s * 0.05, PAL.cyan, 1);
+  ctx.restore();
+  ctx.strokeStyle = rgba(PAL.cyan, 0.6); ctx.lineWidth = 1.5;
+  for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(x + s * 0.14, y - s * 0.64, s * 0.08 * i, -1.7, -0.2); ctx.stroke(); }
+}
+function containersC(ctx, x, y, s, R) {
+  const cw = s * 0.2, ch = s * 0.1, cols = [PAL.steel, '#2A5A8A', '#7B8698', '#8A5A1A'];
+  for (let row = 0; row < 3; row++) for (let i = 0; i < 4 - row; i++) {
+    const cx = x - cw * 2 + i * cw + row * cw * 0.5, cy = y - ch * (row + 1);
+    ctx.fillStyle = cols[Math.floor(R() * cols.length)]; ctx.fillRect(cx, cy, cw - 2, ch - 2);
+    ctx.strokeStyle = 'rgba(11,15,22,.5)'; ctx.lineWidth = 1;
+    for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(cx + k * (cw - 2) / 4, cy); ctx.lineTo(cx + k * (cw - 2) / 4, cy + ch - 2); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fillRect(cx, cy, cw - 2, 2);
+  }
+}
+function armC(ctx, x, y, s) {
+  ctx.fillStyle = metal(ctx, x - s * 0.3, y - s * 0.06, x + s * 0.3, y); ctx.fillRect(x - s * 0.36, y - s * 0.06, s * 0.72, s * 0.06);
+  const j = [[x - s * 0.18, y - s * 0.06], [x - s * 0.1, y - s * 0.44], [x + s * 0.16, y - s * 0.38], [x + s * 0.2, y - s * 0.17]];
+  const line = (c, lw) => { ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(j[0][0], j[0][1]); for (const p of j.slice(1)) ctx.lineTo(p[0], p[1]); ctx.stroke(); };
+  ctx.lineCap = 'round'; line('#5C6676', Math.max(4, s * 0.06)); line(PAL.amber, Math.max(2, s * 0.03)); ctx.lineCap = 'butt';
+  for (const p of j) { ctx.fillStyle = '#DCE3EC'; ctx.beginPath(); ctx.arc(p[0], p[1], s * 0.03, 0, TAU); ctx.fill(); }
+  glow(ctx, j[3][0], j[3][1] + s * 0.07, s * 0.12, PAL.amber, 0.9);
+}
+function turretC(ctx, x, y, s) {
+  ctx.fillStyle = metal(ctx, x - s * 0.1, y - s * 0.2, x + s * 0.1, y); ctx.fillRect(x - s * 0.09, y - s * 0.16, s * 0.18, s * 0.16);
+  ctx.beginPath(); ctx.arc(x, y - s * 0.16, s * 0.09, Math.PI, TAU); ctx.fill();
+  ctx.strokeStyle = '#DCE3EC'; ctx.lineWidth = Math.max(2, s * 0.025); ctx.beginPath(); ctx.moveTo(x, y - s * 0.2); ctx.lineTo(x + s * 0.18, y - s * 0.34); ctx.stroke();
+  glow(ctx, x + s * 0.19, y - s * 0.35, s * 0.045, PAL.red, 0.95);
+}
+function shieldC(ctx, x, y, r) {
+  const g = ctx.createRadialGradient(x, y, r * 0.55, x, y, r); g.addColorStop(0, rgba(PAL.cyan, 0.04)); g.addColorStop(1, rgba(PAL.cyan, 0.32));
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, Math.PI, TAU); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = rgba(PAL.cyan, 0.75); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r, Math.PI, TAU); ctx.stroke();
+  ctx.strokeStyle = rgba(PAL.cyan, 0.2); ctx.lineWidth = 1;
+  for (let i = 1; i < 6; i++) { const a = Math.PI + i * Math.PI / 6; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); ctx.stroke(); }
+  for (let k = 1; k < 3; k++) { ctx.beginPath(); ctx.arc(x, y, r * k / 3, Math.PI, TAU); ctx.stroke(); }
+}
+const HULLS = {
+  drone: { p: [[0.7, 0], [0.1, -0.35], [-0.5, -0.2], [-0.6, 0], [-0.5, 0.2], [0.1, 0.35]], e: [[-0.6, -0.1], [-0.6, 0.1]], drill: true },
+  scout: { p: [[1, 0], [0.1, -0.08], [-0.3, -0.3], [-0.5, -0.3], [-0.35, -0.06], [-0.6, 0], [-0.35, 0.06], [-0.5, 0.3], [-0.3, 0.3], [0.1, 0.08]], e: [[-0.6, 0]] },
+  lancer: { p: [[1, 0], [-0.25, -0.22], [-0.8, -0.42], [-0.62, -0.08], [-0.8, 0], [-0.62, 0.08], [-0.8, 0.42], [-0.25, 0.22]], e: [[-0.8, 0]] },
+  hauler: { p: [[0.9, -0.12], [0.95, 0], [0.9, 0.12], [0.6, 0.24], [-0.8, 0.24], [-0.9, 0.1], [-0.9, -0.1], [-0.8, -0.24], [0.6, -0.24]], e: [[-0.9, -0.12], [-0.9, 0.12]], cargo: true },
+  corvette: { p: [[1, 0], [0.4, -0.18], [-0.1, -0.2], [-0.4, -0.5], [-0.7, -0.5], [-0.55, -0.18], [-0.85, -0.12], [-0.85, 0.12], [-0.55, 0.18], [-0.7, 0.5], [-0.4, 0.5], [-0.1, 0.2], [0.4, 0.18]], e: [[-0.85, -0.06], [-0.85, 0.06]] },
+  warden: { p: [[1, 0], [0.6, -0.14], [0.2, -0.16], [0, -0.32], [-0.3, -0.32], [-0.4, -0.18], [-0.9, -0.2], [-0.95, 0], [-0.9, 0.2], [-0.4, 0.18], [-0.3, 0.32], [0, 0.32], [0.2, 0.16], [0.6, 0.14]], e: [[-0.95, -0.12], [-0.95, 0], [-0.95, 0.12]] },
+};
+function hullC(ctx, id, s) {
+  if (id === 'seed') {
+    for (const ey of [-0.18, 0.18]) glow(ctx, -s * 0.5, ey * s, s * 0.22, PAL.cyan, 0.85);
+    planet(ctx, 0, 0, s * 0.42, '#EEF3F8', '#7B8698', PAL.navy, null, () => { for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; glow(ctx, Math.cos(a) * s * 0.3, Math.sin(a) * s * 0.12, s * 0.035, PAL.green, 1); } });
+    ctx.strokeStyle = rgba(PAL.green, 0.85); ctx.lineWidth = Math.max(2, s * 0.04); ctx.beginPath(); ctx.ellipse(0, 0, s * 0.62, s * 0.17, -0.2, 0, TAU); ctx.stroke();
+    return;
+  }
+  const H = HULLS[id];
+  for (const [ex, ey] of H.e) {
+    const tr = ctx.createLinearGradient(ex * s - s * 3, 0, ex * s, 0); tr.addColorStop(0, rgba(PAL.cyan, 0)); tr.addColorStop(1, rgba(PAL.cyan, 0.45));
+    ctx.fillStyle = tr; ctx.fillRect(ex * s - s * 3, ey * s - s * 0.04, s * 3, s * 0.08);
+    glow(ctx, ex * s, ey * s, s * 0.28, PAL.cyan, 0.9);
+  }
+  ctx.beginPath(); H.p.forEach(([px, py], i) => (i ? ctx.lineTo(px * s, py * s) : ctx.moveTo(px * s, py * s))); ctx.closePath();
+  const g = ctx.createLinearGradient(0, -s * 0.4, 0, s * 0.4); g.addColorStop(0, '#DCE3EC'); g.addColorStop(0.5, PAL.slate); g.addColorStop(1, PAL.steel);
+  ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = rgba(PAL.cyan, 0.4); ctx.lineWidth = 1; ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.moveTo(-s * 0.6, 0); ctx.lineTo(s * 0.8, 0); ctx.stroke();
+  if (H.cargo) { ctx.fillStyle = 'rgba(11,15,22,.38)'; for (let i = 0; i < 4; i++) ctx.fillRect(-s * 0.62 + i * s * 0.33, -s * 0.19, s * 0.27, s * 0.38); }
+  if (H.drill) { ctx.fillStyle = PAL.amber; ctx.beginPath(); ctx.moveTo(s * 0.7, -s * 0.09); ctx.lineTo(s * 1.02, 0); ctx.lineTo(s * 0.7, s * 0.09); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = rgba(PAL.cyan, 0.95); ctx.fillRect(s * 0.22, -s * 0.045, s * 0.17, s * 0.06);
+}
+function drawIconPaths(ctx, name, cx, cy, size) {
+  const src = ICONS[name] || '', k = size / 28;
+  ctx.save(); ctx.translate(cx - 14 * k, cy - 14 * k); ctx.scale(k, k);
+  const lw = ctx.lineWidth; ctx.lineWidth = lw / k; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  const re = /<(path|circle|rect|ellipse)\s([^>]*?)\/?>/g; let m;
+  while ((m = re.exec(src))) {
+    const at = {}; m[2].replace(/([\w-]+)="([^"]*)"/g, (_, a, v) => { at[a] = v; return ''; });
+    let p;
+    if (m[1] === 'path') p = new Path2D(at.d);
+    else { p = new Path2D(); if (m[1] === 'circle') p.arc(+at.cx, +at.cy, +at.r, 0, TAU); else if (m[1] === 'rect') p.rect(+at.x, +at.y, +at.width, +at.height); else p.ellipse(+at.cx, +at.cy, +at.rx, +at.ry, 0, 0, TAU); }
+    ctx.setLineDash(at['stroke-dasharray'] ? at['stroke-dasharray'].split(/[ ,]+/).map(Number) : []);
+    ctx.stroke(p);
+  }
+  ctx.restore();
+}
+function modScene(ctx, w, h, R, id) {
+  const col = PALC[MOD[id].color] || PAL.cyan, s = Math.min(h * 0.95, w * 0.9), cx = w / 2, gy = h * 0.74;
+  if (id === 'yard' || id === 'beacon') {
+    space(ctx, w, h, R, [[0.5, 0.45, 0.6, col, 0.22], [0.2, 0.2, 0.4, PAL.purple, 0.12]]);
+    if (id === 'yard') {
+      const pr = Math.max(w, h) * 1.1; planet(ctx, w * 0.5, h + pr * 0.78, pr, '#5FB4FF', PAL.blue, '#05101F', PAL.cyan);
+      for (const tx of [cx - s * 0.42, cx + s * 0.42]) { ctx.fillStyle = PAL.void; ctx.fillRect(tx - 5, h * 0.12, 10, h * 0.72); ctx.strokeStyle = PAL.steel; ctx.lineWidth = 1; ctx.strokeRect(tx - 5, h * 0.12, 10, h * 0.72); for (let y = h * 0.12; y < h * 0.84; y += 10) { ctx.beginPath(); ctx.moveTo(tx - 5, y); ctx.lineTo(tx + 5, y + 10); ctx.stroke(); } }
+      ctx.fillStyle = PAL.void; ctx.fillRect(cx - s * 0.42, h * 0.12, s * 0.84, 7); ctx.strokeStyle = PAL.steel; ctx.strokeRect(cx - s * 0.42, h * 0.12, s * 0.84, 7);
+      for (let i = 0; i < 3; i++) glow(ctx, cx - s * 0.25 + i * s * 0.25, h * 0.14, 7, PAL.cyan, 0.95);
+      ctx.save(); ctx.translate(cx, h * 0.5); hullC(ctx, 'corvette', s * 0.34); ctx.restore();
+      for (let i = 0; i < 8; i++) glow(ctx, cx + (R() - 0.5) * s * 0.4, h * (0.42 + R() * 0.08), 3 + R() * 3, PAL.amber, 0.95);
+    } else {
+      const st0 = h * 0.45; glow(ctx, cx, st0, s * 0.6, PAL.amber, 0.45); glow(ctx, cx, st0, s * 0.14, '#FFF3D6', 1);
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 6; i++) { const a0 = i / 6 * TAU + 0.15; ctx.strokeStyle = '#A7B1C0'; ctx.lineWidth = Math.max(4, s * 0.05); ctx.beginPath(); ctx.ellipse(cx, st0, s * 0.36, s * 0.13, -0.25, a0, a0 + 0.75); ctx.stroke(); ctx.strokeStyle = PAL.cyan; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(cx, st0, s * 0.36, s * 0.13, -0.25, a0, a0 + 0.75); ctx.stroke(); }
+      ctx.lineCap = 'butt';
+      ctx.strokeStyle = rgba(PAL.amber, 0.5); ctx.lineWidth = 1; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * s * 0.36, st0 + Math.sin(a) * s * 0.13); ctx.lineTo(cx, st0); ctx.stroke(); }
+    }
+    return;
+  }
+  skyC(ctx, w, h, R, id === 'sail' ? [0.2, 0.18] : [0.14, 0.16], col);
+  glow(ctx, cx, h * 0.5, s * 0.6, col, 0.16);
+  groundC(ctx, w, h, R, gy);
+  switch (id) {
+    case 'drill':
+      glow(ctx, cx, gy + 2, s * 0.16, PAL.amber, 0.85); derrick(ctx, cx, gy, s);
+      for (let i = 0; i < 7; i++) { const x = cx + (R() < 0.5 ? -1 : 1) * s * (0.2 + R() * 0.2), r = s * (0.02 + R() * 0.03); ctx.fillStyle = metal(ctx, x - r, gy - r * 2, x + r, gy); ctx.beginPath(); ctx.moveTo(x - r, gy); ctx.lineTo(x - r * 0.4, gy - r * 1.4); ctx.lineTo(x + r * 0.7, gy - r); ctx.lineTo(x + r, gy); ctx.closePath(); ctx.fill(); }
+      break;
+    case 'ice': {
+      const tx = w * 0.78, ty = h * 0.18, tl = ctx.createLinearGradient(tx, ty, tx - s * 0.6, ty + s * 0.3); tl.addColorStop(0, rgba(PAL.cyan, 0.6)); tl.addColorStop(1, rgba(PAL.cyan, 0));
+      ctx.fillStyle = tl; ctx.beginPath(); ctx.moveTo(tx, ty - 4); ctx.lineTo(tx - s * 0.6, ty + s * 0.22); ctx.lineTo(tx - s * 0.6, ty + s * 0.34); ctx.lineTo(tx, ty + 4); ctx.closePath(); ctx.fill();
+      planet(ctx, tx, ty, s * 0.05, '#F2FDFF', '#6FE3F5', '#12506E', PAL.cyan);
+      ctx.strokeStyle = '#A7B1C0'; ctx.lineWidth = Math.max(1.5, s * 0.018); ctx.beginPath(); ctx.moveTo(cx - s * 0.12, gy); ctx.lineTo(cx - s * 0.05, gy - s * 0.24); ctx.moveTo(cx + s * 0.12, gy); ctx.lineTo(cx + s * 0.05, gy - s * 0.24); ctx.stroke();
+      ctx.fillStyle = metal(ctx, cx - s * 0.2, gy - s * 0.5, cx + s * 0.2, gy - s * 0.2); ctx.beginPath(); ctx.moveTo(cx - s * 0.22, gy - s * 0.5); ctx.lineTo(cx + s * 0.22, gy - s * 0.5); ctx.lineTo(cx + s * 0.05, gy - s * 0.22); ctx.lineTo(cx - s * 0.05, gy - s * 0.22); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = rgba(PAL.cyan, 0.75); ctx.beginPath(); ctx.ellipse(cx, gy - s * 0.5, s * 0.22, s * 0.04, 0, 0, TAU); ctx.fill();
+      for (let i = 0; i < 9; i++) { const x = cx + (R() - 0.5) * s * 0.9, y = gy + R() * (h - gy) * 0.5, r = s * (0.015 + R() * 0.03); ctx.fillStyle = rgba(PAL.cyan, 0.75 + R() * 0.25); ctx.beginPath(); ctx.moveTo(x, y - r * 2); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r * 0.6); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fill(); }
+      break;
+    }
+    case 'sail': sailC(ctx, cx - s * 0.3, gy, s * 0.75, -0.25); sailC(ctx, cx + s * 0.32, gy, s * 0.7, -0.25); sailC(ctx, cx + s * 0.02, gy + 2, s, -0.25); break;
+    case 'hab': domeC(ctx, cx - s * 0.36, gy, s * 0.1); tubeC(ctx, cx - s * 0.3, cx + s * 0.1, gy - s * 0.05, s * 0.045); domeC(ctx, cx - s * 0.18, gy, s * 0.17); domeC(ctx, cx + s * 0.2, gy, s * 0.26); break;
+    case 'lab':
+      domeC(ctx, cx, gy, s * 0.24);
+      glow(ctx, cx, gy - s * 0.5, s * 0.28, PAL.purple, 0.55);
+      planet(ctx, cx, gy - s * 0.5, s * 0.11, '#F3E8FF', PAL.purple, '#1E0A35', PAL.purple);
+      ctx.strokeStyle = rgba(PAL.cyan, 0.7); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(cx, gy - s * 0.5, s * 0.2, s * 0.05, 0.3, 0, TAU); ctx.stroke();
+      { const bm = ctx.createLinearGradient(0, gy - s * 0.24, 0, gy - s * 0.45); bm.addColorStop(0, rgba(PAL.purple, 0.5)); bm.addColorStop(1, rgba(PAL.purple, 0)); ctx.fillStyle = bm; ctx.fillRect(cx - s * 0.04, gy - s * 0.45, s * 0.08, s * 0.21); }
+      break;
+    case 'depot': containersC(ctx, cx, gy, s, R); break;
+    case 'works': domeC(ctx, cx - s * 0.32, gy, s * 0.1); armC(ctx, cx + s * 0.04, gy, s); break;
+    case 'radar': domeC(ctx, cx - s * 0.28, gy, s * 0.1); dishC(ctx, cx + s * 0.04, gy, s); break;
+    case 'bastion': turretC(ctx, cx - s * 0.22, gy, s); turretC(ctx, cx + s * 0.22, gy, s); domeC(ctx, cx, gy, s * 0.13); shieldC(ctx, cx, gy, s * 0.44); break;
+  }
+}
+function techScene(ctx, w, h, R, id) {
+  const col = PALC[TECH[id].color] || PAL.cyan, vx = w / 2, fy = h * 0.8;
+  const bg = ctx.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, PAL.void); bg.addColorStop(1, '#0A1626'); ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+  glow(ctx, vx, h * 0.42, Math.max(w, h) * 0.55, col, 0.22);
+  starsC(ctx, w, h * 0.7, R, 40);
+  ctx.strokeStyle = rgba(col, 0.18); ctx.lineWidth = 1;
+  for (let i = -8; i <= 8; i++) { ctx.beginPath(); ctx.moveTo(vx + i * 6, fy); ctx.lineTo(vx + i * w * 0.16, h); ctx.stroke(); }
+  for (let k = 0; k < 5; k++) { const y = fy + (h - fy) * (k / 5) ** 1.6; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+  const bm = ctx.createLinearGradient(0, fy, 0, h * 0.08); bm.addColorStop(0, rgba(col, 0.32)); bm.addColorStop(1, rgba(col, 0));
+  ctx.fillStyle = bm; ctx.beginPath(); ctx.moveTo(vx - w * 0.24, fy); ctx.lineTo(vx + w * 0.24, fy); ctx.lineTo(vx + w * 0.12, h * 0.08); ctx.lineTo(vx - w * 0.12, h * 0.08); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = rgba(col, 0.14); ctx.strokeStyle = rgba(col, 0.8); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(vx, fy, w * 0.26, h * 0.05, 0, 0, TAU); ctx.fill(); ctx.stroke();
+  const es = Math.min(w, h) * 0.44, ey = h * 0.44;
+  ctx.strokeStyle = rgba(col, 0.5); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(vx, ey, es * 0.64, 0, TAU); ctx.stroke();
+  ctx.setLineDash([3, 5]); ctx.beginPath(); ctx.ellipse(vx, ey, es * 0.82, es * 0.22, -0.3, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+  ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.strokeStyle = col; ctx.lineWidth = 3; drawIconPaths(ctx, TECH[id].icon, vx, ey, es);
+  ctx.shadowBlur = 0; ctx.strokeStyle = 'rgba(240,250,255,.9)'; ctx.lineWidth = 1.2; drawIconPaths(ctx, TECH[id].icon, vx, ey, es);
+  for (let i = 0; i < 24; i++) { ctx.fillStyle = rgba(col, 0.3 + R() * 0.6); ctx.fillRect(vx + (R() - 0.5) * w * 0.6, h * (0.1 + R() * 0.65), 1.6, 1.6); }
+}
+function shipScene(ctx, w, h, R, id) {
+  const col = PALC[SHIP[id].color] || PAL.cyan;
+  space(ctx, w, h, R, [[0.7, 0.3, 0.7, col, 0.2], [0.2, 0.8, 0.5, PAL.blue, 0.2]]);
+  const pr = Math.max(w, h) * 0.9; planet(ctx, w * 0.12, h + pr * 0.6, pr, '#8EE6FF', PAL.blue, '#081A33', PAL.cyan);
+  const s = Math.min(w * 0.34, h * 0.4) * (id === 'warden' ? 1.15 : id === 'scout' || id === 'drone' ? 0.85 : 1);
+  ctx.save(); ctx.translate(w * 0.56, h * 0.46); ctx.rotate(-0.16); hullC(ctx, id, s); ctx.restore();
+}
+function drawItem(kind, id, w, h) {
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d'); if (!ctx) return '';
+  const R = makeRng(hashStr(kind + ':' + id));
+  if (kind === 'mod') modScene(ctx, w, h, R, id); else if (kind === 'tech') techScene(ctx, w, h, R, id); else shipScene(ctx, w, h, R, id);
+  return cv.toDataURL('image/jpeg', 0.85);
+}
+function thumbKey(kind, id, big) { return `${kind}:${id}:${big ? '720x320' : '320x320'}`; }
+function thumbImg(kind, id, big) { const k = thumbKey(kind, id, big), src = THUMBS[k]; return `<img data-thumb="${k}" alt=""${src ? ` src="${src}"` : ''}>`; }
+let thumbQ = [], thumbBusy = false;
+function paintThumbs() {
+  for (const img of $$('img[data-thumb]')) {
+    if (img.getAttribute('src')) continue;
+    const k = img.dataset.thumb;
+    if (THUMBS[k]) img.src = THUMBS[k]; else if (!(k in THUMBS) && !thumbQ.includes(k)) thumbQ.push(k);
+  }
+  if (thumbQ.length && !thumbBusy) { thumbBusy = true; setTimeout(drainThumbs, 16); }
+}
+function drainThumbs() {
+  const t0 = performance.now();
+  while (thumbQ.length && performance.now() - t0 < 14) {
+    const k = thumbQ.shift(), [kind, id, wh] = k.split(':'), [w, h] = wh.split('x').map(Number);
+    try { THUMBS[k] = drawItem(kind, id, w, h); } catch (e) { THUMBS[k] = ''; }
+  }
+  thumbBusy = false;
+  for (const img of $$('img[data-thumb]')) if (!img.getAttribute('src') && THUMBS[img.dataset.thumb]) img.src = THUMBS[img.dataset.thumb];
+  if (thumbQ.length) { thumbBusy = true; setTimeout(drainThumbs, 16); }
+}
+
+function renderView(force) {
+  renderHead();
+  const v = $('#view'); const a = document.activeElement;
+  if (!force && (pointerDown || (a && v.contains(a) && a.tagName === 'INPUT'))) { pendingView = true; return; }
+  pendingView = false;
+  v.innerHTML = (VIEWS[tab] || VIEWS.station)();
+  paintThumbs();
+}
+function renderAll(force) {
+  $('#station-name').textContent = st.name;
+  renderRes(); renderTicker(); renderThreat(); renderDock(); renderView(force); refreshItemSheet();
+  updateSaveMode(); updateDynamic(); dirty = false;
+}
+function flush(force) { if (!force && pointerDown) return; renderAll(force); }
+
+const BIND = {
+  score: () => fmt(score()),
+  lum: () => pct(lumAt(lvl('beacon'))),
+  'v-energy': r => `${fmt(r.eCons)} / ${fmt(r.eProd)}`,
+  'v-energy-n': r => r.eff < 1 ? ['Ajoutez des voiles solaires', true] : [`Surplus de ${fmt(r.eProd - r.eCons)}`, false],
+  'v-staff': r => `${fmt(Math.ceil(r.need))} / ${fmt(Math.floor(st.pop))}`,
+  'v-staff-n': r => r.staff < 1 ? ['Agrandissez l’Habitat', true] : [`${fmt(Math.max(0, Math.floor(st.pop - r.need)))} colons libres`, false],
+  'v-prot': () => `${fmt(protectedAmt())} de chaque`,
+  'v-out': () => `${st.outk.length} sur ${maxOutposts()}`,
+};
+function setText(id, t) { const el = document.getElementById(id); if (el && el.textContent !== t) el.textContent = t; }
+function setText2(el, t) { if (el.textContent !== t) el.textContent = t; }
+function waitText(c, r) {
+  if (afford(c)) return '';
+  let worst = 0;
+  for (const k in c) {
+    const miss = c[k] - getRes(k); if (miss <= 0) continue;
+    if ((k === 'ore' || k === 'ice') && c[k] > r.store) return 'L’Entrepôt est trop petit pour ce coût';
+    if (k === 'pop') return 'Pas assez de colons';
+    const rate = r[k]; if (!(rate > 0)) return k === 'data' ? 'Il faut un Laboratoire pour produire des données' : 'Production à l’arrêt';
+    worst = Math.max(worst, miss / rate * HOUR);
+  }
+  return 'Possible dans ' + fmtDur(worst);
+}
+function updateDynamic() {
+  const now = Date.now(), r = rates();
+  for (const k of ['ore', 'ice']) {
+    setText('v-' + k, fmtS(st.res[k])); setText('s-' + k, '+' + fmtS(r[k]) + '/h');
+    const f = st.res[k] / r.store; $('#m-' + k).style.width = clamp01(f) * 100 + '%';
+    $('#r-' + k).classList.toggle('full', f >= 0.999);
+  }
+  setText('v-data', fmtS(st.res.data)); setText('s-data', '+' + fmtS(r.data) + '/h');
+  const net = r.eProd - r.eCons;
+  setText('v-energy', (net >= 0 ? '+' : '−') + fmtS(Math.abs(net))); setText('s-energy', r.eff < 1 ? 'manque' : 'sur ' + fmtS(r.eProd));
+  $('#m-energy').style.width = (r.eProd > 0 ? clamp01(r.eCons / r.eProd) : 1) * 100 + '%';
+  $('#r-energy').classList.toggle('warn', r.eff < 1);
+  setText('v-pop', fmtS(st.pop)); setText('s-pop', r.staff < 1 ? 'manque' : 'sur ' + fmtS(r.cap));
+  $('#m-pop').style.width = clamp01(st.pop / r.cap) * 100 + '%';
+  $('#r-pop').classList.toggle('warn', r.staff < 1);
+  const re = document.getElementById('ring-energy'); if (re) re.style.strokeDashoffset = String(100 - 100 * (r.eProd > 0 ? clamp01(r.eCons / r.eProd) : 1));
+  const rs = document.getElementById('ring-staff'); if (rs) rs.style.strokeDashoffset = String(100 - 100 * (st.pop > 0 ? clamp01(r.need / st.pop) : 1));
+  for (const el of $$('[data-bind]')) {
+    const fn = BIND[el.dataset.bind]; if (!fn) continue;
+    let v = fn(r), w = null; if (Array.isArray(v)) { w = v[1]; v = v[0]; }
+    if (el.textContent !== v) el.textContent = v;
+    if (w !== null) { const p = el.closest('.ring-box'); if (p) p.classList.toggle('warn', w); }
+  }
+  for (const el of $$('[data-eta]')) setText2(el, fmtDur(+el.dataset.eta - now));
+  for (const el of $$('[data-prog]')) { const [a, b] = el.dataset.prog.split(',').map(Number); el.style.width = clamp01((now - a) / (b - a)) * 100 + '%'; }
+  for (const el of $$('.cost[data-k]')) el.classList.toggle('short', getRes(el.dataset.k) < +el.dataset.v - 1e-9);
+  for (const b of $$('button[data-need]')) if (!b.dataset.block) b.disabled = !afford(parseCost(b.dataset.need));
+  for (const el of $$('[data-can]')) el.classList.toggle('can', afford(parseCost(el.dataset.can)));
+  for (const el of $$('[data-wait]')) setText2(el, waitText(parseCost(el.dataset.wait), r));
+  for (const el of $$('.fdot')) {
+    const f = st.fleets.find(x => x.id === +el.dataset.f); if (!f) continue;
+    const c = st.map[f.k], [tx, ty] = hexXY(c.q, c.r);
+    const p = f.phase === 'out' ? clamp01((now - f.depart) / (f.arrive - f.depart)) : f.p0 * (1 - clamp01((now - f.bs) / (f.back - f.bs)));
+    el.style.transform = `translate(${(tx * p).toFixed(1)}px,${(ty * p).toFixed(1)}px)`;
+  }
+}
+
+/* ---- toasts ---- */
+function toast(m, k) {
+  const box = $('#toasts'); if (!box) return;
+  const el = document.createElement('div'); el.className = 'toast k-' + (k || 'info');
+  el.innerHTML = `<span class="tdot" aria-hidden="true"></span><div><b>${KIND[k] || 'Station'}</b><span></span></div>`;
+  el.querySelector('div span').textContent = m;
+  box.appendChild(el);
+  while (box.children.length > 3) box.firstChild.remove();
+  setTimeout(() => el.remove(), 5200);
+}
+
+/* ---- feuilles ---- */
+function openModal(kind, html) {
+  modalKind = kind; $('#sheet').innerHTML = html; $('#modal').hidden = false; document.body.classList.add('noscroll');
+  const f = $('#sheet').querySelector('input:not([type=radio]),button.primary,button');
+  if (f && kind !== 'fleet') setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) { /* ignoré */ } }, 30);
+}
+function closeModal() { $('#modal').hidden = true; $('#sheet').innerHTML = ''; modalKind = null; fc = null; itemSel = null; document.body.classList.remove('noscroll'); }
+function speedsHtml(name, cur) {
+  return `<fieldset class="speeds"><legend>Vitesse du temps</legend>${SPEEDS.map(s => `<label class="speed"><input type="radio" name="${name}" value="${s.v}"${s.v === cur ? ' checked' : ''}><span class="mul">×${s.v}</span><b>${s.name}</b><span>${s.d}</span></label>`).join('')}</fieldset>`;
+}
+function openWelcome() {
+  openModal('welcome', `<div class="sheet-art" aria-hidden="true"></div><div class="sheet-h"><p class="eyebrow">Héliarque</p><h2>Vesper s’éteint.</h2></div>
+    <p class="lede">Votre station dérive autour d’une géante rouge à bout de souffle. Creusez la roche, tendez vos voiles, repoussez les corsaires de la Faille, puis bâtissez l’Allumeur stellaire pour rendre sa lumière à l’étoile.</p>
+    <label class="field">Nom de la station<input id="w-name" type="text" maxlength="24" value="${esc(st.name)}" autocomplete="off"></label>
+    ${speedsHtml('w-speed', 4)}
+    <button class="btn primary block" data-act="found">Fonder la station</button>`);
+}
+function openSettings() {
+  openModal('settings', `<div class="sheet-h"><p class="eyebrow">Paramètres</p><h2>${esc(st.name)}</h2></div>
+    <label class="field">Nom de la station<input id="s-name" type="text" maxlength="24" value="${esc(st.name)}" autocomplete="off"></label>
+    ${speedsHtml('s-speed', st.speed)}
+    <p class="muted" style="font-size:14px">${saveMode === 'cloud' ? 'Votre partie est enregistrée sur votre compte : ouvrez ce lien sur votre téléphone ou votre ordinateur pour la reprendre.' : 'Votre partie est enregistrée dans ce navigateur.'} Les chantiers continuent pendant votre absence.</p>
+    <div class="sheet-actions"><button class="btn" data-act="close">Fermer</button><button class="btn primary" data-act="save-settings">Enregistrer</button></div>
+    <div class="danger-zone" id="dz"><button class="btn danger block" data-act="reset-ask">Recommencer une partie</button></div>`);
+}
+function openVictory() {
+  st.wonSeen = true; scheduleSave();
+  openModal('victory', `<div class="sheet-art bright" aria-hidden="true"></div><div class="sheet-h"><p class="eyebrow">Allumeur stellaire · cinquième étage</p><h2>Vesper brille à nouveau.</h2></div>
+    <p class="lede">Les cinq étages de l’Allumeur ont réveillé le cœur de l’étoile. Partie d’une poignée de colons, la station ${esc(st.name)} éclaire désormais tout le secteur de la Faille.</p>
+    <div class="chips"><span class="chip"><b>${fmt(score())}</b> points</span><span class="chip"><b>${st.stats.raidsWon}</b> raids repoussés</span><span class="chip"><b>${st.stats.nests}</b> nids détruits</span></div>
+    <div class="sheet-actions one"><button class="btn primary" data-act="close">Continuer à jouer</button></div>`);
+}
+function openAway(ms, items) {
+  const shown = items.slice(-14).reverse();
+  openModal('away', `<div class="sheet-h"><p class="eyebrow">Pendant votre absence</p><h2>${fmtDur(ms)} se sont écoulées</h2></div>
+    <ul class="timeline">${shown.map(e => `<li class="k-${e.k}"><span class="when"><b>${KIND[e.k] || ''}</b></span>${esc(e.m)}</li>`).join('')}</ul>
+    ${items.length > shown.length ? `<p class="muted">Et ${items.length - shown.length} autres événements dans le Journal.</p>` : ''}
+    <div class="sheet-actions one"><button class="btn primary" data-act="close">Reprendre</button></div>`);
+}
+function fleetSheet() {
+  const c = st.map[fc.k];
+  const rows = SHIP_ORDER.filter(id => (st.ships[id] || 0) > 0).map(id => `<div class="fc-row" style="--c:var(--${SHIP[id].color})">${medal(SHIP[id].icon)}<div class="fc-n"><b>${SHIP[id].name}</b><span class="muted">${fmt(st.ships[id])} à quai</span></div><div class="stepper sm"><button type="button" data-act="fc-step" data-id="${id}" data-d="-1" aria-label="Retirer un ${SHIP[id].name}">−</button><input id="fc-${id}" data-fc="${id}" type="number" inputmode="numeric" min="0" max="${st.ships[id]}" value="${fc.sel[id] || 0}" aria-label="Nombre de ${SHIP[id].pl}"><button type="button" data-act="fc-step" data-id="${id}" data-d="1" aria-label="Ajouter un ${SHIP[id].name}">+</button></div><button type="button" class="chipbtn" data-act="fc-max" data-id="${id}">Max</button></div>`).join('');
+  return `<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true">${bodyGlyph(c, visible(c))}</svg><div class="sheet-h"><p class="eyebrow">${MISSION[fc.m].name} · ${c.d} saut${c.d > 1 ? 's' : ''}</p><h2>${esc(cellTitle(c))}</h2></div></div>
+    ${rows ? `<div class="fc-rows">${rows}</div>` : '<p class="empty">Aucun vaisseau à quai.</p>'}
+    <div class="fc-sum" id="fc-sum"></div>
+    <div class="sheet-actions"><button class="btn" data-act="close">Annuler</button><button class="btn primary" id="fc-go" data-act="launch">Lancer</button></div>`;
+}
+function openFleet(k, m) {
+  advanceTo(Date.now());
+  const n = id => st.ships[id] || 0; const s = {};
+  if (m === 'explore') { if (n('scout')) s.scout = 1; }
+  else if (m === 'extract' || m === 'salvage') { if (n('drone')) s.drone = n('drone'); if (n('hauler')) s.hauler = n('hauler'); }
+  else if (m === 'attack') { for (const id of ARMED) if (n(id)) s[id] = n(id); }
+  else if (m === 'outpost') { if (n('seed')) s.seed = 1; }
+  fc = { k, m, sel: s };
+  openModal('fleet', fleetSheet());
+  refreshFc(true);
+}
+function refreshFc(setInputs) {
+  if (!fc) return;
+  if (setInputs) for (const id in st.ships) { const el = document.getElementById('fc-' + id); if (el) el.value = fc.sel[id] || 0; }
+  const c = st.map[fc.k], s = fc.sel, chk = fcCheck();
+  const any = Object.values(s).some(v => v > 0);
+  const dur = any ? travelMs(c.d, s) : 0, p = fleetPower(s);
+  const lines = [];
+  if (any) {
+    lines.push(`Trajet de <b>${fmtDur(dur)}</b>, retour vers <b>${clock(Date.now() + dur * 2)}</b>`);
+    lines.push(`Soute <b>${fmt(fleetCargo(s))}</b> · feu <b>${fmt(p.a)}</b> · coque <b>${fmt(p.h)}</b>`);
+    if (fc.m === 'attack' && c.garrison) { const g = compPower(c.garrison); lines.push(`En face : feu <b>${fmt(g.a)}</b> · coque <b>${fmt(g.h)}</b>`); }
+  }
+  if (!chk.ok && chk.msg) lines.push(`<span class="bad">${chk.msg}</span>`);
+  const sum = $('#fc-sum'); if (sum) sum.innerHTML = lines.map(l => `<span>${l}</span>`).join('') || '<span>Choisissez vos vaisseaux.</span>';
+  const go = $('#fc-go'); if (go) go.disabled = !chk.ok;
+}
+function refreshShipCard(id, setInput) {
+  const foot = document.getElementById('sf-' + id); if (!foot) return;
+  foot.innerHTML = shipFoot(id);
+  if (setInput) { const el = document.getElementById('qty-' + id); if (el) el.value = qty[id] || 1; }
+  updateDynamic();
+}
+
+/* ================= interactions ================= */
+function act(fn) { advanceTo(Date.now()); const r = fn(); bump(); checkQuests(); flush(true); scheduleSave(); return r; }
+function setTab(id) {
+  if (!VIEWS[id]) return;
+  tab = id; try { localStorage.setItem(LS_TAB, id); } catch (e) { /* ignoré */ }
+  renderDock(); renderView(true); updateDynamic();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+document.addEventListener('pointerdown', () => { pointerDown = true; }, true);
+const release = () => setTimeout(() => { pointerDown = false; if (dirty || pendingView) flush(); }, 60);
+document.addEventListener('pointerup', release, true);
+document.addEventListener('pointercancel', release, true);
+document.addEventListener('click', e => {
+  const modal = $('#modal');
+  if (e.target === modal && modalKind && modalKind !== 'welcome') { closeModal(); return; }
+  const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
+  const a = el.dataset.act, id = el.dataset.id;
+  switch (a) {
+    case 'tab': setTab(id); break;
+    case 'item': openItem(el.dataset.kind, id); break;
+    case 'build': act(() => doBuild(id)); break;
+    case 'cancel-build': act(() => { st.q.build = cancelQueue(st.q.build, +el.dataset.i, 'build'); }); break;
+    case 'research': act(() => doResearch(id)); break;
+    case 'cancel-research': act(() => { st.q.research = cancelQueue(st.q.research, +el.dataset.i, 'research'); }); break;
+    case 'ships': act(() => doShips(id, qty[id] || 1)); break;
+    case 'cancel-yard': act(() => cancelYard(+el.dataset.i)); break;
+    case 'qty-step': qty[id] = clampInt((qty[id] || 1) + (+el.dataset.d), 1, 9999); refreshShipCard(id, true); break;
+    case 'qty-set': qty[id] = el.dataset.v === 'max' ? Math.max(1, maxAfford(id)) : clampInt(el.dataset.v, 1, 9999); refreshShipCard(id, true); break;
+    case 'cell': sel = el.dataset.k; renderView(true); updateDynamic(); { const p = $('.cell-panel'); if (p && window.innerWidth < 980) { const r = p.getBoundingClientRect(); if (r.top > window.innerHeight - 160) p.scrollIntoView({ behavior: 'smooth', block: 'center' }); } } break;
+    case 'mission': openFleet(el.dataset.k, el.dataset.m); break;
+    case 'fc-step': if (fc) { fc.sel[id] = clampInt((fc.sel[id] || 0) + (+el.dataset.d), 0, st.ships[id] || 0); refreshFc(true); } break;
+    case 'fc-max': if (fc) { fc.sel[id] = st.ships[id] || 0; refreshFc(true); } break;
+    case 'launch': if (fc) act(() => { if (launch()) closeModal(); }); break;
+    case 'recall': act(() => recall(+id)); break;
+    case 'settings': openSettings(); break;
+    case 'close': closeModal(); break;
+    case 'found': {
+      const name = ($('#w-name') || {}).value; const sp = +(($('input[name="w-speed"]:checked') || {}).value || 4);
+      closeModal(); act(() => found(name, sp)); saveNow(); break;
+    }
+    case 'save-settings': {
+      const name = (($('#s-name') || {}).value || '').trim(); const sp = +(($('input[name="s-speed"]:checked') || {}).value || st.speed);
+      act(() => { if (name) st.name = name.slice(0, 24); if (sp !== st.speed) { st.speed = sp; log('info', `Vitesse du temps réglée sur ×${sp}.`); } });
+      closeModal(); break;
+    }
+    case 'reset-ask': $('#dz').innerHTML = `<p style="font-size:13.5px">Toute la progression de ${esc(st.name)} sera effacée.</p><div class="sheet-actions"><button class="btn" data-act="reset-no">Garder ma partie</button><button class="btn danger" data-act="reset-yes">Tout effacer</button></div>`; break;
+    case 'reset-no': $('#dz').innerHTML = '<button class="btn danger block" data-act="reset-ask">Recommencer une partie</button>'; break;
+    case 'reset-yes': {
+      closeModal(); st = newGame(); sel = null; tab = 'station';
+      try { localStorage.removeItem(LS_SAVE); } catch (e) { /* ignoré */ }
+      renderAll(true); openWelcome(); break;
+    }
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalKind && modalKind !== 'welcome') { closeModal(); return; }
+  const t = e.target;
+  if ((e.key === 'Enter' || e.key === ' ') && t instanceof SVGElement && t.dataset && t.dataset.act) { e.preventDefault(); t.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.qty) { qty[t.dataset.qty] = clampInt(t.value || 1, 1, 9999); refreshShipCard(t.dataset.qty, false); }
+  if (t.dataset && t.dataset.fc && fc) { fc.sel[t.dataset.fc] = clampInt(t.value || 0, 0, st.ships[t.dataset.fc] || 0); refreshFc(false); }
+});
+document.addEventListener('focusout', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.qty) t.value = qty[t.dataset.qty] || 1;
+  if (t.dataset && t.dataset.fc && fc) t.value = fc.sel[t.dataset.fc] || 0;
+});
+const persist = () => { if (st && st.founded) { advanceTo(Date.now()); saveNow(); } };
+window.addEventListener('pagehide', persist);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persist(); else tick(); });
+
+/* ================= boucle ================= */
+function tick() {
+  if (!st) return;
+  const v0 = ver;
+  advanceTo(Date.now());
+  checkQuests();
+  const th = threatVisible();
+  if (th !== threatShown) { threatShown = th; dirty = true; if (th && live && st.raid) toast(`Raid corsaire détecté : ${listText(st.raid.comp, PIRATE)}. Arrivée dans ${fmtDur(st.raid.at - Date.now())}.`, 'raid'); }
+  if (ver !== v0) scheduleSave();
+  if (dirty || pendingView) flush(); else updateDynamic();
+  if (st.won && !st.wonSeen && !modalKind) openVictory();
+}
+function catchUp(report) {
+  const from = st.t, now = Date.now();
+  if (now - st.t > 30 * 24 * HOUR) st.t = now - 30 * 24 * HOUR;
+  live = false; awayLog = [];
+  advanceTo(now); checkQuests();
+  const items = awayLog; awayLog = null; live = true;
+  threatShown = threatVisible();
+  if (report && st.founded && now - from > 2 * MIN && items.length && !modalKind) openAway(now - from, items);
+}
+
+/* ================= étoile ================= */
+function initStar() {
+  const cv = $('#star'); const ctx = cv.getContext && cv.getContext('2d'); if (!ctx) return;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const voidHex = getComputedStyle(document.documentElement).getPropertyValue('--void').trim() || '#0b1114';
+  const vr = parseInt(voidHex.slice(1, 3), 16), vg = parseInt(voidHex.slice(3, 5), 16), vb = parseInt(voidHex.slice(5, 7), 16);
+  const R0 = makeRng(7);
+  const cells = Array.from({ length: 30 }, () => ({ a: R0() * 6.283, d: Math.sqrt(R0()), s: (R0() - 0.5) * 0.00005, z: 0.08 + R0() * 0.16, ph: R0() * 6.283 }));
+  let W = 0, H = 0, last = 0;
+  function resize() { const dpr = Math.min(2, window.devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function draw(ts) {
+    if (!reduce) requestAnimationFrame(draw);
+    if (ts - last < 40 && !reduce) return; last = ts;
+    if (!W || cv.width === 0) resize();
+    const L = st ? lumAt(lvl('beacon')) : 0.12;
+    ctx.clearRect(0, 0, W, H);
+    const R = Math.max(130, H * 1.3), cx = W - R * 0.38, cy = H * 0.78;
+    const core = [255, lerp(150, 238, L), lerp(90, 200, L)].map(Math.round);
+    const rim = [lerp(170, 255, L), lerp(40, 130, L), lerp(22, 70, L)].map(Math.round);
+    const pulse = reduce ? 0 : Math.sin(ts * 0.0007) * 0.05;
+    const glow = ctx.createRadialGradient(cx, cy, R * 0.85, cx, cy, R * (1.6 + L * 0.6));
+    glow.addColorStop(0, `rgba(${rim.join(',')},${0.3 + 0.3 * L + pulse})`); glow.addColorStop(1, `rgba(${rim.join(',')},0)`);
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+    const disk = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.32, R * 0.05, cx, cy, R);
+    disk.addColorStop(0, `rgb(${core.join(',')})`); disk.addColorStop(0.65, `rgb(${rim.join(',')})`); disk.addColorStop(1, `rgb(${rim.map(v => Math.round(v * 0.5)).join(',')})`);
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = disk; ctx.fill(); ctx.clip();
+    for (const c of cells) {
+      const a = c.a + (reduce ? 0 : ts * c.s), x = cx + Math.cos(a) * c.d * R * 0.95, y = cy + Math.sin(a) * c.d * R * 0.95;
+      const rr = R * c.z * (1 + (reduce ? 0 : 0.18 * Math.sin(ts * 0.0011 + c.ph)));
+      const g = ctx.createRadialGradient(x, y, 0, x, y, rr);
+      g.addColorStop(0, `rgba(255,232,190,${0.12 + 0.1 * L})`); g.addColorStop(1, 'rgba(255,210,160,0)');
+      ctx.fillStyle = g; ctx.fillRect(x - rr, y - rr, rr * 2, rr * 2);
+    }
+    ctx.restore();
+    const fade = ctx.createLinearGradient(0, 0, W, 0);
+    fade.addColorStop(0, `rgba(${vr},${vg},${vb},0.96)`); fade.addColorStop(0.45, `rgba(${vr},${vg},${vb},0.72)`); fade.addColorStop(0.8, `rgba(${vr},${vg},${vb},0)`);
+    ctx.fillStyle = fade; ctx.fillRect(0, 0, W, H);
+  }
+  window.addEventListener('resize', () => { resize(); if (reduce) draw(performance.now()); });
+  resize(); requestAnimationFrame(draw);
+}
+
+/* ================= démarrage ================= */
+function boot(hot) {
+  let s = null, savedAt = 0;
+  if (hot && hot.state && hot.state.v === 1) { s = hot.state; savedAt = hot.savedAt || Date.now(); if (hot.tab && VIEWS[hot.tab]) tab = hot.tab; if (hot.sel) sel = hot.sel; }
+  else {
+    try { const raw = localStorage.getItem(LS_SAVE); if (raw) { const d = JSON.parse(raw); if (d && d.state && d.state.v === 1) { s = d.state; savedAt = d.savedAt || 0; } } } catch (e) { s = null; }
+    try { const t = localStorage.getItem(LS_TAB); if (t && VIEWS[t]) tab = t; } catch (e) { /* ignoré */ }
+  }
+  if (s) { st = migrate(s); lastSavedAt = savedAt; catchUp(!(hot && hot.state)); }
+  else st = newGame();
+  live = true;
+  renderAll(true);
+  initStar();
+  setInterval(tick, 1000);
+  if (!st.founded) openWelcome();
+  else if (st.won && !st.wonSeen && !modalKind) openVictory();
+  initCloud();
+}
+const H = window.claude && window.claude.hot;
+if (H && typeof H.snapshot === 'function') { try { H.snapshot(() => ({ state: st, savedAt: lastSavedAt, tab, sel })); } catch (e) { /* ignoré */ } }
+if (H && typeof H.ready === 'function') H.ready(boot); else boot((H && H.data) || {});
+})();
+</script>
+
+</body>
+</html>
