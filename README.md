@@ -12,4 +12,4 @@ Tout tient dans `index.html`. La partie est enregistrée dans le navigateur de l
 
 Photos libres de droits : NASA/GSFC (Terre « Blue Marble » 2012, pleine Lune), NASA/JPL (Io), NASA/JPL-Caltech/UCLA/MPS/DLR/IDA (Vesta), NASA/JPL-Caltech/UMD (comète Hartley 2), NASA/JPL-Caltech (nébuleuse Helix), NASA, ESA, CSA, STScI (nébuleuse de la Carène, Webb), NASA/JSC (surface lunaire Apollo 17, la Terre depuis l'ISS). Leur présence n'implique aucune approbation de ce jeu par ces agences.
 
-Illustrations des vaisseaux : fournies par l'auteur du jeu.
+Illustrations des vaisseaux, des recherches et du Laboratoire : fournies par l'auteur du jeu.
