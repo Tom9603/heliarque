@@ -442,6 +442,49 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+/* combat : rôles, simulateur, rapports */
+.role{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0;font-size:13px;color:var(--ink-2)}
+.role b{font-family:var(--f-hud);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c);padding:1px 6px;background:color-mix(in oklab,var(--c) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--c) 45%,transparent)}
+.sim{display:grid;gap:6px;padding:11px 12px;background:rgba(12,25,41,.85);box-shadow:inset 3px 0 0 var(--c),inset 0 0 0 1px color-mix(in oklab,var(--c) 30%,transparent)}
+.sim-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sim-h b{font-family:var(--f-hud);font-size:28px;font-weight:700;line-height:1;color:var(--c);text-shadow:0 0 14px color-mix(in oklab,var(--c) 50%,transparent)}
+.sim-w{margin:0;font-family:var(--f-hud);font-size:16px;font-weight:700;letter-spacing:.02em;color:var(--ink)}
+.sim-bar{display:flex;height:8px;background:rgba(255,255,255,.06);overflow:hidden}
+.sim-bar i{display:block;height:100%}
+.sim-bar .w,.sim-k .w::before{background:var(--ok)}.sim-bar .d,.sim-k .d::before{background:var(--energy)}.sim-bar .l,.sim-k .l::before{background:var(--danger)}
+.sim-k{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0;font-size:12px;color:var(--ink-2)}
+.sim-k span{display:inline-flex;align-items:center;gap:5px}
+.sim-k span::before{content:"";width:8px;height:8px;display:inline-block}
+.sim-loss{margin:0;font-size:12.5px;color:var(--ink-3)}
+.alert b.ok{color:var(--ok)}.alert b.mid{color:var(--energy)}.alert b.bad{color:#FF8A8A}
+.rp-open{appearance:none;display:inline-block;margin-top:6px;padding:4px 9px;border:0;background:rgba(255,77,77,.12);box-shadow:inset 0 0 0 1px rgba(255,77,77,.45);color:#FFB3B3;font:inherit;font-family:var(--f-hud);font-size:12.5px;font-weight:700;letter-spacing:.04em;cursor:pointer}
+.toast .tlink{display:block;margin-top:3px;font-family:var(--f-hud);font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--vesper-2)}
+button.toast{appearance:none;border:0;font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
+.rp-head{display:grid;gap:3px;padding:2px 40px 2px 0;box-shadow:inset 0 -1px 0 color-mix(in oklab,var(--c) 40%,transparent);padding-bottom:10px}
+.rp-head h2{color:var(--c);text-shadow:0 0 16px color-mix(in oklab,var(--c) 40%,transparent)}
+.rp-sub{margin:0;font-size:13px;color:var(--ink-2)}
+.rp-sub b{color:var(--c);font-family:var(--f-hud);letter-spacing:.06em;text-transform:uppercase}
+.rp-chart{display:grid;gap:8px;padding:10px 12px}
+.rp-legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--ink-2)}
+.rp-legend .you::before,.rp-legend .foe::before{content:"";display:inline-block;width:9px;height:9px;margin-right:5px;vertical-align:-1px}
+.rp-legend .you::before{background:var(--vesper-2)}.rp-legend .foe::before{background:var(--danger)}
+.rp-cols{display:flex;align-items:flex-end;gap:6px;height:92px}
+.rp-col{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:2px;height:100%;min-width:0}
+.rp-bar{align-self:end;height:var(--h);min-height:2px;transition:height .5s}
+.rp-bar.you{background:linear-gradient(0deg,var(--vesper),var(--vesper-2));box-shadow:0 0 8px rgba(0,229,255,.35)}
+.rp-bar.foe{background:linear-gradient(0deg,#7A1F1F,var(--danger));box-shadow:0 0 8px rgba(255,77,77,.3)}
+.rp-col em{grid-column:1/3;font-style:normal;text-align:center;font-family:var(--f-hud);font-size:11px;color:var(--ink-3)}
+.rp-sides{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.rp-sides .panel{display:grid;gap:4px;align-content:start;padding:10px 12px}
+.rp-sides h3{margin:0 0 2px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.rp-u{display:grid;grid-template-columns:1fr auto;gap:0 8px;font-size:13px}
+.rp-n{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp-c{font-family:var(--f-hud);font-weight:700;color:var(--ink-2)}
+.rp-c i{font-style:normal;margin:0 3px;color:var(--ink-3)}.rp-c b{color:var(--ink)}
+.rp-l{grid-column:1/3;font-size:11.5px;font-weight:700;color:#FF8A8A}.rp-l.ok{color:var(--ok)}
+.rp-u.dead .rp-n{color:var(--ink-3);text-decoration:line-through}
+.rp-lines{margin:0;padding:0 0 0 18px;display:grid;gap:4px;font-size:13px;color:var(--ink-2)}
+
 /* illustrations des bâtiments */
 .rpano{position:absolute;top:0;right:0;bottom:0;width:86%;z-index:0;pointer-events:none;background:center 62%/cover no-repeat;opacity:.7;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.28) 28%,rgba(0,0,0,.85) 62%,#000);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.28) 28%,rgba(0,0,0,.85) 62%,#000);transition:opacity .2s}
 .row.pano{background:var(--noise),linear-gradient(90deg,rgba(9,18,31,.96) 30%,rgba(9,18,31,.55)),var(--card);background-size:160px 160px,auto,auto}
@@ -555,6 +598,10 @@ const ICONS = {
   sheet: '<path d="M7 3h14v22H7z"/><path d="M11 8h6M11 12h6M11 16h4"/>',
   hyper: '<path d="M14 14m-2 0a2 2 0 1 1 4 0a4 4 0 1 1-8 0a6 6 0 1 1 12 0a8 8 0 1 1-16 0"/>',
   terra: '<path d="M6 22C6 11 13 5 23 5c0 10-6 17-17 17z"/><path d="M6 22l9-9"/>',
+  flak: '<path d="M5 24h18M8 24v-5a6 6 0 0 1 12 0v5"/><path d="M11 14L8 5M14 13V3M17 14l3-9"/>',
+  rail: '<path d="M4 24h12M6 24v-5h8v5"/><path d="M9 19L22 6M12 21L25 8"/><path d="M20 4l4 4"/>',
+  arc: '<path d="M5 24h11M7 24v-5h7v5"/><path d="M10.5 19C10.5 11 15 6 23 5"/><path d="M18 9l3 1.5-.5 3.5M23 5l2-2"/>',
+  veil: '<path d="M3 22a11 11 0 0 1 22 0"/><path d="M7.5 22a6.5 6.5 0 0 1 13 0"/><path d="M2 22h24M14 11v-2M6.5 14.5l-1.4-1.4M21.5 14.5l1.4-1.4"/>',
 };
 function svg(name) { return `<svg viewBox="0 0 28 28" aria-hidden="true">${ICONS[name] || ''}</svg>`; }
 function icon(name) { return `<span class="ico">${svg(name)}</span>`; }
@@ -573,14 +620,14 @@ const MOD = {
     cost: l => ({ ore: 150 * 1.7 ** (l - 1), ice: 220 * 1.7 ** (l - 1) }), prod: l => 22 * l * 1.1 ** l, energy: l => 14 * l * 1.1 ** l, staff: l => 6 * l * 1.08 ** l },
   depot: { name: 'Entrepôt', color: 'ore', icon: 'depot', desc: 'Soutes blindées : plus de minerai et de glace en réserve, et une part du stock à l’abri des pillards.',
     cost: l => ({ ore: 200 * 1.85 ** (l - 1), ice: 80 * 1.85 ** (l - 1) }), store: l => 3000 * 1.65 ** l },
-  works: { name: 'Ateliers d’assemblage', color: 'energy', icon: 'works', req: { b: { hab: 2 } }, desc: 'Bras robotisés et imprimantes orbitales. Chaque niveau raccourcit les chantiers de 12 %.',
+  works: { name: 'Ateliers d’assemblage', color: 'energy', icon: 'works', req: { b: { hab: 2 } }, desc: 'Bras robotisés et imprimantes orbitales. Chaque niveau raccourcit les chantiers de 12 % et fait réparer plus de défenses après un raid.',
     cost: l => ({ ore: 250 * 1.9 ** (l - 1), ice: 120 * 1.9 ** (l - 1) }) },
   yard: { name: 'Chantier orbital', color: 'ice', icon: 'yard', req: { b: { works: 1 } }, desc: 'Cale sèche en apesanteur pour assembler des coques. Chaque niveau accélère la cadence de 20 %.',
     cost: l => ({ ore: 300 * 1.8 ** (l - 1), ice: 180 * 1.8 ** (l - 1) }) },
   radar: { name: 'Antenne profonde', color: 'data', icon: 'radar', req: { b: { lab: 1 } }, desc: 'Écoute le secteur : élargit la zone cartographiée et repère plus tôt les corsaires.',
     cost: l => ({ ore: 180 * 1.7 ** (l - 1), ice: 140 * 1.7 ** (l - 1), data: 20 * 1.7 ** (l - 1) }) },
-  bastion: { name: 'Bastion orbital', color: 'danger', icon: 'bastion', req: { b: { yard: 1 } }, desc: 'Tourelles et plaques de blindage autour du moyeu. Combat à chaque raid, puis se répare.',
-    cost: l => ({ ore: 400 * 1.75 ** (l - 1), ice: 300 * 1.75 ** (l - 1) }), atk: l => 30 * l * 1.2 ** l, hull: l => 400 * l * 1.25 ** l },
+  bastion: { name: 'Bastion orbital', color: 'danger', icon: 'bastion', req: { b: { yard: 1 } }, desc: 'Tourelles et plaques de blindage autour du moyeu. Combat à chaque raid, puis se répare. Débloque les défenses du Chantier.',
+    cost: l => ({ ore: 400 * 1.75 ** (l - 1), ice: 300 * 1.75 ** (l - 1) }), atk: l => 30 * l * 1.2 ** l, hull: l => 400 * l * 1.25 ** l, shield: l => 40 * l * 1.2 ** l },
   beacon: { name: 'Allumeur stellaire', color: 'energy', icon: 'beacon', max: 5, req: { b: { yard: 6, lab: 8, works: 5 }, t: { stellar: 3 } }, desc: 'Mégastructure qui injecte de la matière au cœur de Vesper. Cinq étages pour rallumer l’étoile.',
     cost: l => ({ ore: 60000 * 2 ** (l - 1), ice: 40000 * 2 ** (l - 1), data: 5000 * 2 ** (l - 1) }) },
 };
@@ -593,8 +640,8 @@ const TECH = {
   hold: { name: 'Soutes modulaires', icon: 'depot', color: 'ore', req: { b: { lab: 2, yard: 1 } }, desc: 'Des cales qui se déplient en vol.', eff: l => `+${15 * l}${NBSP}% de soute`, cost: l => ({ data: 100 * 1.75 ** (l - 1), ore: 180 * 1.75 ** (l - 1) }) },
   ion: { name: 'Propulsion ionique', icon: 'ion', color: 'energy', req: { b: { lab: 2, yard: 1 } }, desc: 'Moteurs à grille pour toutes les coques.', eff: l => `+${10 * l}${NBSP}% de vitesse`, cost: l => ({ data: 120 * 1.75 ** (l - 1), ice: 220 * 1.75 ** (l - 1) }) },
   auto: { name: 'Automatisation', icon: 'auto', color: 'pop', req: { b: { lab: 3 } }, desc: 'Des machines prennent les postes ingrats.', eff: l => `−${Math.round((1 - 0.93 ** l) * 100)}${NBSP}% de colons requis`, cost: l => ({ data: 160 * 1.75 ** (l - 1), ore: 200 * 1.75 ** (l - 1) }) },
-  armor: { name: 'Blindage composite', icon: 'bastion', color: 'ice', req: { b: { lab: 3, yard: 2 } }, desc: 'Céramique et glace stratifiées.', eff: l => `+${10 * l}${NBSP}% de coque`, cost: l => ({ data: 200 * 1.75 ** (l - 1), ore: 320 * 1.75 ** (l - 1) }) },
-  plasma: { name: 'Lances à plasma', icon: 'plasma', color: 'danger', req: { b: { lab: 4 }, t: { armor: 2 } }, desc: 'Armement de la flotte et du Bastion.', eff: l => `+${10 * l}${NBSP}% de puissance de feu`, cost: l => ({ data: 260 * 1.75 ** (l - 1), ice: 300 * 1.75 ** (l - 1) }) },
+  armor: { name: 'Blindage composite', icon: 'bastion', color: 'ice', req: { b: { lab: 3, yard: 2 } }, desc: 'Céramique et glace stratifiées.', eff: l => `+${10 * l}${NBSP}% de coque et de bouclier`, cost: l => ({ data: 200 * 1.75 ** (l - 1), ore: 320 * 1.75 ** (l - 1) }) },
+  plasma: { name: 'Lances à plasma', icon: 'plasma', color: 'danger', req: { b: { lab: 4 }, t: { armor: 2 } }, desc: 'Armement de la flotte, du Bastion et des défenses.', eff: l => `+${10 * l}${NBSP}% de puissance de feu`, cost: l => ({ data: 260 * 1.75 ** (l - 1), ice: 300 * 1.75 ** (l - 1) }) },
   hyper: { name: 'Hyperespace', icon: 'hyper', color: 'data', req: { b: { lab: 5, yard: 4 }, t: { ion: 3 } }, desc: 'Ouvre des couloirs de saut : vos flottes traversent le secteur bien plus vite.', eff: l => `Trajets −${Math.round((1 - 0.9 ** l) * 100)}${NBSP}%`, cost: l => ({ data: 700 * 1.8 ** (l - 1), ice: 900 * 1.8 ** (l - 1), ore: 600 * 1.8 ** (l - 1) }) },
   terra: { name: 'Terraforming', icon: 'terra', color: 'pop', req: { b: { lab: 4, hab: 5 } }, desc: 'Réchauffe et épaissit l’atmosphère des anneaux habités : plus de colons peuvent y vivre.', eff: l => `+${10 * l}${NBSP}% de colons max`, cost: l => ({ data: 450 * 1.75 ** (l - 1), ice: 1200 * 1.75 ** (l - 1), ore: 800 * 1.75 ** (l - 1) }) },
   stellar: { name: 'Théorie stellaire', icon: 'beacon', color: 'energy', req: { b: { lab: 6 }, t: { photon: 4 } }, desc: 'Modélise le cœur de Vesper. Le niveau 3 débloque l’Allumeur.', eff: l => l >= 3 ? 'Allumeur débloqué' : `${l}/3 vers l’Allumeur`, cost: l => ({ data: 1500 * 1.9 ** (l - 1), ore: 2000 * 1.9 ** (l - 1), ice: 2000 * 1.9 ** (l - 1) }) },
@@ -617,6 +664,40 @@ const PIRATE = {
   breaker: { name: 'Briseur', pl: 'Briseurs', atk: 55, hull: 240, salvage: [600, 250] },
   maw: { name: 'Gueule-de-fer', pl: 'Gueules-de-fer', atk: 240, hull: 1200, salvage: [2600, 1100] },
 };
+/* ---- combat : classes de coque, boucliers, spécialités ---- */
+const CLS_NAME = { light: 'coques légères', heavy: 'coques lourdes', fixed: 'structures' };
+const CLS_ONE = { light: 'Coque légère', heavy: 'Coque lourde', fixed: 'Structure fixe' };
+const COMBAT = {
+  drone: { cls: 'light', shield: 2 }, scout: { cls: 'light', shield: 0 },
+  lancer: { cls: 'light', shield: 6, vs: { light: 1.8 } },
+  hauler: { cls: 'heavy', shield: 12 },
+  corvette: { cls: 'heavy', shield: 30, vs: { heavy: 1.6 } },
+  seed: { cls: 'heavy', shield: 20 },
+  warden: { cls: 'heavy', shield: 90, vs: { fixed: 2.2 } },
+  skiff: { cls: 'light', shield: 5, vs: { light: 1.5 } },
+  breaker: { cls: 'heavy', shield: 25, vs: { fixed: 2 } },
+  maw: { cls: 'heavy', shield: 110, vs: { heavy: 1.5 } },
+};
+for (const k in COMBAT) Object.assign(SHIP[k] || PIRATE[k], COMBAT[k]);
+const DEF = {
+  flak: { name: 'Tourelle à éclats', pl: 'Tourelles à éclats', icon: 'flak', color: 'energy', cls: 'fixed', req: { b: { bastion: 1 } }, cost: { ore: 180, ice: 60 }, atk: 14, hull: 90, shield: 8, vs: { light: 1.8 }, desc: 'Une gerbe d’éclats à cadence rapide. Bon marché : à poser en nombre contre les Écorcheurs.' },
+  rail: { name: 'Batterie à rail', pl: 'Batteries à rail', icon: 'rail', color: 'ice', cls: 'fixed', req: { b: { bastion: 2 }, t: { armor: 1 } }, cost: { ore: 760, ice: 320, data: 20 }, atk: 66, hull: 330, shield: 36, vs: { heavy: 1.7 }, desc: 'Des projectiles lancés à très haute vitesse, qui traversent les Briseurs de part en part.' },
+  arc: { name: 'Lance-arc', pl: 'Lance-arcs', icon: 'arc', color: 'danger', cls: 'fixed', req: { b: { bastion: 4 }, t: { plasma: 2 } }, cost: { ore: 2800, ice: 1900, data: 150 }, atk: 240, hull: 1050, shield: 150, vs: { light: 1.3, heavy: 1.3 }, desc: 'Un arc de plasma qui balaie le vide. Cher, mais il tient la ligne presque seul.' },
+  veil: { name: 'Voile déflecteur', pl: 'Voiles déflecteurs', icon: 'veil', color: 'data', cls: 'fixed', max: 1, w: 6, req: { b: { bastion: 3 }, t: { photon: 2 } }, cost: { ore: 1600, ice: 2600, data: 80 }, atk: 0, hull: 1800, shield: 450, desc: 'Une bulle d’énergie qui attire les salves ennemies sur elle et épargne le reste de la station. Un seul par station.' },
+};
+const DEF_ORDER = ['flak', 'rail', 'arc', 'veil'];
+const UNIT = id => SHIP[id] || DEF[id];
+const unitKind = id => DEF[id] ? 'def' : 'ship';
+const unitName = (id, n) => n > 1 ? UNIT(id).pl : UNIT(id).name;
+const unitCount = id => DEF[id] ? (st.def[id] || 0) : (st.ships[id] || 0);
+const queuedUnits = id => st.q.yard.filter(b => b.id === id).reduce((a, b) => a + b.n - b.done, 0);
+const defFull = id => !!(DEF[id] && DEF[id].max && (st.def[id] || 0) + queuedUnits(id) >= DEF[id].max);
+function roleText(u) {
+  const v = u.vs || {}, ks = Object.keys(v), x = n => String(n).replace('.', ',');
+  if ((u.w || 1) > 1) return 'Attire les tirs ennemis sur lui';
+  if (!ks.length) return u.atk > 2 ? 'Sans spécialité' : 'Pas taillé pour le combat';
+  return `Dégâts ×${x(v[ks[0]])} contre les ${ks.map(k => CLS_NAME[k]).join(' et les ')}`;
+}
 const MISSION = {
   explore: { name: 'Explorer', need: 'scout', hint: 'Requiert un Éclaireur à quai.' },
   extract: { name: 'Extraire', need: 'drone', hint: 'Requiert un Drone foreur à quai.' },
@@ -640,6 +721,7 @@ const QUESTS = [
   { id: 'q9', title: 'Des yeux dans le noir', text: 'Envoyez un Éclaireur explorer une case.', ok: () => st.stats.explored >= 1, reward: { data: 120 } },
   { id: 'q10', title: 'Première récolte', text: 'Rapportez du minerai, de la glace ou des débris à la station.', ok: () => st.stats.extracted >= 1, reward: { ships: { drone: 2 } } },
   { id: 'q11', title: 'Hérisser le moyeu', text: 'Construisez le Bastion orbital.', ok: () => lvl('bastion') >= 1, reward: { ore: 500 } },
+  { id: 'q11b', title: 'Première ligne', text: 'Posez 5 Tourelles à éclats autour du moyeu.', ok: () => (st.def.flak || 0) >= 5, reward: { ice: 600 } },
   { id: 'q12', title: 'Tenir la ligne', text: 'Repoussez un raid corsaire.', ok: () => st.stats.raidsWon >= 1, reward: { data: 300 } },
   { id: 'q13', title: 'Brûler le nid', text: 'Détruisez un nid corsaire.', ok: () => st.stats.nests >= 1, reward: { ore: 1500, ice: 1000 } },
   { id: 'q14', title: 'Semer au loin', text: 'Fondez un avant-poste avec un Semeur.', ok: () => st.stats.outposts >= 1, reward: { data: 800 } },
@@ -704,21 +786,34 @@ function rates() {
 function sumCost(c) { return (c.ore || 0) + (c.ice || 0) + (c.data || 0) * 3; }
 function bTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 * 0.88 ** lvl('works') / st.speed; }
 function rTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 / (1 + 0.1 * lvl('lab')) / st.speed; }
-function sTime(id) { return (6 + Math.pow(sumCost(SHIP[id].cost) / 5, 0.8)) * 1000 / (1 + 0.2 * Math.max(0, lvl('yard') - 1)) / st.speed; }
-function shipCost(id, n) { const c = { ...SHIP[id].cost }; if (SHIP[id].colonists) c.pop = SHIP[id].colonists; return mulCost(c, n); }
-function maxAfford(id) { const c = shipCost(id, 1); let m = 9999; for (const k in c) m = Math.min(m, Math.floor(getRes(k) / c[k])); return Math.max(0, m); }
+function sTime(id) { return (6 + Math.pow(sumCost(UNIT(id).cost) / 5, 0.8)) * 1000 / (1 + 0.2 * Math.max(0, lvl('yard') - 1)) / st.speed; }
+function shipCost(id, n) { const u = UNIT(id), c = { ...u.cost }; if (u.colonists) c.pop = u.colonists; return mulCost(c, n); }
+function maxAfford(id) { const c = shipCost(id, 1); let m = DEF[id] && DEF[id].max ? Math.max(0, DEF[id].max - unitCount(id) - queuedUnits(id)) : 9999; for (const k in c) m = Math.min(m, Math.floor(getRes(k) / c[k])); return Math.max(0, m); }
 const shipAtk = id => SHIP[id].atk * (1 + 0.1 * tech('plasma'));
 const shipHull = id => SHIP[id].hull * (1 + 0.1 * tech('armor'));
 const shipSpeed = id => SHIP[id].speed * (1 + 0.1 * tech('ion'));
 const shipCargo = id => SHIP[id].cargo * (1 + 0.15 * tech('hold'));
 const bastionAtk = () => MOD.bastion.atk(lvl('bastion')) * (1 + 0.1 * tech('plasma'));
 const bastionHull = () => MOD.bastion.hull(lvl('bastion')) * (1 + 0.1 * tech('armor'));
+const bastionShield = () => MOD.bastion.shield(lvl('bastion')) * (1 + 0.1 * tech('armor'));
+const shipShield = id => (SHIP[id].shield || 0) * (1 + 0.1 * tech('armor'));
+const defAtk = id => DEF[id].atk * (1 + 0.1 * tech('plasma'));
+const defHull = id => DEF[id].hull * (1 + 0.1 * tech('armor'));
+const defShield = id => DEF[id].shield * (1 + 0.1 * tech('armor'));
+const unitAtk = id => DEF[id] ? defAtk(id) : shipAtk(id);
+const unitHull = id => DEF[id] ? defHull(id) : shipHull(id);
+const unitShield = id => DEF[id] ? defShield(id) : shipShield(id);
+const repairFrac = () => Math.min(0.8, 0.4 + 0.05 * lvl('works'));
+const DEBRIS = 0.4;
+function orbitTotal() { return st.orbit ? (st.orbit.ore || 0) + (st.orbit.ice || 0) : 0; }
+function homeKey() { for (const k in st.map) if (st.map[k].type === 'home') return k; return '0,0'; }
+function defPower() { let a = 0, h = 0; for (const id of DEF_ORDER) { const n = st.def[id] || 0; a += n * defAtk(id); h += n * defHull(id); } return { a, h }; }
 function shipName(id, n) { return n > 1 ? SHIP[id].pl : SHIP[id].name; }
 function listText(map, defs) { return Object.keys(defs).filter(k => map[k] > 0).map(k => `${fmt(map[k])} ${map[k] > 1 ? defs[k].pl : defs[k].name}`).join(', '); }
 function fleetCargo(ships) { let c = 0; for (const k in ships) c += (ships[k] || 0) * shipCargo(k); return c; }
 function fleetPower(ships) { let a = 0, h = 0; for (const k in ships) { a += (ships[k] || 0) * shipAtk(k); h += (ships[k] || 0) * shipHull(k); } return { a, h }; }
 function compPower(comp) { let a = 0, h = 0; for (const k in comp) { a += comp[k] * PIRATE[k].atk; h += comp[k] * PIRATE[k].hull; } return { a, h }; }
-function travelMs(d, ships) { let v = Infinity; for (const k in ships) if (ships[k] > 0) v = Math.min(v, shipSpeed(k)); if (!isFinite(v)) v = 1; return d * 90000 / v / st.speed * 0.9 ** tech('hyper'); }
+function travelMs(d, ships) { let v = Infinity; for (const k in ships) if (ships[k] > 0) v = Math.min(v, shipSpeed(k)); if (!isFinite(v)) v = 1; return Math.max(d, 0.3) * 90000 / v / st.speed * 0.9 ** tech('hyper'); }
 function gain(c) {
   const cap = storeCap(); let lost = 0;
   for (const k in c) {
@@ -802,11 +897,11 @@ function newGame() {
     v: 1, founded: false, name: 'Kestrel-7', speed: 1, created: now, t: now, seed, rng: (seed ^ 0x9e3779b9) >>> 0,
     res: { ore: 600, ice: 400, data: 0 }, pop: 18,
     b: { drill: 1, ice: 1, sail: 1, hab: 1, lab: 0, depot: 0, works: 0, yard: 0, radar: 0, bastion: 0, beacon: 0 },
-    tech: {}, ships: {},
+    tech: {}, ships: {}, def: {},
     q: { build: [], research: [], yard: [] },
     fleets: [], fid: 1,
     map: genMap(seed), outk: [],
-    raid: null, log: [], quests: {},
+    raid: null, log: [], quests: {}, reports: [], repId: 0, orbit: { ore: 0, ice: 0 },
     stats: { spent: 0, explored: 0, extracted: 0, raidsWon: 0, raidsLost: 0, nests: 0, outposts: 0 },
     won: false, wonSeen: false,
   };
@@ -814,7 +909,8 @@ function newGame() {
 function migrate(s) {
   const base = newGame();
   for (const k of ['res', 'b', 'q', 'stats']) s[k] = Object.assign({}, base[k], s[k] || {});
-  for (const k of ['tech', 'ships', 'quests']) s[k] = s[k] || {};
+  for (const k of ['tech', 'ships', 'quests', 'def']) s[k] = s[k] || {};
+  s.reports = s.reports || []; s.orbit = s.orbit || { ore: 0, ice: 0 };
   s.q.build = s.q.build || []; s.q.research = s.q.research || []; s.q.yard = s.q.yard || [];
   s.fleets = s.fleets || []; s.log = s.log || []; s.outk = s.outk || [];
   if (!s.map) s.map = genMap(s.seed || 1);
@@ -862,8 +958,8 @@ function handle(ev) {
     log('research', `${TECH[j.id].name} : niveau ${j.lvl} maîtrisé.`); fxDone('tech', j.id, j.lvl);
     if (st.q.research[0]) startJob(st.q.research[0], t, 'research');
   } else if (ev.kind === 'yard') {
-    const y = st.q.yard[0]; y.done++; st.ships[y.id] = (st.ships[y.id] || 0) + 1;
-    if (y.done >= y.n) { st.q.yard.shift(); log('yard', `Livraison du chantier : ${fmt(y.n)} ${shipName(y.id, y.n)}.`); fxDone('ship', y.id, y.n); if (st.q.yard[0]) st.q.yard[0].start = t; }
+    const y = st.q.yard[0]; y.done++; if (DEF[y.id]) st.def[y.id] = (st.def[y.id] || 0) + 1; else st.ships[y.id] = (st.ships[y.id] || 0) + 1;
+    if (y.done >= y.n) { st.q.yard.shift(); log('yard', `${DEF[y.id] ? 'Défense en place' : 'Livraison du chantier'} : ${fmt(y.n)} ${unitName(y.id, y.n)}.`); fxDone(unitKind(y.id), y.id, y.n); if (st.q.yard[0]) st.q.yard[0].start = t; }
   } else if (ev.kind === 'fleet') {
     if (ev.ref.phase === 'out') fleetArrive(ev.ref, t); else fleetHome(ev.ref, t);
   } else if (ev.kind === 'raid') {
@@ -872,37 +968,91 @@ function handle(ev) {
 }
 
 /* ================= combat ================= */
-function playerGroups(ships, withBastion) {
+// Un groupe = n unités identiques. À chaque salve, les boucliers se rechargent, puis les deux camps tirent en même temps.
+// Les tirs se répartissent selon le nombre d'unités (et leur poids w : le Bastion et le Voile attirent les tirs).
+// Le bouclier absorbe d'abord, le reste entame la coque ; une unité tombe quand sa coque est vide.
+function grp(key, n, u, atk, hull, shield, perm) { return { key, n, n0: n, atk, hull, shield: shield || 0, cls: u.cls || 'heavy', vs: u.vs || {}, w: u.w || 1, wound: 0, perm: !!perm }; }
+function playerGroups(ships, home) {
   const g = [];
-  for (const id of SHIP_ORDER) { const n = ships[id] || 0; if (n > 0) g.push({ key: id, n, atk: shipAtk(id), hull: shipHull(id), w: 1, wound: 0 }); }
-  if (withBastion && lvl('bastion') > 0) g.push({ key: 'bastion', n: 1, atk: bastionAtk(), hull: bastionHull(), w: 8, wound: 0, fixed: true });
+  for (const id of SHIP_ORDER) { const n = ships[id] || 0; if (n > 0) g.push(grp(id, n, SHIP[id], shipAtk(id), shipHull(id), shipShield(id))); }
+  if (home) {
+    for (const id of DEF_ORDER) { const n = st.def[id] || 0; if (n > 0) g.push(grp(id, n, DEF[id], defAtk(id), defHull(id), defShield(id))); }
+    if (lvl('bastion') > 0) g.push(grp('bastion', 1, { cls: 'fixed', w: 8 }, bastionAtk(), bastionHull(), bastionShield(), true));
+  }
   return g;
 }
-function pirateGroups(comp) { return Object.keys(PIRATE).filter(k => comp[k] > 0).map(k => ({ key: k, n: comp[k], atk: PIRATE[k].atk, hull: PIRATE[k].hull, w: 1, wound: 0 })); }
-function hit(groups, dmg) {
-  const W = groups.reduce((s, g) => s + g.n * g.w, 0); if (W <= 0) return;
-  for (const g of groups) {
-    const share = dmg * g.n * g.w / W;
-    g.wound += share;
-    const k = Math.min(g.n, Math.floor(g.wound / g.hull));
-    g.n -= k; g.wound -= k * g.hull; if (g.n === 0) g.wound = 0;
-  }
+const FIRE = 1.6; // cadence de tir commune : règle la durée des combats sans changer l'équilibre entre unités
+function rampart(l) { return { atk: 10 * l, hull: 180 * l * 1.25 ** (l - 1), shield: 12 * l }; }
+function pirateGroups(comp, nestLvl) {
+  const g = Object.keys(PIRATE).filter(k => comp[k] > 0).map(k => grp(k, comp[k], PIRATE[k], PIRATE[k].atk, PIRATE[k].hull, PIRATE[k].shield));
+  if (nestLvl) { const r = rampart(nestLvl); g.push(grp('rampart', 1, { cls: 'fixed', w: 4 }, r.atk, r.hull, r.shield, true)); }
+  return g;
 }
-function battle(A, D) {
-  const a0 = A.map(g => g.n), d0 = D.map(g => g.n); let rounds = 0;
+function volley(S, T, f) {
+  const W = T.reduce((a, t) => a + t.n * t.w, 0), inc = T.map(() => 0); if (W <= 0) return inc;
+  for (const g of S) { if (!g.atk || !g.n) continue; const tot = g.n * g.atk * f * FIRE; T.forEach((t, i) => { inc[i] += tot * t.n * t.w / W * (g.vs[t.cls] || 1); }); }
+  return inc;
+}
+function absorb(T, inc) {
+  T.forEach((t, i) => {
+    t.wound += Math.max(0, inc[i] - t.n * t.shield);
+    const k = Math.min(t.n, Math.floor(t.wound / t.hull + 1e-9)); t.n -= k; t.wound -= k * t.hull; if (t.n === 0) t.wound = 0;
+  });
+}
+function hpOf(G) { return G.reduce((a, g) => a + Math.max(0, g.n * g.hull - g.wound), 0); }
+function battle(A, D, R) {
+  R = R || rnd;
+  const hA = hpOf(A) || 1, hD = hpOf(D) || 1, tl = [[1, 1]]; let rounds = 0;
   while (rounds < 6) {
     const aA = A.filter(g => g.n > 0), aD = D.filter(g => g.n > 0);
     if (!aA.length || !aD.length) break;
     rounds++;
-    const dA = aA.reduce((s, g) => s + g.n * g.atk, 0) * (0.85 + 0.3 * rnd());
-    const dD = aD.reduce((s, g) => s + g.n * g.atk, 0) * (0.85 + 0.3 * rnd());
-    hit(aD, dA); hit(aA, dD);
+    const toD = volley(aA, aD, 0.85 + 0.3 * R()), toA = volley(aD, aA, 0.85 + 0.3 * R());
+    absorb(aD, toD); absorb(aA, toA);
+    tl.push([hpOf(A) / hA, hpOf(D) / hD]);
   }
-  const lossA = {}, lossD = {};
-  A.forEach((g, i) => { if (!g.fixed && a0[i] - g.n > 0) lossA[g.key] = a0[i] - g.n; });
-  D.forEach((g, i) => { if (!g.fixed && d0[i] - g.n > 0) lossD[g.key] = d0[i] - g.n; });
-  return { rounds, attDead: !A.some(g => g.n > 0), defDead: !D.some(g => g.n > 0), lossA, lossD, D };
+  // les structures permanentes (Bastion, rempart d'un nid) comptent pour la victoire mais ne sont jamais perdues
+  const loss = G => { const o = {}; G.forEach(g => { if (!g.perm && g.n0 - g.n > 0) o[g.key] = g.n0 - g.n; }); return o; };
+  return { rounds, attDead: !A.some(g => g.n > 0), defDead: !D.some(g => g.n > 0), lossA: loss(A), lossD: loss(D), A, D, tl };
 }
+
+/* ---- simulateur : rejoue le combat avec des tirages fixes, sans toucher à la partie ---- */
+const SIM_RUNS = 48, simCache = new Map();
+function simulate(mkA, mkD, key) {
+  if (key && simCache.has(key)) return simCache.get(key);
+  let win = 0, lose = 0, rounds = 0; const lossA = {}, lossD = {};
+  for (let i = 0; i < SIM_RUNS; i++) {
+    const rep = battle(mkA(), mkD(), makeRng(0x51ed + i * 7919));
+    if (rep.defDead && !rep.attDead) win++; else if (rep.attDead) lose++;
+    rounds += rep.rounds;
+    for (const k in rep.lossA) lossA[k] = (lossA[k] || 0) + rep.lossA[k] / SIM_RUNS;
+    for (const k in rep.lossD) lossD[k] = (lossD[k] || 0) + rep.lossD[k] / SIM_RUNS;
+  }
+  const r = { win: win / SIM_RUNS, lose: lose / SIM_RUNS, draw: (SIM_RUNS - win - lose) / SIM_RUNS, rounds: rounds / SIM_RUNS, lossA, lossD };
+  if (key) { simCache.set(key, r); if (simCache.size > 40) simCache.delete(simCache.keys().next().value); }
+  return r;
+}
+function simKey() { return [tech('plasma'), tech('armor'), lvl('bastion'), JSON.stringify(st.def)].join('|'); }
+function simAttack(ships, c) { return simulate(() => playerGroups(ships, false), () => pirateGroups(c.garrison, c.lvl), 'a' + JSON.stringify(ships) + '@' + c.q + ':' + c.r + JSON.stringify(c.garrison) + simKey()); }
+function simRaid() { return st.raid ? simulate(() => pirateGroups(st.raid.comp, 0), () => playerGroups(st.ships, true), 'r' + JSON.stringify(st.raid.comp) + JSON.stringify(st.ships) + simKey()) : null; }
+
+/* ---- débris et rapports ---- */
+function debrisOf(loss) {
+  const o = { ore: 0, ice: 0 };
+  for (const k in loss) {
+    if (PIRATE[k]) { o.ore += PIRATE[k].salvage[0] * loss[k]; o.ice += PIRATE[k].salvage[1] * loss[k]; }
+    else if (SHIP[k]) { o.ore += (SHIP[k].cost.ore || 0) * loss[k]; o.ice += (SHIP[k].cost.ice || 0) * loss[k]; }
+  }
+  o.ore = Math.round(o.ore * DEBRIS); o.ice = Math.round(o.ice * DEBRIS); return o;
+}
+function unitLabel(k, n) {
+  if (k === 'bastion') return MOD.bastion.name; if (k === 'rampart') return 'Rempart du nid';
+  const u = SHIP[k] || DEF[k] || PIRATE[k]; return u ? (n > 1 ? u.pl : u.name) : k;
+}
+function listUnits(map) { return Object.keys(map).filter(k => map[k] > 0).map(k => `${fmt(map[k])} ${unitLabel(k, map[k])}`).join(', '); }
+function sideRows(G) { return G.map(g => [g.key, g.n0, g.n]); }
+function saveReport(r) { st.repId = (st.repId || 0) + 1; r.id = st.repId; r.t = st.t; st.reports.unshift(r); if (st.reports.length > 12) st.reports.length = 12; return r.id; }
+
 function scheduleRaid(from) {
   const gap = (35 + 40 * rnd()) * MIN / st.speed;
   const P = (60 + 7 * Math.pow(score(), 0.9)) * (1 + 0.08 * aliveNests()) * (0.8 + 0.4 * rnd());
@@ -910,23 +1060,28 @@ function scheduleRaid(from) {
 }
 function resolveRaid() {
   const raid = st.raid; st.raid = null;
-  const rep = battle(pirateGroups(raid.comp), playerGroups(st.ships, true));
-  for (const k in rep.lossD) st.ships[k] -= rep.lossD[k];
-  const killed = listText(rep.lossA, PIRATE), lost = listText(rep.lossD, SHIP);
-  if (rep.attDead) {
-    let ore = 0, ice = 0;
-    for (const k in rep.lossA) { ore += PIRATE[k].salvage[0] * rep.lossA[k]; ice += PIRATE[k].salvage[1] * rep.lossA[k]; }
-    ore = Math.round(ore * 0.4); ice = Math.round(ice * 0.4); gain({ ore, ice });
-    st.stats.raidsWon++;
-    log('raid', `Raid repoussé. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}. Débris récupérés : ${fmt(ore)} minerai, ${fmt(ice)} glace.`);
-  } else if (rep.defDead) {
+  const rep = battle(pirateGroups(raid.comp, 0), playerGroups(st.ships, true));
+  const fix = repairFrac(), repaired = {}, shipLoss = {};
+  for (const k in rep.lossD) {
+    if (SHIP[k]) { st.ships[k] -= rep.lossD[k]; shipLoss[k] = rep.lossD[k]; }
+    else if (DEF[k]) { const r = Math.round(rep.lossD[k] * fix); st.def[k] = Math.max(0, (st.def[k] || 0) - rep.lossD[k] + r); if (r) repaired[k] = r; }
+  }
+  const deb = debrisOf(Object.assign({}, rep.lossA, shipLoss));
+  st.orbit.ore = (st.orbit.ore || 0) + deb.ore; st.orbit.ice = (st.orbit.ice || 0) + deb.ice;
+  const lines = []; let outcome, title;
+  if (rep.attDead) { outcome = 'win'; title = 'Raid anéanti'; st.stats.raidsWon++; }
+  else if (rep.defDead) {
+    outcome = 'loss'; title = 'Défenses percées';
     const prot = protectedAmt(), stolen = {};
     for (const k of ['ore', 'ice']) { stolen[k] = Math.floor(Math.max(0, st.res[k] - prot) * 0.3); st.res[k] -= stolen[k]; }
-    st.stats.raidsLost++;
-    log('raid', `Les corsaires ont percé les défenses${lost ? ' (pertes : ' + lost + ')' : ''} et emporté ${fmt(stolen.ore)} minerai et ${fmt(stolen.ice)} glace.`);
-  } else {
-    log('raid', `Les corsaires battent en retraite après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.`);
-  }
+    st.stats.raidsLost++; lines.push(`Pillé : ${fmt(stolen.ore)} minerai et ${fmt(stolen.ice)} glace.`);
+  } else { outcome = 'draw'; title = 'Raid repoussé'; st.stats.raidsWon++; lines.unshift('Les corsaires survivants battent en retraite sans rien emporter.'); }
+  const nLost = DEF_ORDER.reduce((a, k) => a + (rep.lossD[k] || 0), 0), nFix = Object.values(repaired).reduce((a, b) => a + b, 0);
+  if (nLost) lines.push(`Drones de maintenance : ${fmt(nFix)} défense${nFix > 1 ? 's' : ''} sur ${fmt(nLost)} remise${nFix > 1 ? 's' : ''} en état.`);
+  if (deb.ore + deb.ice > 0) lines.push(`Débris en orbite : ${fmt(deb.ore)} minerai et ${fmt(deb.ice)} glace, à ramasser avec des Drones foreurs.`);
+  const id = saveReport({ kind: 'raid', place: st.name, outcome, title, rounds: rep.rounds, you: sideRows(rep.D), foe: sideRows(rep.A), tl: rep.tl.map(([a, d]) => [d, a]), lines, repaired });
+  const killed = listUnits(rep.lossA), lost = listUnits(rep.lossD);
+  log('raid', `${title} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.${lines.length ? ' ' + lines.join(' ') : ''}`, id);
 }
 
 /* ================= flottes ================= */
@@ -934,7 +1089,7 @@ function turnBack(f, t, p0) { f.phase = 'back'; f.bs = t; f.p0 = p0; f.back = t 
 function removeFleet(f) { st.fleets = st.fleets.filter(x => x !== f); }
 function fleetEmpty(f) { return !Object.values(f.ships).some(n => n > 0); }
 function fleetArrive(f, t) {
-  const c = st.map[f.k]; const cap = fleetCargo(f.ships); let note = '';
+  const c = st.map[f.k]; const cap = fleetCargo(f.ships); let note = '', repId = 0;
   const title = c.name || TYPE_NAME[c.type];
   if (f.m === 'explore') {
     c.known = true; neighbors(c).forEach(n => { n.known = true; });
@@ -951,33 +1106,40 @@ function fleetArrive(f, t) {
       if (c[kind] <= 0 && !c.outpost) { c.was = c.type; c.type = 'depleted'; c.name = (c.was === 'comet' ? 'Comète dissipée' : 'Astéroïde épuisé'); note += ' Le gisement est épuisé.'; }
     }
   } else if (f.m === 'salvage') {
+    const home = c.type === 'home', src = home ? st.orbit : c;
     if (!(f.ships.drone > 0)) note = 'Aucun Drone foreur dans la flotte : récupération impossible.';
-    else if (c.type !== 'wreck' && c.type !== 'debris') note = 'Il n’y a plus rien à récupérer ici.';
+    else if (home ? orbitTotal() < 1 : c.type !== 'wreck' && c.type !== 'debris') note = 'Il n’y a plus rien à récupérer ici.';
     else {
-      const tot = (c.ore || 0) + (c.ice || 0) + (c.data || 0); const k = tot > 0 ? Math.min(1, cap / tot) : 0; const got = {};
-      for (const r of ['ore', 'ice', 'data']) { got[r] = Math.floor((c[r] || 0) * k); c[r] = (c[r] || 0) - got[r]; f.cargo[r] = (f.cargo[r] || 0) + got[r]; }
+      const tot = (src.ore || 0) + (src.ice || 0) + (src.data || 0); const k = tot > 0 ? Math.min(1, cap / tot) : 0; const got = {};
+      for (const r of ['ore', 'ice', 'data']) { got[r] = Math.floor((src[r] || 0) * k); src[r] = (src[r] || 0) - got[r]; f.cargo[r] = (f.cargo[r] || 0) + got[r]; }
       f.got = true;
-      note = `Récupéré sur ${title} : ${fmt(got.ore)} minerai, ${fmt(got.ice)} glace, ${fmt(got.data)} données.`;
-      if ((c.ore || 0) + (c.ice || 0) + (c.data || 0) < 1) { c.type = 'empty'; c.name = null; note += ' Le site est vidé.'; }
+      note = `Récupéré ${home ? 'en orbite de la station' : 'sur ' + title} : ${fmt(got.ore)} minerai, ${fmt(got.ice)} glace${got.data ? ', ' + fmt(got.data) + ' données' : ''}.`;
+      if (home) { if (orbitTotal() < 1) { st.orbit = { ore: 0, ice: 0 }; note += ' L’orbite est dégagée.'; } }
+      else if ((c.ore || 0) + (c.ice || 0) + (c.data || 0) < 1) { c.type = 'empty'; c.name = null; note += ' Le site est vidé.'; }
     }
   } else if (f.m === 'attack') {
     if (c.type !== 'nest') note = 'Le nid a disparu avant votre arrivée.';
     else {
-      const rep = battle(playerGroups(f.ships, false), pirateGroups(c.garrison));
+      const rep = battle(playerGroups(f.ships, false), pirateGroups(c.garrison, c.lvl));
       for (const k in rep.lossA) f.ships[k] -= rep.lossA[k];
-      rep.D.forEach(g => { c.garrison[g.key] = g.n; });
-      const killed = listText(rep.lossD, PIRATE), lost = listText(rep.lossA, SHIP);
+      rep.D.forEach(g => { if (PIRATE[g.key]) c.garrison[g.key] = g.n; });
+      const deb = debrisOf(Object.assign({}, rep.lossA, rep.lossD));
+      c.dbr = { ore: ((c.dbr && c.dbr.ore) || 0) + deb.ore, ice: ((c.dbr && c.dbr.ice) || 0) + deb.ice };
+      const killed = listUnits(rep.lossD), lost = listUnits(rep.lossA), old = c.name || title, lines = [];
+      let outcome, head;
       if (rep.defDead) {
         st.stats.nests++;
         const room = fleetCargo(f.ships); const tot = c.loot.ore + c.loot.ice + c.loot.data; const k = tot > 0 ? Math.min(1, room / tot) : 0;
         const take = {}; for (const r of ['ore', 'ice', 'data']) { take[r] = Math.floor(c.loot[r] * k); f.cargo[r] = (f.cargo[r] || 0) + take[r]; }
-        const old = c.name;
         c.type = 'debris'; c.name = ruinName(old);
-        c.ore = c.loot.ore - take.ore + 300 * c.lvl; c.ice = c.loot.ice - take.ice + 200 * c.lvl; c.data = c.loot.data - take.data;
-        delete c.garrison; delete c.loot;
-        note = `${old} détruit après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}. Butin chargé : ${fmt(take.ore)} minerai, ${fmt(take.ice)} glace, ${fmt(take.data)} données.`;
-      } else if (rep.attDead) note = `Flotte anéantie devant ${title}. Abattus : ${killed || 'aucun'}.`;
-      else note = `Assaut repoussé par ${title} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.`;
+        c.ore = c.loot.ore - take.ore + 300 * c.lvl + c.dbr.ore; c.ice = c.loot.ice - take.ice + 200 * c.lvl + c.dbr.ice; c.data = c.loot.data - take.data;
+        delete c.garrison; delete c.loot; delete c.dbr;
+        outcome = 'win'; head = `${old} détruit`;
+        lines.push(`Butin chargé : ${fmt(take.ore)} minerai, ${fmt(take.ice)} glace, ${fmt(take.data)} données.`, `Les ruines restent à récupérer : ${fmt(c.ore)} minerai, ${fmt(c.ice)} glace.`);
+      } else if (rep.attDead) { outcome = 'loss'; head = `Flotte anéantie devant ${old}`; }
+      else { outcome = 'draw'; head = `Assaut repoussé par ${old}`; lines.push('Le nid répare son rempart, mais ses pertes restent des pertes.'); }
+      repId = saveReport({ kind: 'attack', place: old, outcome, title: head, rounds: rep.rounds, you: sideRows(rep.A), foe: sideRows(rep.D), tl: rep.tl, lines });
+      note = `${head} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.${outcome === 'win' ? ' ' + lines[0] : ''}`;
     }
   } else if (f.m === 'outpost') {
     if (!(f.ships.seed > 0)) note = 'Aucun Semeur dans la flotte.';
@@ -988,7 +1150,7 @@ function fleetArrive(f, t) {
       note = `Avant-poste fondé sur ${title} : +${fmt(outpostYield(c) * st.speed)} ${RES_NAME[c.outpost]}/h.`;
     }
   }
-  log(fleetEmpty(f) && f.m === 'attack' ? 'raid' : 'fleet', note);
+  log(fleetEmpty(f) && f.m === 'attack' ? 'raid' : 'fleet', note, repId);
   if (fleetEmpty(f)) { removeFleet(f); return; }
   turnBack(f, t, 1);
 }
@@ -1029,7 +1191,8 @@ function doResearch(id) {
   if (st.q.research.length === 1) startJob(j, st.t, 'research');
 }
 function doShips(id, n) {
-  const s = SHIP[id]; if (!reqOk(s.req)) return; n = Math.floor(n); if (!(n >= 1)) return;
+  const s = UNIT(id); if (!s || !reqOk(s.req)) return; n = Math.floor(n); if (!(n >= 1)) return;
+  if (s.max) { n = Math.min(n, s.max - unitCount(id) - queuedUnits(id)); if (n < 1) return toast(`${s.name} : un seul par station.`, 'info'); }
   if (st.q.yard.length >= 5) return toast('Le chantier accepte cinq commandes à la fois.', 'info');
   const c = shipCost(id, n); if (!afford(c)) return toast(c.pop && st.pop < c.pop ? 'Pas assez de colons pour armer ces Semeurs.' : 'Ressources insuffisantes.', 'info');
   pay(c); const y = { id, n, done: 0, each: sTime(id), unit: shipCost(id, 1) }; st.q.yard.push(y);
@@ -1039,7 +1202,7 @@ function cancelYard(i) {
   const y = st.q.yard[i]; if (!y) return;
   refund(mulCost(y.unit, y.n - y.done)); st.q.yard.splice(i, 1);
   if (i === 0 && st.q.yard[0]) st.q.yard[0].start = st.t;
-  log('info', `Commande annulée : ${fmt(y.n - y.done)} ${shipName(y.id, y.n - y.done)}. Ressources restituées.`);
+  log('info', `Commande annulée : ${fmt(y.n - y.done)} ${unitName(y.id, y.n - y.done)}. Ressources restituées.`);
 }
 function fcCheck() {
   if (!fc) return { ok: false, msg: '' };
@@ -1065,7 +1228,7 @@ function launch() {
   const dur = travelMs(c.d, ships);
   const f = { id: st.fid++, ships, m: fc.m, k: fc.k, depart: st.t, arrive: st.t + dur, dur, phase: 'out', cargo: {} };
   st.fleets.push(f);
-  const where = visible(c) && c.name ? c.name : 'la case ' + c.q + ':' + c.r;
+  const where = c.type === 'home' ? 'en orbite' : visible(c) && c.name ? c.name : 'la case ' + c.q + ':' + c.r;
   log('fleet', `Flotte ${f.id} en route : ${MISSION[f.m].name.toLowerCase()} ${where}. Arrivée dans ${fmtDur(dur)}.`);
   return true;
 }
@@ -1104,9 +1267,10 @@ function rewardText(rw) {
 }
 
 /* ================= journal ================= */
-function log(k, m) {
-  st.log.unshift({ t: st.t, k, m }); if (st.log.length > 80) st.log.length = 80;
-  if (live) { if (!['build', 'research', 'yard'].includes(k)) toast(m, k); if (k === 'raid') sfx('alert'); } else if (awayLog) awayLog.push({ k, m });
+function log(k, m, r) {
+  const e = { t: st.t, k, m }; if (r) e.r = r;
+  st.log.unshift(e); if (st.log.length > 80) st.log.length = 80;
+  if (live) { if (!['build', 'research', 'yard'].includes(k)) toast(m, k, r); if (k === 'raid') sfx('alert'); } else if (awayLog) awayLog.push({ k, m });
 }
 function bump() { ver++; dirty = true; }
 
@@ -1315,9 +1479,9 @@ function itemState(kind, id) {
     const t = TECH[id], L = tech(id), P = pendingT(id), ok = reqOk(t.req), j = st.q.research[0];
     return { name: t.name, color: t.color, ok, badge: L, queued: P - L, need: costAttr(cost(t.cost(P + 1))), block: !ok || st.q.research.length >= 2, busy: j && j.id === id ? j : null };
   }
-  const s = SHIP[id], ok = reqOk(s.req), y0 = st.q.yard[0];
+  const s = UNIT(id), ok = reqOk(s.req), y0 = st.q.yard[0];
   const queued = st.q.yard.filter(b => b.id === id).reduce((a, b) => a + b.n - b.done, 0);
-  return { name: s.name, color: s.color, ok, badge: st.ships[id] || 0, queued, need: costAttr(shipCost(id, 1)), block: !ok || st.q.yard.length >= 5, busy: y0 && y0.id === id ? { start: y0.start + y0.done * y0.each, end: y0.start + (y0.done + 1) * y0.each } : null };
+  return { name: s.name, color: s.color, ok, badge: unitCount(id), queued, need: costAttr(shipCost(id, 1)), block: !ok || st.q.yard.length >= 5 || defFull(id), busy: y0 && y0.id === id ? { start: y0.start + y0.done * y0.each, end: y0.start + (y0.done + 1) * y0.each } : null };
 }
 let itemSel = null;
 function jobRow(name, meta, active, act, i, color, ic) {
@@ -1375,7 +1539,7 @@ function mapSvg() {
 }
 function missionsFor(c) {
   const vis = visible(c), m = [];
-  if (c.type === 'home') return m;
+  if (c.type === 'home') { if (orbitTotal() >= 1) m.push('salvage'); return m; }
   if (!vis || (c.type === 'anomaly' && !c.studied)) m.push('explore');
   if (vis && ((c.type === 'asteroid' && c.ore > 0) || (c.type === 'comet' && c.ice > 0))) m.push('extract');
   if (vis && (c.type === 'wreck' || c.type === 'debris')) m.push('salvage');
@@ -1632,6 +1796,15 @@ function shipScene(ctx, w, h, R, id) {
   const s = Math.min(w * 0.34, h * 0.4) * (id === 'warden' ? 1.15 : id === 'scout' || id === 'drone' ? 0.85 : 1);
   ctx.save(); ctx.translate(w * 0.56, h * 0.46); ctx.rotate(-0.16); hullC(ctx, id, s); ctx.restore();
 }
+function defScene(ctx, w, h, R, id) {
+  const d = DEF[id], col = PALC[d.color] || PAL.cyan, art = PHOTO.mod_bastion;
+  ctx.fillStyle = PAL.void; ctx.fillRect(0, 0, w, h);
+  if (art && art.naturalWidth) drawCover(ctx, art, w, h, 0.25 + R() * 0.5, 0.6, 1.6);
+  veil(ctx, w, h, 0.58); glow(ctx, w * 0.5, h * 0.55, Math.max(w, h) * 0.6, col, 0.3);
+  const es = Math.min(w, h) * 0.58;
+  ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.strokeStyle = col; ctx.lineWidth = 3; drawIconPaths(ctx, d.icon, w / 2, h * 0.52, es);
+  ctx.shadowBlur = 0; ctx.strokeStyle = 'rgba(240,250,255,.92)'; ctx.lineWidth = 1.2; drawIconPaths(ctx, d.icon, w / 2, h * 0.52, es);
+}
 function shipPhoto(ctx, w, h, id) {
   drawCover(ctx, PHOTO['ship_' + id], w, h, 0.5, 0.5, 1.04);
   const g = ctx.createLinearGradient(0, h * 0.62, 0, h); g.addColorStop(0, 'rgba(6,10,20,0)'); g.addColorStop(1, 'rgba(6,10,20,.55)');
@@ -1647,7 +1820,7 @@ function drawItem(kind, id, w, h) {
   const ctx = cv.getContext('2d'); if (!ctx) return '';
   const R = makeRng(hashStr(kind + ':' + id));
   const art = PHOTO[kind + '_' + id];
-  if (art && art.naturalWidth) artThumb(ctx, w, h, art); else if (kind === 'mod') modScene(ctx, w, h, R, id); else if (kind === 'tech') techScene(ctx, w, h, R, id); else shipScene(ctx, w, h, R, id);
+  if (art && art.naturalWidth) artThumb(ctx, w, h, art); else if (kind === 'mod') modScene(ctx, w, h, R, id); else if (kind === 'tech') techScene(ctx, w, h, R, id); else if (kind === 'def') defScene(ctx, w, h, R, id); else shipScene(ctx, w, h, R, id);
   return cv.toDataURL('image/jpeg', 0.85);
 }
 let thumbQ = [], thumbBusy = false;
@@ -1687,10 +1860,11 @@ function waitText(c, r) {
   }
   return 'Possible dans ' + fmtDur(worst);
 }
-function toast(m, k) {
+function toast(m, k, r) {
   const box = $('#toasts'); if (!box) return;
-  const el = document.createElement('div'); el.className = 'toast k-' + (k || 'info');
-  el.innerHTML = `<span class="tdot" aria-hidden="true"></span><div><b>${KIND[k] || 'Station'}</b><span class="tmsg"></span></div>`;
+  const el = document.createElement(r ? 'button' : 'div'); el.className = 'toast k-' + (k || 'info');
+  if (r) { el.dataset.act = 'report'; el.dataset.id = r; }
+  el.innerHTML = `<span class="tdot" aria-hidden="true"></span><div><b>${KIND[k] || 'Station'}</b><span class="tmsg"></span>${r ? '<span class="tlink">Voir le rapport ›</span>' : ''}</div>`;
   el.querySelector('.tmsg').textContent = m;
   box.appendChild(el);
   while (box.children.length > 3) box.firstChild.remove();
@@ -1743,6 +1917,7 @@ function fleetSheet() {
   return `<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true">${bodyGlyph(c, visible(c))}</svg><div class="sheet-h"><p class="eyebrow">${MISSION[fc.m].name} · ${c.d} saut${c.d > 1 ? 's' : ''}</p><h2>${esc(cellTitle(c))}</h2></div></div>
     ${rows ? `<div class="fc-rows">${rows}</div>` : '<p class="empty">Aucun vaisseau à quai.</p>'}
     <div class="fc-sum" id="fc-sum"></div>
+    ${fc.m === 'attack' ? '<div id="fc-sim"></div>' : ''}
     <div class="sheet-actions"><button class="btn" data-act="close">Annuler</button><button class="btn primary" id="fc-go" data-act="launch">Lancer</button></div>`;
 }
 function openFleet(k, m) {
@@ -1766,11 +1941,13 @@ function refreshFc(setInputs) {
   if (any) {
     lines.push(`Trajet de <b>${fmtDur(dur)}</b>, retour vers <b>${clock(Date.now() + dur * 2)}</b>`);
     lines.push(`Soute <b>${fmt(fleetCargo(s))}</b> · feu <b>${fmt(p.a)}</b> · coque <b>${fmt(p.h)}</b>`);
-    if (fc.m === 'attack' && c.garrison) { const g = compPower(c.garrison); lines.push(`En face : feu <b>${fmt(g.a)}</b> · coque <b>${fmt(g.h)}</b>`); }
+    if (fc.m === 'attack' && c.garrison) { const g = compPower(c.garrison); lines.push(`En face : feu <b>${fmt(g.a)}</b> · coque <b>${fmt(g.h)}</b> · rempart niveau <b>${c.lvl}</b>`); lines.push(`Butin du nid : <b>${fmt(c.loot.ore + c.loot.ice + c.loot.data)}</b> pour une soute de <b>${fmt(fleetCargo(s))}</b>`); }
   }
   if (!chk.ok && chk.msg) lines.push(`<span class="bad">${chk.msg}</span>`);
   const sum = $('#fc-sum'); if (sum) sum.innerHTML = lines.map(l => `<span>${l}</span>`).join('') || '<span>Choisissez vos vaisseaux.</span>';
   const go = $('#fc-go'); if (go) go.disabled = !chk.ok;
+  const sim = $('#fc-sim');
+  if (sim) { const armed = {}; for (const k in s) if (s[k] > 0) armed[k] = s[k]; sim.innerHTML = c.garrison && ARMED.some(k => armed[k]) ? simHtml(simAttack(armed, c), 'attack') : ''; }
 }
 function refreshShipCard(id, setInput) {
   const foot = document.getElementById('sf-' + id); if (!foot) return;
@@ -1788,7 +1965,7 @@ const TABS = [
   { id: 'sector', label: 'Carte', icon: 'hexmap' },
   { id: 'journal', label: 'Journal', icon: 'sheet' },
 ];
-const seg = { station: 'prod', sector: 'map', journal: 'quests' };
+const seg = { station: 'prod', sector: 'map', journal: 'quests', yard: 'ships' };
 const PROD = ['drill', 'ice', 'sail', 'hab', 'depot'];
 const INST = ['lab', 'works', 'yard', 'radar', 'bastion', 'beacon'];
 const CLOCK_SVG = '<svg class="ic-wait" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.6V8l2.3 1.5"/></svg>';
@@ -1817,6 +1994,7 @@ function shortGain(kind, id) {
     }
   }
   if (kind === 'tech') return TECH[id].eff(pendingT(id) + 1);
+  if (kind === 'def') return `Feu ${fmt(defAtk(id))} · coque ${fmtS(defHull(id))} · bouclier ${fmt(defShield(id))}`;
   return `Feu ${fmt(shipAtk(id))} · coque ${fmt(shipHull(id))} · soute ${fmt(shipCargo(id))}`;
 }
 function reqShort(req) {
@@ -1830,7 +2008,10 @@ function alertsHtml(r) {
   if (r.eff < 1) a.push(['sail', 'energy', `Énergie insuffisante : production à <b>${pct(r.eff)}</b>. Améliorez la Voile solaire.`]);
   if (r.staff < 1) a.push(['hab', 'pop', `Pas assez de colons : postes pourvus à <b>${pct(r.staff)}</b>. Agrandissez l’Habitat.`]);
   if (st.res.ore >= r.store * 0.999 || st.res.ice >= r.store * 0.999) a.push(['depot', 'ore', 'Entrepôt plein : la production s’arrête. Agrandissez l’Entrepôt.']);
-  return a.map(([id, col, t]) => `<button class="alert" data-act="item" data-kind="mod" data-id="${id}" style="--c:var(--${col})"><span class="dot"></span><span>${t}</span></button>`).join('');
+  let x = '';
+  if (threatVisible()) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>Raid corsaire dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
+  if (orbitTotal() >= 1) x += `<button class="alert" data-act="cell" data-k="${homeKey()}" style="--c:var(--ore)"><span class="dot"></span><span>Débris en orbite : <b>${fmtS(st.orbit.ore)}</b> minerai et <b>${fmtS(st.orbit.ice)}</b> glace. Envoyez des Drones foreurs les ramasser.</span></button>`;
+  return x + a.map(([id, col, t]) => `<button class="alert" data-act="item" data-kind="mod" data-id="${id}" style="--c:var(--${col})"><span class="dot"></span><span>${t}</span></button>`).join('');
 }
 function queueHtml(kind) {
   if (kind === 'build') {
@@ -1844,7 +2025,7 @@ function queueHtml(kind) {
   const q = st.q.yard;
   return panelQ('Chantier orbital', `${q.length} sur 5`, q.length ? q.map((y, i) => {
     const active = i === 0 ? { start: y.start + y.done * y.each, end: y.start + (y.done + 1) * y.each } : null;
-    return jobRow(SHIP[y.id].pl, i === 0 ? `${fmt(y.done)}/${fmt(y.n)}` : `×${fmt(y.n)}`, active, 'cancel-yard', i, `var(--${SHIP[y.id].color})`, SHIP[y.id].icon);
+    return jobRow(UNIT(y.id).pl, i === 0 ? `${fmt(y.done)}/${fmt(y.n)}` : `×${fmt(y.n)}`, active, 'cancel-yard', i, `var(--${UNIT(y.id).color})`, UNIT(y.id).icon);
   }).join('') : null, 'Aucune commande.');
 }
 function fleetRow(f) {
@@ -1852,7 +2033,7 @@ function fleetRow(f) {
   return `<div class="row busy" style="--c:var(--energy)"><span class="rthumb planet"><svg viewBox="-30 -30 60 60" aria-hidden="true">${bodyGlyph(c, visible(c))}</svg></span><span class="rtext" style="flex:1"><span class="rname">${MISSION[f.m].name} · ${esc(cellTitle(c))}</span><span class="rsub">${out ? 'Aller' : 'Retour'} · <span data-eta="${b}"></span></span><span class="rcost">${listText(f.ships, SHIP)}</span></span>${out ? `<button class="up soft" data-act="recall" data-id="${f.id}">Rappeler</button>` : ''}<span class="rbar"><i data-prog="${a},${b}"></i></span></div>`;
 }
 function fleetsHtml() {
-  const def = fleetPower(st.ships), ba = lvl('bastion') ? bastionAtk() : 0, bh = lvl('bastion') ? bastionHull() : 0;
+  const def = fleetPower(st.ships), dp = defPower(), ba = (lvl('bastion') ? bastionAtk() : 0) + dp.a, bh = (lvl('bastion') ? bastionHull() : 0) + dp.h;
   const docked = SHIP_ORDER.filter(id => (st.ships[id] || 0) > 0);
   return `<div class="duo2"><div class="stat2"><span>Feu de défense</span><b style="color:var(--danger)">${fmt(def.a + ba)}</b></div><div class="stat2"><span>Coque de défense</span><b style="color:var(--ice)">${fmt(def.h + bh)}</b></div></div>
     <div class="chips">${docked.length ? docked.map(id => `<span class="chip"><b>${fmt(st.ships[id])}</b>${shipName(id, st.ships[id])}</span>`).join('') : '<span class="empty">Aucun vaisseau à quai.</span>'}</div>
@@ -1875,10 +2056,12 @@ const VIEWS = {
       <div class="list">${TECH_ORDER.map((id, i) => rowHtml('tech', id, i)).join('')}</div>`;
   },
   yard() {
-    const n = SHIP_ORDER.reduce((a, id) => a + (st.ships[id] || 0), 0);
-    return `<div class="vh"><h1>Chantier</h1><span>${fmt(n)} vaisseau${n > 1 ? 'x' : ''} à quai</span></div>
-      ${lvl('yard') ? '' : '<p class="note">Construisez le Chantier orbital (Station › Installations) pour fabriquer des vaisseaux.</p>'}
-      <div class="list">${SHIP_ORDER.map((id, i) => rowHtml('ship', id, i)).join('')}</div>`;
+    const n = SHIP_ORDER.reduce((a, id) => a + (st.ships[id] || 0), 0), nd = DEF_ORDER.reduce((a, id) => a + (st.def[id] || 0), 0), d = seg.yard === 'def';
+    return `<div class="vh"><h1>Chantier</h1><span>${d ? `${fmt(nd)} défense${nd > 1 ? 's' : ''} en place` : `${fmt(n)} vaisseau${n > 1 ? 'x' : ''} à quai`}</span></div>
+      ${lvl('yard') ? '' : '<p class="note">Construisez le Chantier orbital (Station › Installations) pour fabriquer des vaisseaux et des défenses.</p>'}
+      ${segsHtml('yard', [['ships', 'Vaisseaux'], ['def', nd ? `Défenses · ${fmt(nd)}` : 'Défenses']])}
+      ${d ? `<p class="hint-s">Les défenses ne quittent pas la station. Après un raid, les drones de maintenance en remettent <b>${pct(repairFrac())}</b> en état (plus avec les Ateliers).</p>` : ''}
+      <div class="list">${(d ? DEF_ORDER : SHIP_ORDER).map((id, i) => rowHtml(d ? 'def' : 'ship', id, i)).join('')}</div>`;
   },
   sector() {
     const r = radarRange(), nf = st.fleets.length;
@@ -1893,7 +2076,7 @@ const VIEWS = {
     return `<div class="vh"><h1>Journal</h1><span>${done}/${QUESTS.length} objectifs</span>${GEAR}</div>
       ${segsHtml('journal', [['quests', 'Objectifs'], ['log', 'Événements']])}
       ${seg.journal === 'log'
-        ? (st.log.length ? `<section class="panel"><ul class="timeline">${st.log.map(e => `<li class="k-${e.k}"><span class="when">${clock(e.t)} · <b>${KIND[e.k] || ''}</b></span>${esc(e.m)}</li>`).join('')}</ul></section>` : '<p class="empty">Rien à signaler pour l’instant.</p>')
+        ? (st.log.length ? `<section class="panel"><ul class="timeline">${st.log.map(e => `<li class="k-${e.k}"><span class="when">${clock(e.t)} · <b>${KIND[e.k] || ''}</b></span>${esc(e.m)}${e.r && st.reports.some(x => x.id === e.r) ? `<button class="rp-open" data-act="report" data-id="${e.r}">Voir le rapport de combat ›</button>` : ''}</li>`).join('')}</ul></section>` : '<p class="empty">Rien à signaler pour l’instant.</p>')
         : `<section class="panel"><ol class="qlist">${QUESTS.map((q, i) => `<li class="${st.quests[q.id] ? 'done' : q === cur ? 'cur' : ''}"><span class="qcheck" aria-hidden="true">${st.quests[q.id] ? '✓' : ''}</span><div><h4>${q.title}</h4>${q === cur ? `<p>${q.text}</p>` : ''}${rewardText(q.reward) && !st.quests[q.id] ? `<p class="rw">${rewardText(q.reward)}</p>` : ''}</div></li>`).join('')}</ol></section>`}`;
   },
 };
@@ -1902,7 +2085,7 @@ const VIEWS = {
 const GEAR = `<button class="gear" data-act="settings" aria-label="Paramètres"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="3.5"/><circle cx="14" cy="14" r="8"/><path d="M14 2.5v3.5M14 22v3.5M2.5 14H6M22 14h3.5M5.9 5.9l2.4 2.4M19.7 19.7l2.4 2.4M22.1 5.9l-2.4 2.4M8.3 19.7l-2.4 2.4"/></svg></button>`;
 const XBTN = '<button class="sh-x" data-act="close" aria-label="Fermer">×</button>';
 function openItem(kind, id) {
-  if (!(kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : SHIP[id])) return;
+  if (!(kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : UNIT(id))) return;
   advanceTo(Date.now());
   itemSel = { kind, id };
   openModal('item', itemSheet());
@@ -1910,7 +2093,7 @@ function openItem(kind, id) {
 }
 function openActivity() { advanceTo(Date.now()); openModal('activity', activitySheet()); updateDynamic(); }
 function activitySheet() {
-  const th = threatVisible() ? `<div class="alert raid" style="--c:var(--danger)"><span class="dot"></span><span>Raid corsaire : ${listText(st.raid.comp, PIRATE)}. Arrivée dans <b data-eta="${st.raid.at}"></b>. Vos vaisseaux à quai et le Bastion défendront la station.</span></div>` : '';
+  const th = threatVisible() ? `<div class="alert raid" style="--c:var(--danger)"><span class="dot"></span><span>Raid corsaire : ${listText(st.raid.comp, PIRATE)}. Arrivée dans <b data-eta="${st.raid.at}"></b>. Vos vaisseaux à quai, vos défenses et le Bastion défendront la station.</span></div>${simHtml(simRaid(), 'raid')}` : '';
   return `${XBTN}<div class="sh-title"><h2>Activité</h2></div>${th}${queueHtml('build')}${queueHtml('research')}${queueHtml('yard')}
     <section class="panel"><div class="panel-h"><h3>Flottes en vol</h3><span class="pill">${st.fleets.length}</span></div>${st.fleets.length ? `<div class="list">${st.fleets.map(fleetRow).join('')}</div>` : '<p class="empty">Aucune flotte en vol.</p>'}</section>`;
 }
@@ -1938,12 +2121,12 @@ function cellSheet() {
   const vis = visible(c), facts = [];
   if (!vis) facts.push('<p>Hors de portée de l’Antenne profonde. Un Éclaireur peut aller voir.</p>');
   else switch (c.type) {
-    case 'home': facts.push('<p>Votre station. Toutes les flottes partent d’ici.</p>'); break;
+    case 'home': facts.push('<p>Votre station. Toutes les flottes partent d’ici.</p>'); if (orbitTotal() >= 1) facts.push(`<div class="price">${resChips({ ore: st.orbit.ore, ice: st.orbit.ice })}<span class="muted">de débris en orbite</span></div>`); break;
     case 'empty': facts.push('<p>Rien que du vide et de la poussière.</p>'); break;
     case 'asteroid': facts.push(`<div class="price">${resChips({ ore: c.ore })}<span class="muted">à extraire</span></div>`); break;
     case 'comet': facts.push(`<div class="price">${resChips({ ice: c.ice })}<span class="muted">à extraire</span></div>`); break;
     case 'wreck': case 'debris': facts.push(`<div class="price">${resChips({ ore: c.ore, ice: c.ice, data: c.data })}<span class="muted">à récupérer</span></div>`); break;
-    case 'nest': { const p = compPower(c.garrison); facts.push(`<p>Niveau <b>${c.lvl}</b> · ${listText(c.garrison, PIRATE) || 'aucune garnison'} · feu <b>${fmt(p.a)}</b> · coque <b>${fmt(p.h)}</b></p>`, `<div class="price">${resChips(c.loot)}<span class="muted">de butin</span></div>`); break; }
+    case 'nest': { const p = compPower(c.garrison); facts.push(`<p>Niveau <b>${c.lvl}</b> · ${listText(c.garrison, PIRATE) || 'aucune garnison'} · feu <b>${fmt(p.a)}</b> · coque <b>${fmt(p.h)}</b></p>`, `<div class="price">${resChips(c.loot)}<span class="muted">de butin</span></div>`); nestFacts(c, facts); break; }
     case 'anomaly': facts.push(c.studied ? '<p>Ce signal a déjà été étudié.</p>' : `<p>Un Éclaireur pourrait en tirer environ <b>${fmt(c.data)}</b> données.</p>`); break;
     case 'depleted': facts.push('<p>Il ne reste plus rien à extraire.</p>'); break;
   }
@@ -1954,6 +2137,46 @@ function cellSheet() {
   return `${XBTN}<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true">${bodyGlyph(c, vis)}</svg><div><p class="eyebrow">Case ${c.q}:${c.r} · ${c.d ? c.d + ' saut' + (c.d > 1 ? 's' : '') : 'origine'}</p><h2>${esc(cellTitle(c))}</h2></div></div>
     <div class="facts">${facts.join('')}</div>
     ${ms.length ? `<div class="missions">${ms.map(m => { const ok = missionReady(m); return `<div class="mission"><button class="btn block ${ok ? 'primary' : ''}" data-act="mission" data-m="${m}" data-k="${sel}"${ok ? '' : ' disabled'}>${MISSION[m].name}</button>${ok ? '' : `<p class="hint">${MISSION[m].hint}</p>`}</div>`; }).join('')}</div>` : ''}`;
+}
+function simHtml(r, mode) {
+  if (!r) return '';
+  const raid = mode === 'raid', p = raid ? 1 - r.win : r.win;
+  const tone = p >= 0.75 ? 'ok' : p >= 0.4 ? 'energy' : 'danger';
+  const word = raid ? (p >= 0.75 ? 'La station devrait tenir' : p >= 0.4 ? 'Ça peut basculer' : 'La station risque d’être pillée')
+    : (p >= 0.75 ? 'Victoire probable' : p >= 0.4 ? 'Combat incertain' : 'Assaut perdu d’avance');
+  const good = raid ? r.lose : r.win, bad = raid ? r.win : r.lose, mine = raid ? r.lossD : r.lossA;
+  const losses = Object.keys(mine).filter(k => mine[k] >= 0.5).map(k => `${fmt(mine[k])} ${unitLabel(k, Math.round(mine[k]))}`).join(', ');
+  const bar = (v, c) => v > 0.001 ? `<i class="${c}" style="width:${(v * 100).toFixed(1)}%"></i>` : '';
+  return `<div class="sim" style="--c:var(--${tone})"><div class="sim-h"><span class="hud-k">Simulation · ${SIM_RUNS} combats</span><b>${pct(p)}</b></div>
+    <p class="sim-w">${word}</p><div class="sim-bar">${bar(good, 'w')}${bar(r.draw, 'd')}${bar(bad, 'l')}</div>
+    <p class="sim-k"><span class="w">${raid ? 'Repoussé' : 'Victoire'} ${pct(good)}</span><span class="d">${raid ? 'Retraite' : 'Repli'} ${pct(r.draw)}</span><span class="l">${raid ? 'Pillage' : 'Défaite'} ${pct(bad)}</span></p>
+    <p class="sim-loss">Pertes probables : ${losses || 'aucune'} · ${NF1.format(r.rounds)} salve${r.rounds >= 2 ? 's' : ''} en moyenne</p></div>`;
+}
+function nestFacts(c, facts) {
+  const r = rampart(c.lvl);
+  facts.push(`<p>Rempart : coque <b>${fmtS(r.hull)}</b> · bouclier <b>${fmt(r.shield)}</b>. Les Gardiens le brisent bien plus vite.</p>`);
+  const armed = {}; for (const k of ARMED) if (st.ships[k] > 0) armed[k] = st.ships[k];
+  if (Object.keys(armed).length) facts.push(`<p class="hud-k">Si vous attaquez avec tous vos vaisseaux armés</p>${simHtml(simAttack(armed, c), 'attack')}`);
+}
+function openReport(id) {
+  advanceTo(Date.now());
+  const r = (st.reports || []).find(x => x.id === +id);
+  if (!r) { toast('Ce rapport n’est plus disponible.', 'info'); return; }
+  openModal('report', reportSheet(r));
+}
+function reportSheet(r) {
+  const tone = r.outcome === 'win' ? 'ok' : r.outcome === 'loss' ? 'danger' : 'energy';
+  const verdict = r.outcome === 'win' ? 'Victoire' : r.outcome === 'loss' ? 'Défaite' : r.kind === 'raid' ? 'Repoussé' : 'Sans vainqueur';
+  const side = (rows, mine) => rows.length ? rows.map(([k, a, b]) => {
+    const perm = k === 'bastion' || k === 'rampart', fixd = (mine && r.repaired && r.repaired[k]) || 0, lost = a - b;
+    const tail = perm ? (b ? 'debout' : 'hors de combat') : lost ? `−${fmt(lost)}${fixd ? ` · ${fmt(fixd)} réparé${fixd > 1 ? 's' : ''}` : ''}` : 'intact';
+    return `<div class="rp-u${!perm && b === 0 ? ' dead' : ''}"><span class="rp-n">${esc(unitLabel(k, a))}</span><span class="rp-c">${fmt(a)}<i>›</i><b>${fmt(perm ? b : b + fixd)}</b></span><span class="rp-l${perm ? ((mine ? b > 0 : b === 0) ? ' ok' : '') : lost ? '' : ' ok'}">${tail}</span></div>`;
+  }).join('') : '<p class="empty">Personne.</p>';
+  const cols = r.tl.map(([y, f], i) => `<div class="rp-col"><span class="rp-bar you" style="--h:${Math.round(y * 100)}%"></span><span class="rp-bar foe" style="--h:${Math.round(f * 100)}%"></span><em>${i || 'Avant'}</em></div>`).join('');
+  return `${XBTN}<div class="rp-head" style="--c:var(--${tone})"><p class="eyebrow">Rapport de combat · ${clock(r.t)}</p><h2>${esc(r.title)}</h2><p class="rp-sub"><b>${verdict}</b> · ${esc(r.place)} · ${r.rounds} salve${r.rounds > 1 ? 's' : ''}</p></div>
+    <section class="panel rp-chart"><div class="rp-legend"><span class="you">Vos forces</span><span class="foe">${r.kind === 'raid' ? 'Corsaires' : 'Le nid'}</span><span class="muted">coque restante, salve par salve</span></div><div class="rp-cols">${cols}</div></section>
+    <div class="rp-sides"><section class="panel"><h3>Vos forces</h3>${side(r.you, true)}</section><section class="panel"><h3>${r.kind === 'raid' ? 'Corsaires' : 'Le nid'}</h3>${side(r.foe, false)}</section></div>
+    ${r.lines.length ? `<ul class="rp-lines">${r.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}`;
 }
 function refreshSheet() {
   if (!modalKind) return;
@@ -1991,14 +2214,14 @@ function waitShort(c, r) {
   return fmtDur(worst);
 }
 /* ---- retours de jeu : lancement, décompte, célébration, dépenses, sons ---- */
-const QUEST_TARGET = { q1: ['mod', 'drill'], q2: ['mod', 'ice'], q3: ['mod', 'sail'], q4: ['mod', 'hab'], q5: ['mod', 'lab'], q6: ['tech', 'deep'], q7: ['mod', 'works'], q8: ['mod', 'yard'], q9: ['ship', 'scout'], q10: ['ship', 'drone'], q11: ['mod', 'bastion'], q14: ['ship', 'seed'], q15: ['tech', 'stellar'], q16: ['mod', 'beacon'], q17: ['mod', 'beacon'] };
+const QUEST_TARGET = { q1: ['mod', 'drill'], q2: ['mod', 'ice'], q3: ['mod', 'sail'], q4: ['mod', 'hab'], q5: ['mod', 'lab'], q6: ['tech', 'deep'], q7: ['mod', 'works'], q8: ['mod', 'yard'], q9: ['ship', 'scout'], q10: ['ship', 'drone'], q11: ['mod', 'bastion'], q11b: ['def', 'flak'], q14: ['ship', 'seed'], q15: ['tech', 'stellar'], q16: ['mod', 'beacon'], q17: ['mod', 'beacon'] };
 function curTarget() { const q = QUESTS.find(x => !st.quests[x.id]); return q ? QUEST_TARGET[q.id] || null : null; }
 function goQuest() {
   const t = curTarget();
   if (!t) { setTab('journal'); return; }
   if (t[0] === 'mod') { seg.station = INST.includes(t[1]) ? 'inst' : 'prod'; if (tab !== 'station') setTab('station'); else { renderView(true); updateDynamic(); } }
   else if (t[0] === 'tech' && tab !== 'research') setTab('research');
-  else if (t[0] === 'ship' && tab !== 'yard') setTab('yard');
+  else if (t[0] === 'ship' || t[0] === 'def') { seg.yard = t[0] === 'def' ? 'def' : 'ships'; if (tab !== 'yard') setTab('yard'); else { renderView(true); updateDynamic(); } }
   openItem(t[0], t[1]);
 }
 function fmtShort(ms) {
@@ -2042,13 +2265,13 @@ function userActive() { const u = navigator.userActivation; return !u || u.hasBe
 function buzz(p) { try { if (navigator.vibrate && userActive()) navigator.vibrate(p); } catch (e) { /* vibration indisponible */ } }
 let launchTimer = null;
 function fxLaunch(kind, id) {
-  const def = kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : SHIP[id];
+  const def = kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : UNIT(id);
   const list = kind === 'mod' ? st.q.build : kind === 'tech' ? st.q.research : st.q.yard;
   const idx = list.map(j => j.id).lastIndexOf(id), job = list[idx]; if (!job) return;
   const active = idx === 0;
   let a = job.start, b = job.end, label = `${def.name} → niveau ${job.lvl}`;
-  if (kind === 'ship') { a = job.start + job.done * job.each; b = a + job.each; label = `${fmt(job.n)} ${shipName(id, job.n)}`; }
-  const title = !active ? `Ajouté à la file · position ${idx + 1}` : kind === 'mod' ? (job.lvl === 1 ? 'Construction lancée' : 'Amélioration lancée') : kind === 'tech' ? 'Recherche lancée' : 'Fabrication lancée';
+  if (kind === 'ship' || kind === 'def') { a = job.start + job.done * job.each; b = a + job.each; label = `${fmt(job.n)} ${unitName(id, job.n)}`; }
+  const title = !active ? `Ajouté à la file · position ${idx + 1}` : kind === 'mod' ? (job.lvl === 1 ? 'Construction lancée' : 'Amélioration lancée') : kind === 'tech' ? 'Recherche lancée' : kind === 'def' ? 'Construction lancée' : 'Fabrication lancée';
   let el = document.getElementById('launch');
   if (!el) { el = document.createElement('button'); el.id = 'launch'; el.className = 'launch'; el.dataset.act = 'activity'; document.body.appendChild(el); }
   el.style.setProperty('--c', `var(--${def.color})`);
@@ -2059,6 +2282,7 @@ function fxLaunch(kind, id) {
 }
 function gainAt(kind, id, n) {
   if (kind === 'ship') return 'Prêts au départ, ils défendent la station';
+  if (kind === 'def') return `En position · ${roleText(DEF[id]).toLowerCase()}`;
   if (kind === 'tech') return TECH[id].eff(n);
   const m = MOD[id], a = n - 1, b = n, sp = st.speed;
   switch (id) {
@@ -2085,9 +2309,9 @@ function fxDone(kind, id, n) {
 function nextCel() {
   const c = celQ.shift(); if (!c) { celBusy = false; return; }
   celBusy = true;
-  const def = c.kind === 'mod' ? MOD[c.id] : c.kind === 'tech' ? TECH[c.id] : SHIP[c.id];
-  const title = c.kind === 'ship' ? 'Livraison du chantier' : c.kind === 'tech' ? 'Recherche terminée' : (c.n === 1 ? 'Construction terminée' : 'Amélioration terminée');
-  const sub = c.kind === 'ship' ? `${fmt(c.n)} ${shipName(c.id, c.n)}` : `${def.name} · niveau ${c.n}`;
+  const def = c.kind === 'mod' ? MOD[c.id] : c.kind === 'tech' ? TECH[c.id] : UNIT(c.id);
+  const title = c.kind === 'def' ? 'Défense en place' : c.kind === 'ship' ? 'Livraison du chantier' : c.kind === 'tech' ? 'Recherche terminée' : (c.n === 1 ? 'Construction terminée' : 'Amélioration terminée');
+  const sub = c.kind === 'ship' || c.kind === 'def' ? `${fmt(c.n)} ${unitName(c.id, c.n)}` : `${def.name} · niveau ${c.n}`;
   let el = document.getElementById('celebrate');
   if (!el) { el = document.createElement('div'); el.id = 'celebrate'; el.className = 'celebrate'; el.dataset.act = 'cel-close'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
   el.style.setProperty('--c', `var(--${def.color})`);
@@ -2123,22 +2347,22 @@ function spawnFloat(k, txt, cls) {
 
 /* ---- lignes, fiches et barres refaites ---- */
 function rowHtml(kind, id, i) {
-  const it = itemState(kind, id), def = kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : SHIP[id];
-  const maxed = kind === 'mod' && def.max && pendingB(id) >= def.max;
+  const it = itemState(kind, id), def = kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : UNIT(id);
+  const maxed = kind === 'mod' ? !!(def.max && pendingB(id) >= def.max) : kind === 'def' ? defFull(id) : false;
   const c = parseCost(it.need);
   const dur = maxed ? '' : fmtDur(kind === 'mod' ? bTime(c) : kind === 'tech' ? rTime(c) : sTime(id));
-  const L = kind === 'mod' ? lvl(id) : kind === 'tech' ? tech(id) : (st.ships[id] || 0);
+  const L = kind === 'mod' ? lvl(id) : kind === 'tech' ? tech(id) : unitCount(id);
   const P = kind === 'mod' ? pendingB(id) : kind === 'tech' ? pendingT(id) : L;
   const tg = curTarget(), isObj = !!(tg && tg[0] === kind && tg[1] === id);
-  const chip = kind === 'ship' ? `<span class="lchip">×${fmt(L)}</span>` : maxed ? '<span class="lchip max">MAX</span>' : `<span class="lchip">NIV ${L}<i>›</i>${P + 1}</span>`;
-  const verb = kind === 'mod' ? (P === 0 ? 'Construire' : 'Améliorer') : kind === 'tech' ? 'Rechercher' : 'Fabriquer';
+  const chip = kind === 'ship' || kind === 'def' ? `<span class="lchip">×${fmt(L)}</span>` : maxed ? '<span class="lchip max">MAX</span>' : `<span class="lchip">NIV ${L}<i>›</i>${P + 1}</span>`;
+  const verb = kind === 'mod' ? (P === 0 ? 'Construire' : 'Améliorer') : kind === 'tech' ? 'Rechercher' : kind === 'def' ? 'Construire' : 'Fabriquer';
   const act = kind === 'mod' ? 'build' : kind === 'tech' ? 'research' : 'ships1';
   const action = !it.ok ? `<span class="act-lock" title="Verrouillé">${LOCK_SVG}</span>`
     : maxed ? '<span class="act-done">MAX</span>'
     : `<button class="up" data-act="${act}" data-id="${id}" data-need="${it.need}" data-dur="${dur}" data-verb="${verb}"${it.block ? ' data-block="1" disabled' : ''} aria-label="${esc(verb + ' ' + def.name)}"><span class="up-l">${it.block ? 'File' : verb}</span><span class="up-t">${it.block ? 'pleine' : dur}</span></button>`;
   const b = it.busy;
   const ring = b ? `<span class="tring"><svg viewBox="0 0 40 40" aria-hidden="true"><circle class="tr-bg" cx="20" cy="20" r="17"/><circle class="tr-fg" cx="20" cy="20" r="17" pathLength="100" data-ring="${b.start},${b.end}"/></svg><b data-short="${b.end}"></b></span>` : '';
-  const sub = b ? `<span class="rsub busy-t">${kind === 'mod' ? 'Construction' : kind === 'tech' ? 'Recherche' : 'Assemblage'} en cours · <b data-eta="${b.end}"></b></span>`
+  const sub = b ? `<span class="rsub busy-t">${kind === 'mod' || kind === 'def' ? 'Construction' : kind === 'tech' ? 'Recherche' : 'Assemblage'} en cours · <b data-eta="${b.end}"></b></span>`
     : `<span class="rsub">${it.ok ? `${chip} ${shortGain(kind, id)}` : reqShort(def.req)}</span>`;
   const pano = kind === 'mod' ? panoUrl(id) : '';
   return `<div class="row${it.ok ? '' : ' locked'}${b ? ' busy' : ''}${isObj ? ' obj' : ''}${pano ? ' pano' : ''}" style="--c:var(--${it.color});--i:${i || 0}">${pano ? `<span class="rpano" style="background-image:url(${pano})" aria-hidden="true"></span>` : ''}
@@ -2155,8 +2379,8 @@ function costBars(c) {
   return `<div class="cbars">${Object.entries(c).map(([k, v]) => `<div class="cb" data-k="${k}" data-v="${v}" style="--c:var(--${k})">${ri(k)}<span class="cb-n">${RES_NAME[k]}</span><span class="cb-t"><b class="cb-have">${fmt(getRes(k))}</b> / ${fmt(v)}</span><span class="cb-bar"><i></i></span></div>`).join('')}</div>`;
 }
 function shipFoot(id) {
-  const n = qty[id] || 1, c = shipCost(id, n), ok = reqOk(SHIP[id].req), full = st.q.yard.length >= 5, blocked = !ok || full;
-  return `<p class="hud-k">Coût pour ${fmt(n)} ${shipName(id, n)}</p>${costBars(c)}<p class="dur-line">${ri('time')}Assemblage : ${fmtDur(sTime(id) * n)}</p><button class="btn block ${blocked ? '' : 'primary'}" data-act="ships" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'Chantier complet' : `Fabriquer ${fmt(n)} ${shipName(id, n)}`}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
+  const n = qty[id] || 1, c = shipCost(id, n), ok = reqOk(UNIT(id).req), full = st.q.yard.length >= 5, cap = defFull(id), blocked = !ok || full || cap;
+  return `<p class="hud-k">Coût pour ${fmt(n)} ${unitName(id, n)}</p>${costBars(c)}<p class="dur-line">${ri('time')}Assemblage : ${fmtDur(sTime(id) * n)}</p><button class="btn block ${blocked ? '' : 'primary'}" data-act="ships" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : cap ? 'Déjà en place' : full ? 'Chantier complet' : `${DEF[id] ? 'Construire' : 'Fabriquer'} ${fmt(n)} ${unitName(id, n)}`}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
 }
 function itemSheet() {
   const { kind, id } = itemSel, it = itemState(kind, id), b = it.busy;
@@ -2183,11 +2407,12 @@ function itemSheet() {
       ${ok ? '' : reqPills(t.req)}
       <p class="hud-k">Coût</p>${costBars(c)}<p class="dur-line">${ri('time')}Durée de la recherche : ${fmtDur(rTime(c))}${P > L ? ' (après la file)' : ''}</p><button class="btn block ${blocked ? '' : 'primary'}" data-act="research" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'Deux recherches déjà prévues' : (P ? `Rechercher le niveau ${N}` : 'Lancer la recherche')}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
   }
-  const s = SHIP[id], ok = reqOk(s.req), have = st.ships[id] || 0, n = qty[id] || 1, y = st.q.yard[0];
-  return `${head(s.name, have ? fmt(have) + ' à quai' : 'Aucun à quai')}
+  const s = UNIT(id), isDef = !!DEF[id], ok = reqOk(s.req), have = unitCount(id), n = qty[id] || 1, y = st.q.yard[0];
+  return `${head(s.name, isDef ? (have ? fmt(have) + ' en place' : 'Aucune en place') : have ? fmt(have) + ' à quai' : 'Aucun à quai')}
     <p class="desc">${s.desc}</p>
     ${b ? busyBox(b.start, b.end, 'Assemblage en cours', `${fmt(y.done)} sur ${fmt(y.n)} livrés`) : ''}
-    <div class="stats"><span class="stat">Feu <b>${fmt(shipAtk(id))}</b></span><span class="stat">Coque <b>${fmt(shipHull(id))}</b></span><span class="stat">Vitesse <b>${NF1.format(shipSpeed(id))}</b></span><span class="stat">Soute <b>${fmt(shipCargo(id))}</b></span></div>
+    <div class="stats"><span class="stat">Feu <b>${fmt(unitAtk(id))}</b></span><span class="stat">Coque <b>${fmt(unitHull(id))}</b></span><span class="stat">Bouclier <b>${fmt(unitShield(id))}</b></span>${isDef ? '' : `<span class="stat">Vitesse <b>${NF1.format(shipSpeed(id))}</b></span><span class="stat">Soute <b>${fmt(shipCargo(id))}</b></span>`}</div>
+    <p class="role" style="--c:var(--${s.color})"><b>${CLS_ONE[s.cls] || ''}</b>${esc(roleText(s))}</p>
     ${ok ? '' : reqPills(s.req)}
     ${ok ? `<p class="hud-k">Quantité</p><div class="qrow"><div class="stepper"><button type="button" data-act="qty-step" data-id="${id}" data-d="-1" aria-label="Un de moins">−</button><input id="qty-${id}" data-qty="${id}" type="number" inputmode="numeric" min="1" max="9999" value="${n}" aria-label="Quantité de ${s.pl}"><button type="button" data-act="qty-step" data-id="${id}" data-d="1" aria-label="Un de plus">+</button></div><div class="quick"><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="10">×10</button><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="max">Max</button></div></div>` : ''}
     <div id="sf-${id}" style="display:contents">${shipFoot(id)}</div>`;
@@ -2200,7 +2425,7 @@ function renderStrip() {
   if (threatVisible()) parts.push(`<button class="chipx raid" data-act="activity"><span class="dot"></span>Raid <b data-short="${st.raid.at}"></b></button>`);
   if (b) parts.push(chipx('mod', b.id, MOD[b.id].color, `${MOD[b.id].name} ${b.lvl}`, b.start, b.end, st.q.build.length - 1));
   if (r) parts.push(chipx('tech', r.id, TECH[r.id].color, `${TECH[r.id].name} ${r.lvl}`, r.start, r.end, st.q.research.length - 1));
-  if (y) { const s0 = y.start + y.done * y.each; parts.push(chipx('ship', y.id, SHIP[y.id].color, `${SHIP[y.id].pl} ${y.done}/${y.n}`, s0, s0 + y.each, st.q.yard.length - 1)); }
+  if (y) { const s0 = y.start + y.done * y.each; parts.push(chipx(unitKind(y.id), y.id, UNIT(y.id).color, `${UNIT(y.id).pl} ${y.done}/${y.n}`, s0, s0 + y.each, st.q.yard.length - 1)); }
   if (st.fleets.length) parts.push(`<button class="chipx" data-act="activity" style="--c:var(--energy)">${svg('lancer')}<span class="cl">${st.fleets.length} en vol</span></button>`);
   $('#strip').innerHTML = parts.join('');
 }
@@ -2224,7 +2449,7 @@ function renderView(force) {
   if (!force && (pointerDown || (a && v.contains(a) && a.tagName === 'INPUT'))) { pendingView = true; return; }
   pendingView = false;
   v.innerHTML = (VIEWS[tab] || VIEWS.station)();
-  const key = tab + '|' + seg.station + seg.sector + seg.journal;
+  const key = tab + '|' + seg.station + seg.sector + seg.journal + seg.yard;
   if (key !== lastViewKey) {
     lastViewKey = key; v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter');
     clearTimeout(renderView.t); renderView.t = setTimeout(() => v.classList.remove('enter'), 900);
@@ -2304,16 +2529,17 @@ document.addEventListener('click', e => {
     case 'quest-go': goQuest(); break;
     case 'cel-close': closeCel(); break;
     case 'res': openRes(); break;
-    case 'ships1': { const n0 = st.q.yard.length; act(() => doShips(id, 1)); if (st.q.yard.length > n0) fxLaunch('ship', id); } break;
+    case 'ships1': { const n0 = st.q.yard.length; act(() => doShips(id, 1)); if (st.q.yard.length > n0) fxLaunch(unitKind(id), id); } break;
     case 'build': { const n0 = st.q.build.length; act(() => doBuild(id)); if (st.q.build.length > n0) fxLaunch('mod', id); } break;
     case 'cancel-build': act(() => { st.q.build = cancelQueue(st.q.build, +el.dataset.i, 'build'); }); break;
     case 'research': { const n0 = st.q.research.length; act(() => doResearch(id)); if (st.q.research.length > n0) fxLaunch('tech', id); } break;
     case 'cancel-research': act(() => { st.q.research = cancelQueue(st.q.research, +el.dataset.i, 'research'); }); break;
-    case 'ships': { const n0 = st.q.yard.length; act(() => doShips(id, qty[id] || 1)); if (st.q.yard.length > n0) fxLaunch('ship', id); } break;
+    case 'ships': { const n0 = st.q.yard.length; act(() => doShips(id, qty[id] || 1)); if (st.q.yard.length > n0) fxLaunch(unitKind(id), id); } break;
     case 'cancel-yard': act(() => cancelYard(+el.dataset.i)); break;
     case 'qty-step': qty[id] = clampInt((qty[id] || 1) + (+el.dataset.d), 1, 9999); refreshShipCard(id, true); break;
     case 'qty-set': qty[id] = el.dataset.v === 'max' ? Math.max(1, maxAfford(id)) : clampInt(el.dataset.v, 1, 9999); refreshShipCard(id, true); break;
     case 'cell': openCell(el.dataset.k); break;
+    case 'report': openReport(el.dataset.id); break;
     case 'mission': openFleet(el.dataset.k, el.dataset.m); break;
     case 'fc-step': if (fc) { fc.sel[id] = clampInt((fc.sel[id] || 0) + (+el.dataset.d), 0, st.ships[id] || 0); refreshFc(true); } break;
     case 'fc-max': if (fc) { fc.sel[id] = st.ships[id] || 0; refreshFc(true); } break;
