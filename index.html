@@ -970,6 +970,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const HOUR = 3600000, MIN = 60000;
 const LS_SAVE = 'heliarque.save.v1', LS_TAB = 'heliarque.tab';
+const SAVE_GEN = 2; // changer ce numéro fait repartir les parties de zéro ; l’ancienne est gardée en secours
 const RADIUS = 4;
 const SPEEDS = [
   { v: 1, name: 'Standard', d: 'Le rythme d’un jeu par navigateur : on revient plusieurs fois par jour.' },
@@ -2150,7 +2151,7 @@ function bump() { ver++; dirty = true; }
 function saveNow() {
   if (!st || !st.founded) return;
   lastSavedAt = Date.now();
-  try { localStorage.setItem(LS_SAVE, JSON.stringify({ v: 1, savedAt: lastSavedAt, state: st })); } catch (e) { /* stockage indisponible */ }
+  try { localStorage.setItem(LS_SAVE, JSON.stringify({ v: 1, gen: SAVE_GEN, savedAt: lastSavedAt, state: st })); } catch (e) { /* stockage indisponible */ }
   queueCloud();
 }
 function scheduleSave() { if (saveTimer) return; saveTimer = setTimeout(() => { saveTimer = null; saveNow(); }, 1500); }
@@ -2164,7 +2165,7 @@ async function flushCloud() {
   if (cloud.busy) { cloud.again = true; return; }
   cloud.busy = true; cloud.last = Date.now();
   try {
-    await cloud.ref.set({ v: 1, savedAt: lastSavedAt || Date.now(), json: JSON.stringify(st) });
+    await cloud.ref.set({ v: 1, gen: SAVE_GEN, savedAt: lastSavedAt || Date.now(), json: JSON.stringify(st) });
     saveMode = 'cloud';
   } catch (e) {
     const code = e && e.code;
@@ -2186,7 +2187,8 @@ async function initCloud() {
     const snap = await ref.get();
     cloud = { ref, busy: false, again: false, last: 0, timer: null };
     let remote = null;
-    if (snap.exists) { const d = snap.data(); if (d && typeof d.json === 'string') { try { remote = { savedAt: +d.savedAt || 0, state: JSON.parse(d.json) }; } catch (e) { remote = null; } } }
+    if (snap.exists) { const d = snap.data(); if (d && typeof d.json === 'string') { try { remote = { savedAt: +d.savedAt || 0, gen: d.gen, state: JSON.parse(d.json) }; } catch (e) { remote = null; } } }
+    if (remote && remote.gen !== SAVE_GEN) { try { await db.collection('data/users/' + uid).doc('save-ancienne').set(snap.data()); } catch (e) { /* secours facultatif */ } remote = null; }
     saveMode = 'cloud';
     if (remote && remote.state && remote.state.v === 1 && remote.state.founded && (!st.founded || remote.savedAt > lastSavedAt)) adopt(remote.state, remote.savedAt);
     else if (st.founded && (!remote || lastSavedAt > remote.savedAt)) flushCloud();
@@ -2200,7 +2202,7 @@ function adopt(s, savedAt) {
   saveLocalOnly();
   renderAll();
 }
-function saveLocalOnly() { try { localStorage.setItem(LS_SAVE, JSON.stringify({ v: 1, savedAt: lastSavedAt, state: st })); } catch (e) { /* ignoré */ } }
+function saveLocalOnly() { try { localStorage.setItem(LS_SAVE, JSON.stringify({ v: 1, gen: SAVE_GEN, savedAt: lastSavedAt, state: st })); } catch (e) { /* ignoré */ } }
 function updateSaveMode() {
   const txt = saveMode === 'cloud' ? 'Partie enregistrée sur votre compte, sur tous vos appareils' : 'Partie enregistrée dans ce navigateur';
   $$('[data-bind="savemode"]').forEach(el => { el.textContent = txt; });
@@ -4046,9 +4048,9 @@ function initStar() {
 /* ================= démarrage ================= */
 function boot(hot) {
   let s = null, savedAt = 0;
-  if (hot && hot.state && hot.state.v === 1) { s = hot.state; savedAt = hot.savedAt || Date.now(); if (hot.tab && VIEWS[hot.tab]) tab = hot.tab; if (hot.sel) sel = hot.sel; }
+  if (hot && hot.state && hot.state.v === 1 && hot.gen === SAVE_GEN) { s = hot.state; savedAt = hot.savedAt || Date.now(); if (hot.tab && VIEWS[hot.tab]) tab = hot.tab; if (hot.sel) sel = hot.sel; }
   else {
-    try { const raw = localStorage.getItem(LS_SAVE); if (raw) { const d = JSON.parse(raw); if (d && d.state && d.state.v === 1) { s = d.state; savedAt = d.savedAt || 0; } } } catch (e) { s = null; }
+    try { const raw = localStorage.getItem(LS_SAVE); if (raw) { const d = JSON.parse(raw); if (d && d.state && d.state.v === 1 && d.gen === SAVE_GEN) { s = d.state; savedAt = d.savedAt || 0; } else if (d && d.state && !localStorage.getItem(LS_SAVE + '.ancienne')) localStorage.setItem(LS_SAVE + '.ancienne', raw); } } catch (e) { s = null; }
     try { const t = localStorage.getItem(LS_TAB); if (t && VIEWS[t]) tab = t; } catch (e) { /* ignoré */ }
   }
   if (s) { st = migrate(s); lastSavedAt = savedAt; catchUp(!(hot && hot.state)); }
@@ -4062,7 +4064,7 @@ function boot(hot) {
   initCloud();
 }
 const H = window.claude && window.claude.hot;
-if (H && typeof H.snapshot === 'function') { try { H.snapshot(() => ({ state: st, savedAt: lastSavedAt, tab, sel })); } catch (e) { /* ignoré */ } }
+if (H && typeof H.snapshot === 'function') { try { H.snapshot(() => ({ gen: SAVE_GEN, state: st, savedAt: lastSavedAt, tab, sel })); } catch (e) { /* ignoré */ } }
 if (H && typeof H.ready === 'function') H.ready(boot); else boot((H && H.data) || {});
 })();
 </script>
