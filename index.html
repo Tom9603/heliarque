@@ -941,6 +941,19 @@ body{font-size:14.5px}
 .tr-u b{color:var(--title)}
 .tr-link,.tree-link,.tr-back{appearance:none;justify-self:start;border:0;background:none;padding:2px 0;color:#8FC8FF;font:inherit;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .tr-back{margin:-4px 0 2px}
+/* carte expliquée */
+.pnl-h h3 .dp-help{width:20px;height:20px;font-size:12px;vertical-align:1px}
+.inf-g{width:44px;height:44px;display:block}
+.inf-m{display:grid;gap:1px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}
+.inf-m b{color:#F1F5FA}
+.inf-m span{color:var(--ink-2)}
+.inf-m em{font-style:normal;font-size:12px;font-weight:600;color:#C9B07A}
+.inf-m em.ok{color:#8BE36A}
+.lex-l{display:grid;gap:6px}
+.lex{display:grid;grid-template-columns:40px minmax(0,1fr);gap:9px;align-items:start;padding:7px 9px;border:1px solid var(--frame);border-radius:4px;background:linear-gradient(180deg,#17263B,#0C1625)}
+.lex-g{width:40px;height:40px;display:block}
+.lex b{font-size:14px;color:#F1F5FA}
+.lex p{margin:2px 0 0;font-size:12.5px;line-height:1.4;color:var(--ink-2)}
 </style>
 </head>
 <body>
@@ -2999,7 +3012,7 @@ const VIEWS = {
     const r = radarRange(), nf = st.fleets.length;
     return `<div class="vh"><h1>Secteur</h1><span>Antenne : ${r} saut${r > 1 ? 's' : ''}</span></div>
       ${segsHtml('sector', [['map', 'Carte'], ['fleets', nf ? `Flottes · ${nf}` : 'Flottes']])}
-      ${seg.sector === 'fleets' ? fleetsHtml() : `<section class="panel mapp"><div class="pnl-h"><h3>Secteur de Vesper</h3><span>${Object.values(st.map).filter(visible).length} cases en vue sur ${Object.keys(st.map).length}</span></div><div class="map-wrap">${mapSvg()}</div><div class="legend">${MAP_LEGEND.map(([c, l]) => `<span style="--c:var(--${c})"><i></i>${l}</span>`).join('')}</div><p class="hint-s">Touchez un astre pour l’inspecter. Les « ? » sont hors de portée de l’Antenne.</p></section>${sitesHtml()}`}`;
+      ${seg.sector === 'fleets' ? fleetsHtml() : `<section class="panel mapp"><div class="pnl-h"><h3>Secteur de Vesper<button class="dp-help" data-act="info" data-kind="lex" data-id="map" aria-label="Lexique de la carte">?</button></h3><span>${Object.values(st.map).filter(visible).length} cases en vue sur ${Object.keys(st.map).length}</span></div><div class="map-wrap">${mapSvg()}</div><div class="legend">${MAP_LEGEND.map(([c, l]) => `<span style="--c:var(--${c})"><i></i>${l}</span>`).join('')}</div><p class="hint-s">Touchez un astre pour l’inspecter. Les « ? » sont hors de portée de l’Antenne.</p></section>${sitesHtml()}`}`;
   },
   fleets() { seg.sector = 'fleets'; return VIEWS.sector(); },
   journal() {
@@ -3074,7 +3087,7 @@ function cellSheet() {
   const here = st.fleets.filter(f => f.k === sel);
   if (here.length) facts.push(`<p>En approche : ${here.map(f => 'flotte ' + f.id).join(', ')}.</p>`);
   const ms = missionsFor(c);
-  return `${XBTN}<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true">${bodyGlyph(c, vis)}</svg><div><p class="eyebrow">Case ${c.q}:${c.r} · ${c.d ? c.d + ' saut' + (c.d > 1 ? 's' : '') : 'origine'}</p><h2>${esc(cellTitle(c))}</h2></div></div>
+  return `${XBTN}<div class="cell-top"><svg viewBox="-32 -32 64 64" class="cell-art" aria-hidden="true">${bodyGlyph(c, vis)}</svg><div><p class="eyebrow">Case ${c.q}:${c.r} · ${c.d ? c.d + ' saut' + (c.d > 1 ? 's' : '') : 'origine'}</p><h2>${esc(cellTitle(c))}<button class="dp-help" data-act="info" data-kind="cell" data-id="${sel}" aria-label="Tout savoir sur cette case">?</button></h2></div></div>
     <div class="facts">${facts.join('')}</div>
     ${ms.length ? `<div class="missions">${ms.map(m => { const ok = missionReady(m); return `<div class="mission"><button class="btn block ${ok ? 'primary' : ''}" data-act="mission" data-m="${m}" data-k="${sel}"${ok ? '' : ' disabled'}>${MISSION[m].name}</button>${ok ? '' : `<p class="hint">${MISSION[m].hint}</p>`}</div>`; }).join('')}</div>` : ''}`;
 }
@@ -3334,6 +3347,7 @@ const GUIDE = [
   ['Flottes et carburant', 'Choisissez la vitesse de vol : à 50 %, le trajet dure deux fois plus longtemps mais brûle bien moins de glace. Le nombre de flottes simultanées dépend de l’Antenne profonde. Une flotte rappelée revient en autant de temps qu’elle a déjà volé.'],
   ['Espionnage', 'Un Éclaireur rapporte la garnison, les défenses et le butin d’une cible, ce qui permet au simulateur d’estimer vos chances. Le renseignement vieillit : les nids se reconstituent et les stations rivales évoluent.'],
   ['Expéditions', 'Une flotte part explorer l’espace profond pendant 1, 2 ou 4 heures de jeu. Les chances de chaque issue sont affichées avant le départ, et un Éclaireur les améliore. Les gains sont plafonnés par la soute.'],
+  ['La carte du secteur', 'La carte montre le secteur autour de votre station. Les astéroïdes (minerai) et les comètes (glace) s’exploitent avec des Drones foreurs ou un avant-poste ; épaves et champs de débris se récupèrent ; les anomalies rapportent des données à un Éclaireur ; les nids corsaires (chiffre rouge = niveau) et les stations rivales s’espionnent puis s’attaquent. Les « ? » sont hors de portée de l’Antenne. Touchez une case puis son « ? » pour tout savoir, ou le « ? » du cadre de la carte pour le lexique.'],
   ['Débris', 'Les vaisseaux détruits laissent 40 % de leur coût en minerai et en glace. Envoyez des Drones foreurs les ramasser : en orbite de votre station, sur les ruines d’un nid ou autour d’une station rivale.'],
   ['Raids et protection des débuts', 'Pendant les 15 premiers jours, aucune IA ne peut vous attaquer, et les IA ne s’attaquent pas entre elles. Ensuite, corsaires et stations rivales peuvent lancer des raids : l’Antenne les repère à l’avance et vous montre vos chances de tenir. En cas de défaite, 30 % des ressources hors abri sont emportées.'],
   ['Bouclier de veille', 'Jusqu’à 8 heures par période de 24 heures, les raids sont déviés sans combat, mais la production tourne à 50 %. Lancer un assaut le coupe. Activez-le depuis « Avant de partir », en haut de la Station.'],
@@ -3414,7 +3428,85 @@ function profitHtml(kind, id) {
   }
   return L.join('') + unitNote;
 }
+/* ---- la carte expliquée : chaque case et chaque mission ---- */
+const CELL_INFO = {
+  home: { name: 'Votre station', what: 'Le cœur de votre colonie : toutes les flottes partent d’ici et y reviennent.', how: 'Les raids se jouent ici. Les vaisseaux détruits autour de la station laissent un champ de débris en orbite, que des Drones foreurs ramassent en quelques secondes.', tip: 'Après chaque raid, envoyez vos drones vider l’orbite : ce sont des ressources gratuites.' },
+  asteroid: { name: 'Astéroïde', what: 'Un bloc de roche riche en minerai.', how: 'Des Drones foreurs, aidés de Barges pour la soute, en extraient le minerai jusqu’à épuisement. Un Semeur peut aussi y fonder un avant-poste, qui produit du minerai en continu sans jamais s’épuiser ; plus l’astéroïde est loin de la station, plus l’avant-poste produit.', tip: 'Gardez les gisements lointains pour les avant-postes et videz les plus proches avec vos drones.' },
+  comet: { name: 'Comète', what: 'Un noyau de glace qui dérive dans le secteur.', how: 'Même principe que l’astéroïde, mais pour la glace : extraction par Drones foreurs jusqu’à épuisement, ou avant-poste de Semeur pour une production continue.', tip: 'La glace est aussi votre carburant : une comète proche est précieuse si vous envoyez beaucoup de flottes.' },
+  wreck: { name: 'Épave', what: 'Les restes d’un ancien vaisseau, encore chargés de matière.', how: 'Des Drones foreurs récupèrent le minerai, la glace et parfois les données qu’elle contient. Une fois vidée, elle disparaît.', tip: 'Un bon objectif pour vos premiers drones : aucun combat, un butin sûr.' },
+  debris: { name: 'Champ de débris', what: 'Ce qui reste d’un combat ou d’un nid détruit.', how: 'Les vaisseaux détruits laissent 40 % de leur coût en minerai et en glace, et le butin d’un nid détruit s’y ajoute. Des Drones foreurs ramassent le tout, dans la limite de la soute.', tip: 'Après la chute d’un nid, revenez avec des drones et des Barges : les ruines valent souvent plus que le combat.' },
+  nest: { name: 'Nid corsaire', what: 'Une base des corsaires de la Faille, avec une garnison, un rempart et un butin.', how: 'Le chiffre rouge indique son niveau. Espionnez-le d’abord pour connaître sa garnison, puis attaquez-le avec des vaisseaux armés : il tombe quand garnison et rempart sont détruits. Un nid entamé se reconstitue peu à peu et continue d’amasser du butin.', tip: 'Espionnez, regardez la simulation, attaquez avec des Barges pour emporter le butin, puis récupérez les ruines.' },
+  rival: { name: 'Station rivale (IA)', what: 'Une colonie menée par une IA qui joue avec les mêmes règles que vous.', how: 'Elle construit mines, recherches, vaisseaux et défenses, sans jamais aller plus vite que vous. Vous pouvez l’espionner puis la piller : la moitié de ses réserves reste hors d’atteinte, et après 3 pillages dans la même période elle est protégée. Passé les 15 jours de protection, une station active peut riposter.', tip: 'Une station silencieuse ne reconstruit plus : c’est la cible la plus rentable du secteur.' },
+  anomaly: { name: 'Anomalie', what: 'Un signal inexpliqué, rempli de données à analyser.', how: 'Un Éclaireur qui l’explore en rapporte des données pour le Laboratoire. Une fois étudiée, l’anomalie ne rapporte plus rien.', tip: 'Étudiez-les tôt : ce sont des données gratuites pour vos premières recherches.' },
+  empty: { name: 'Vide spatial', what: 'Rien que du vide et de la poussière.', how: 'Aucune mission possible ici.', tip: 'Intéressez-vous plutôt aux cases voisines.' },
+  depleted: { name: 'Gisement épuisé', what: 'Un astéroïde ou une comète entièrement vidé par l’extraction.', how: 'Il n’y a plus rien à extraire ici.', tip: 'Les avant-postes, eux, ne s’épuisent jamais.' },
+  unknown: { name: 'Zone non cartographiée', what: 'Une case hors de portée de votre Antenne profonde, marquée d’un « ? ».', how: 'Un Éclaireur peut aller voir : la case et ses voisines sont alors révélées. Améliorer l’Antenne profonde élargit aussi la zone visible.', tip: 'Explorez en priorité vers les gisements : ce sont vos futurs avant-postes.' },
+};
+const MISSION_HELP = {
+  explore: 'Un Éclaireur révèle la case et ses voisines, et étudie une anomalie.',
+  extract: 'Des Drones foreurs chargent du minerai ou de la glace, autant que la soute de la flotte le permet.',
+  salvage: 'Des Drones foreurs ramassent l’épave ou les débris, dans la limite de la soute.',
+  spy: 'Des Éclaireurs rapportent garnison, défenses et réserves, pour que le simulateur estime vos chances.',
+  attack: 'Vos vaisseaux armés combattent ; en cas de victoire, la soute emporte le butin.',
+  outpost: 'Un Semeur fonde un avant-poste qui produit en continu, sans s’épuiser.',
+};
+function cellProfit(c, vis) {
+  const L = [], n = id => st.ships[id] || 0, kv = kvRow;
+  const xf = {}; if (n('drone')) xf.drone = n('drone'); if (n('hauler')) xf.hauler = n('hauler');
+  const haul = (left, unit) => {
+    if (!xf.drone) { L.push('<p class="inf-p">Fabriquez des Drones foreurs (et des Barges pour la soute) pour en profiter.</p>'); return; }
+    const cap = fleetCargo(xf), tr = travelMs(c.d, xf, 100);
+    L.push(kv('Votre flotte de récolte', listText(xf, SHIP)), kv('Par voyage', `${fmt(Math.min(cap, left))} ${unit}`), kv('Aller-retour', fmtDur(tr * 2)), kv('Carburant', `${fmt(fuelCost(xf, c.d, 100))} glace à pleine vitesse`), kv('Voyages pour tout vider', fmt(Math.ceil(left / Math.max(1, cap)))));
+  };
+  if (!vis) { L.push(kv('Distance', `${c.d} saut${c.d > 1 ? 's' : ''}`)); if (n('scout')) L.push(kv('Trajet d’un Éclaireur', fmtDur(travelMs(c.d, { scout: 1 }, 100)))); else L.push('<p class="inf-p">Fabriquez un Éclaireur pour l’explorer.</p>'); return L.join(''); }
+  if (c.type === 'asteroid' || c.type === 'comet') {
+    const k = c.type === 'asteroid' ? 'ore' : 'ice', left = c[k] || 0;
+    L.push(kv('Reste à extraire', `${fmt(left)} ${RES_NAME[k]}`)); haul(left, RES_NAME[k]);
+    const y = (c.type === 'asteroid' ? 200 : 150) * (1 + 0.3 * c.d) * (1 + 0.08 * tech(c.type === 'asteroid' ? 'deep' : 'cryo')) * st.speed;
+    L.push(kv(c.outpost ? 'Avant-poste installé' : 'Avec un avant-poste', `+${fmt(y)} ${RES_NAME[k]} par heure, sans fin`));
+  } else if (c.type === 'wreck' || c.type === 'debris') {
+    const tot = (c.ore || 0) + (c.ice || 0) + (c.data || 0);
+    L.push(kv('À récupérer', `${fmt(c.ore || 0)} minerai · ${fmt(c.ice || 0)} glace${c.data ? ' · ' + fmt(c.data) + ' données' : ''}`)); haul(tot, 'unités');
+  } else if (c.type === 'home') {
+    const tot = orbitTotal();
+    if (tot >= 1) { L.push(kv('Débris en orbite', `${fmt(st.orbit.ore)} minerai · ${fmt(st.orbit.ice)} glace`)); haul(tot, 'unités'); }
+    else L.push('<p class="inf-p">Rien en orbite pour l’instant. Les débris apparaissent après les combats autour de la station.</p>');
+  } else if (c.type === 'anomaly') {
+    L.push(kv('Données à rapporter', c.studied ? 'déjà étudiée' : `environ ${fmt(c.data)}`));
+    if (!c.studied && n('scout')) L.push(kv('Trajet d’un Éclaireur', fmtDur(travelMs(c.d, { scout: 1 }, 100))));
+  } else if (c.type === 'nest' || c.type === 'rival') {
+    const armed = {}; for (const k of ARMED) if (n(k)) armed[k] = n(k);
+    if (c.type === 'nest') L.push(kv('Niveau du nid', String(c.lvl)));
+    else { rivalTick(c, st.t); L.push(kv('Points de la station', fmt(rivalPts(c))), kv('État', c.silent ? 'silencieuse' : 'active')); }
+    if (!c.intel) L.push(`<p class="inf-p">Espionnez-${c.type === 'nest' ? 'le' : 'la'} d’abord pour connaître ses forces, son butin et vos chances.</p>`);
+    else {
+      if (c.type === 'nest') L.push(kv('Butin connu', fmt((c.intel.loot.ore || 0) + (c.intel.loot.ice || 0) + (c.intel.loot.data || 0))));
+      else { const pl = pillable(c, st.t, c.intel.stock); L.push(kv('Pillable', fmt(pl.ore + pl.ice + pl.data))); }
+      if (Object.keys(armed).length) { const r = simAttack(armed, c); if (r) L.push(kv('Vos chances avec toute la flotte armée', pct(r.win))); }
+      else L.push('<p class="inf-p">Il vous faut des vaisseaux armés (Lanciers, Corvettes, Gardiens) pour attaquer.</p>');
+    }
+  } else L.push('<p class="inf-p">Rien à gagner ici.</p>');
+  return L.join('');
+}
+function cellInfoSheet(k) {
+  const c = st.map[k]; if (!c) return '';
+  const vis = visible(c), type = vis ? c.type : 'unknown', I = CELL_INFO[type] || CELL_INFO.empty, ms = missionsFor(c);
+  const sec = (t, body) => `<section class="panel pnl inf-s"><div class="pnl-h"><h3>${t}</h3></div><div class="inf-b">${body}</div></section>`;
+  const can = ms.length ? ms.map(m => { const ok = missionReady(m); return `<div class="inf-m"><b>${MISSION[m].name}</b><span>${MISSION_HELP[m] || ''}</span><em class="${ok ? 'ok' : ''}">${ok ? 'Possible maintenant' : MISSION[m].hint}</em></div>`; }).join('') : '<p class="inf-p">Aucune mission possible ici pour l’instant.</p>';
+  return `${XBTN}<button class="tr-back" data-act="cell" data-k="${k}">‹ Retour à la case</button><div class="inf-head" style="--c:var(--${SITE_TONE[type] || 'vesper-2'})"><span class="inf-ico"><svg viewBox="-32 -32 64 64" class="inf-g" aria-hidden="true">${bodyGlyph(c, vis)}</svg></span><div><p class="eyebrow">Case ${c.q}:${c.r} · ${c.d ? c.d + ' saut' + (c.d > 1 ? 's' : '') : 'origine'}</p><h2>${esc(cellTitle(c))}</h2><p class="inf-lv">${I.name}</p></div></div>
+    ${sec('Qu’est-ce que c’est', `<p class="inf-p">${I.what}</p>`)}${sec('Fonctionnement', `<p class="inf-p">${I.how}</p>`)}${sec('Ce que vous pouvez faire ici', can)}${sec('Rentabilité', cellProfit(c, vis))}${sec('Conseil', `<p class="inf-p">${I.tip}</p>`)}`;
+}
+function lexSheet() {
+  const order = ['home', 'asteroid', 'comet', 'wreck', 'debris', 'nest', 'rival', 'anomaly', 'unknown', 'depleted', 'empty'];
+  const rows = order.map(t => { const I = CELL_INFO[t]; return `<div class="lex"><svg viewBox="-32 -32 64 64" class="lex-g" aria-hidden="true">${bodyGlyph({ type: t, lvl: 2, d: 1, silent: false, studied: false }, t !== 'unknown')}</svg><div><b>${I.name}</b><p>${I.what} ${I.how}</p></div></div>`; }).join('');
+  const mis = Object.keys(MISSION_HELP).map(m => `<div class="inf-m"><b>${MISSION[m].name}</b><span>${MISSION_HELP[m]}</span></div>`).join('');
+  return `${XBTN}<div class="sh-title"><h2>Lexique de la carte</h2><p class="eyebrow">Ce que représente chaque astre et ce que vos flottes peuvent y faire</p></div>
+    <div class="lex-l">${rows}</div><p class="hud-k">Les missions</p><div class="lex-l">${mis}</div>
+    <p class="inf-n">Touchez une case de la carte puis son « ? » pour les chiffres de votre partie : trajet, carburant, quantité par voyage, chances au combat.</p>`;
+}
 function infoSheet(kind, id) {
+  if (kind === 'cell') return cellInfoSheet(id);
+  if (kind === 'lex') return lexSheet();
   const sec = (t, body) => `<section class="panel pnl inf-s"><div class="pnl-h"><h3>${t}</h3></div><div class="inf-b">${body}</div></section>`;
   if (kind === 'res') {
     const I = INFO.res[id]; if (!I) return '';
