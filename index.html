@@ -546,6 +546,44 @@ button.toast{appearance:none;border:0;font:inherit;color:inherit;text-align:left
 .rk.silent .rk-t em{background:var(--ink-3)}
 .rk-p{font-family:var(--f-hud);font-size:17px;font-weight:700}
 
+/* couche moderne : départ, bouclier, détail de production, saisons */
+.sub-chip.wide{grid-column:1/-1}
+.sub-chip.on{background:rgba(168,85,247,.12);box-shadow:inset 0 0 0 1px var(--c),inset 3px 0 0 var(--c),0 0 14px rgba(168,85,247,.25)}
+.lv-list{display:grid;gap:6px}
+.lv{display:grid;gap:2px;padding:9px 12px;background:rgba(12,25,41,.85);box-shadow:inset 3px 0 0 var(--c),inset 0 0 0 1px color-mix(in oklab,var(--c) 28%,transparent)}
+.lv b{font-family:var(--f-hud);font-size:15px;color:var(--c)}
+.lv span{font-size:13px;color:var(--ink-2)}
+.lv-sh{display:grid;gap:8px;padding:12px}
+.lv-sh h3{margin:0;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--data)}
+.lv-sh p{margin:0;font-size:13px;color:var(--ink-2)}
+.rs-hint{margin:-4px 0 0;text-align:left}
+.rs-d{border-bottom:1px solid rgba(79,163,255,.14)}
+.rs-d summary{list-style:none;cursor:pointer;display:block;position:relative;padding-right:18px}
+.rs-d summary::-webkit-details-marker{display:none}
+.rs-d summary::after{content:"›";position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--ink-3);transition:transform .2s}
+.rs-d[open] summary::after{transform:translateY(-50%) rotate(90deg)}
+.rs-d summary .rs-row{border-bottom:0}
+.pb{display:grid;gap:3px;margin:0 0 10px 30px;padding:8px 10px;background:rgba(12,25,41,.85);box-shadow:inset 2px 0 0 var(--vesper-2)}
+.pb-l{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink-2)}
+.pb-l b{font-family:var(--f-hud);font-size:14px;color:var(--ok);white-space:nowrap}
+.pb-l.bad b{color:#FF8A8A}
+.pb-l.tot{padding-top:4px;margin-top:2px;border-top:1px solid var(--edge);color:var(--ink);font-weight:700}
+.pb-l.tot b{color:var(--ink)}
+.season{display:grid;gap:8px;padding:12px;box-shadow:inset 0 0 0 1px rgba(245,158,11,.35)}
+.ss-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ss-h h3{margin:0;font-family:var(--f-hud);font-size:20px;letter-spacing:.04em;text-transform:uppercase;color:var(--energy)}
+.ss-h span{font-size:12.5px;color:var(--ink-3)}
+.ss-bar{height:6px;background:rgba(255,255,255,.06)}
+.ss-bar i{display:block;height:100%;background:linear-gradient(90deg,#B45309,var(--energy));box-shadow:0 0 8px rgba(245,158,11,.5)}
+.season .hint-s{margin:0;text-align:left}
+.ss-rw,.ss-pal{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ss-rw li{display:grid;grid-template-columns:7.5em 1fr;gap:8px;font-size:13px;color:var(--ink-2)}
+.ss-rw b{font-family:var(--f-hud);color:var(--energy)}
+.ss-p{margin:4px 0 0;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.ss-pal li{display:grid;grid-template-columns:auto 1fr;gap:0 10px;padding:6px 8px;background:rgba(12,25,41,.85);font-size:13px}
+.ss-pal b{font-family:var(--f-hud);color:var(--energy)}
+.ss-pal em{grid-column:1/-1;font-style:normal;font-size:12px;color:var(--ink-3)}
+
 /* illustrations des bâtiments */
 .rpano{position:absolute;top:0;right:0;bottom:0;width:86%;z-index:0;pointer-events:none;background:center 62%/cover no-repeat;opacity:.7;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.28) 28%,rgba(0,0,0,.85) 62%,#000);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.28) 28%,rgba(0,0,0,.85) 62%,#000);transition:opacity .2s}
 .row.pano{background:var(--noise),linear-gradient(90deg,rgba(9,18,31,.96) 30%,rgba(9,18,31,.55)),var(--card);background-size:160px 160px,auto,auto}
@@ -634,6 +672,7 @@ function clock(t) { const d = new Date(t); return d.toLocaleTimeString('fr-FR', 
 
 /* ================= icônes ================= */
 const ICONS = {
+  moon: '<path d="M19 3.5A10.5 10.5 0 1 0 24.5 19 8.5 8.5 0 0 1 19 3.5z"/><path d="M22 6l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>',
   drill: '<path d="M8 4h12v5l-6 15-6-15z"/><path d="M8 9h12M11 14h6"/>',
   ice: '<path d="M14 3l9 5.5v11L14 25l-9-5.5v-11z"/><path d="M14 3v22M5 8.5l18 11M23 8.5l-18 11"/>',
   sail: '<path d="M14 2l10 12-10 12L4 14z"/><path d="M14 2v24M4 14h20"/>',
@@ -769,6 +808,28 @@ const MISSION = {
   expedition: { name: 'Expédition', need: 'any', hint: 'Requiert au moins un vaisseau à quai.' },
   shelter: { name: 'Mise à l’abri', need: 'any', hint: 'Aucun vaisseau à quai.' },
 };
+/* ---- bouclier de veille : protéger ses absences, avec un budget quotidien (temps réel) ---- */
+const SHIELD_BUDGET = 8 * HOUR, SHIELD_WIN = 24 * HOUR;
+function shieldOn(t) { return !!st && (st.shieldLog || []).some(([a, b]) => a <= t && b > t); }
+function shieldEnd(t) { const x = (st.shieldLog || []).find(([a, b]) => a <= t && b > t); return x ? x[1] : 0; }
+function shieldUsed(t) { let u = 0; for (const [a, b] of (st.shieldLog || [])) u += Math.max(0, b - Math.max(a, t - SHIELD_WIN)); return u; }
+function shieldLeft(t) { return Math.max(0, SHIELD_BUDGET - shieldUsed(t)); }
+function shieldStart(t, ms) {
+  const d = Math.min(ms, shieldLeft(t)); if (d < MIN || shieldOn(t)) return 0;
+  st.shieldLog = (st.shieldLog || []).filter(([, b]) => b > t - SHIELD_WIN); st.shieldLog.push([t, t + d]);
+  log('info', `Bouclier de veille activé jusqu’à ${clock(t + d)} : les raids seront déviés, la production tourne à 50 %.`);
+  return d;
+}
+function shieldOff(t) { const x = (st.shieldLog || []).find(([a, b]) => a <= t && b > t); if (x) x[1] = t; }
+/* ---- saisons : une durée fixe, un classement final, puis la partie continue ---- */
+const SEASON_DAYS = 14;
+const seasonLen = () => SEASON_DAYS * 24 * HOUR / st.speed;
+const SEASON_RW = [
+  { title: 'Phare de la Faille', ore: 8000, ice: 6000, data: 3000 },
+  { title: 'Étoile montante', ore: 5000, ice: 4000, data: 2000 },
+  { title: 'Station tenace', ore: 3000, ice: 2500, data: 1200 },
+  { title: 'Survivante', ore: 2000, ice: 1500, data: 800 },
+];
 /* ---- doctrines : la voie que suit la station ---- */
 const DOCTRINE = {
   forge: { name: 'Les Forges', tag: 'Voie industrielle', color: 'ore', icon: 'works', pitch: 'Produire plus, stocker mieux, transporter davantage.', perks: ['+20 % de minerai et de glace', '+40 % de soute pour les Drones foreurs et les Barges', '15 % du stock à l’abri des pillards, au lieu de 5 %'] },
@@ -882,13 +943,13 @@ function rates() {
   const eProd = MOD.sail.out(b.sail) * staff * (1 + 0.08 * tech('photon'));
   const eCons = MOD.drill.energy(b.drill) + MOD.ice.energy(b.ice) + MOD.lab.energy(b.lab);
   const eff = eCons > 0 ? Math.min(1, eProd / eCons) : 1;
-  const k = staff * eff;
+  const k = staff * eff, shM = shieldOn(st.t) ? 0.5 : 1;
   let oOre = 0, oIce = 0;
   for (const key of st.outk) { const c = st.map[key]; if (!c || !c.outpost) continue; const v = outpostYield(c); if (c.outpost === 'ore') oOre += v; else oIce += v; }
   return {
-    ore: (30 + MOD.drill.prod(b.drill) * k * (1 + 0.08 * tech('deep')) + oOre) * sp * (doc('forge') ? 1.2 : 1),
-    ice: (15 + MOD.ice.prod(b.ice) * k * (1 + 0.08 * tech('cryo')) + oIce) * sp * (doc('forge') ? 1.2 : 1),
-    data: MOD.lab.prod(b.lab) * k * sp,
+    ore: (30 + MOD.drill.prod(b.drill) * k * (1 + 0.08 * tech('deep')) + oOre) * sp * (doc('forge') ? 1.2 : 1) * shM,
+    ice: (15 + MOD.ice.prod(b.ice) * k * (1 + 0.08 * tech('cryo')) + oIce) * sp * (doc('forge') ? 1.2 : 1) * shM,
+    data: MOD.lab.prod(b.lab) * k * sp * shM,
     eProd, eCons, eff, staff, need, cap: MOD.hab.cap(b.hab) * (1 + 0.1 * tech('terra')), store: storeCap(),
   };
 }
@@ -1043,7 +1104,7 @@ function newGame() {
     tech: {}, ships: {}, def: {},
     q: { build: [], research: [], yard: [] },
     fleets: [], fid: 1,
-    map: addRivals(genMap(seed), seed, now), outk: [], rivalsInit: true, doctrine: null, docAt: 0,
+    map: addRivals(genMap(seed), seed, now), outk: [], rivalsInit: true, doctrine: null, docAt: 0, shieldLog: [], season: null, palmares: [],
     raid: null, log: [], quests: {}, reports: [], repId: 0, orbit: { ore: 0, ice: 0 },
     stats: { spent: 0, explored: 0, extracted: 0, raidsWon: 0, raidsLost: 0, nests: 0, outposts: 0, spied: 0, expeditions: 0, pillages: 0 }, intelInit: true,
     won: false, wonSeen: false,
@@ -1057,6 +1118,8 @@ function migrate(s) {
   s.q.build = s.q.build || []; s.q.research = s.q.research || []; s.q.yard = s.q.yard || [];
   s.fleets = s.fleets || []; s.log = s.log || []; s.outk = s.outk || [];
   if (!s.map) s.map = genMap(s.seed || 1);
+  s.shieldLog = s.shieldLog || []; s.palmares = s.palmares || [];
+  if (!s.season && s.founded) s.season = { n: 1, start: s.t || Date.now() };
   if (!s.rivalsInit) { addRivals(s.map, s.seed || 1, s.t || Date.now()); s.rivalsInit = true; }
   if (!s.intelInit) { // les nids déjà en vue restent connus après la mise à jour
     for (const k in s.map) { const c = s.map[k]; if (c.type === 'nest' && c.garrison && !c.intel && (c.known || c.d <= 1 + ((s.b && s.b.radar) || 0))) c.intel = { t: s.t || Date.now(), garrison: { ...c.garrison }, loot: { ...c.loot }, lvl: c.lvl }; }
@@ -1081,6 +1144,7 @@ function nextEvent() {
   const y = st.q.yard[0]; if (y) { const tt = y.start + (y.done + 1) * y.each; if (tt < t) { t = tt; kind = 'yard'; } }
   for (const f of st.fleets) { const tt = f.phase === 'out' ? f.arrive : f.back; if (tt < t) { t = tt; kind = 'fleet'; ref = f; } }
   if (st.raid && st.raid.at < t) { t = st.raid.at; kind = 'raid'; }
+  if (st.season) { const se = st.season.start + seasonLen(); if (se < t) { t = se; kind = 'season'; } }
   return { t, kind, ref };
 }
 function advanceTo(T) {
@@ -1111,8 +1175,10 @@ function handle(ev) {
     if (y.done >= y.n) { st.q.yard.shift(); log('yard', `${DEF[y.id] ? 'Défense en place' : 'Livraison du chantier'} : ${fmt(y.n)} ${unitName(y.id, y.n)}.`); fxDone(unitKind(y.id), y.id, y.n); if (st.q.yard[0]) st.q.yard[0].start = t; }
   } else if (ev.kind === 'fleet') {
     if (ev.ref.phase === 'out') fleetArrive(ev.ref, t); else fleetHome(ev.ref, t);
+  } else if (ev.kind === 'season') {
+    endSeason(t);
   } else if (ev.kind === 'raid') {
-    resolveRaid(); scheduleRaid(t);
+    if (shieldOn(t)) deflectRaid(); else resolveRaid(); scheduleRaid(t);
   }
 }
 
@@ -1221,6 +1287,20 @@ function scheduleRaid(from) {
   const gap = (35 + 40 * rnd()) * MIN / st.speed;
   const P = (60 + 7 * Math.pow(score(), 0.9)) * (1 + 0.08 * aliveNests()) * (0.8 + 0.4 * rnd());
   st.raid = { at: from + gap, comp: corsairComp(P, rnd) };
+}
+function deflectRaid() {
+  const c = st.raid.rival && st.map[st.raid.rival];
+  st.raid = null; st.stats.deflected = (st.stats.deflected || 0) + 1;
+  log('raid', `Le bouclier de veille a dévié ${c ? 'les représailles de la station ' + c.name : 'un raid corsaire'} : aucun combat, rien de pillé.`);
+}
+function endSeason(t) {
+  const L = rankList(), rank = L.findIndex(x => x.me) + 1, pts = myPoints().total, base = SEASON_RW[Math.min(rank, SEASON_RW.length) - 1], m = 1 + pts / 300;
+  const rw = { ore: Math.round(base.ore * m), ice: Math.round(base.ice * m), data: Math.round(base.data * m) };
+  st.res.ore += rw.ore; st.res.ice += rw.ice; st.res.data += rw.data;
+  const rec = { n: st.season.n, end: t, rank, of: L.length, pts: Math.round(pts), title: base.title, rw };
+  (st.palmares = st.palmares || []).unshift(rec);
+  log('quest', `Fin de la saison ${rec.n} : ${rankTxt(rank)} sur ${L.length} avec ${fmt(pts)} points. Titre « ${base.title} », et ${fmt(rw.ore)} minerai, ${fmt(rw.ice)} glace, ${fmt(rw.data)} données en récompense.`);
+  st.season = { n: rec.n + 1, start: t }; st.seasonNew = rec.n;
 }
 function resolveRaid() {
   const raid = st.raid; st.raid = null;
@@ -1522,6 +1602,7 @@ function launch() {
   const c = cellOf(fc.k), plan = fcPlan(), ships = {};
   for (const k in fc.sel) if (fc.sel[k] > 0) { ships[k] = fc.sel[k]; st.ships[k] -= fc.sel[k]; }
   st.res.ice -= plan.fuel;
+  if (fc.m === 'attack' && shieldOn(st.t)) { shieldOff(st.t); log('info', 'Bouclier de veille coupé : la station est passée à l’attaque.'); }
   const f = { id: st.fid++, ships, m: fc.m, k: fc.k, depart: st.t, arrive: st.t + plan.travel + plan.hold, dur: plan.travel, phase: 'out', cargo: {}, pct: fc.pct, fuel: plan.fuel };
   if (fc.m === 'expedition') f.hold = fc.hold;
   st.fleets.push(f);
@@ -1540,7 +1621,7 @@ function recall(id) {
 function found(name, speed) {
   const now = Date.now();
   st.name = (name || '').trim().slice(0, 24) || 'Kestrel-7';
-  st.speed = speed; st.created = now; st.t = now; st.founded = true;
+  st.speed = speed; st.created = now; st.t = now; st.founded = true; st.season = { n: 1, start: now };
   st.raid = { at: now + 40 * MIN / speed, comp: corsairComp(70, rnd) };
   log('info', `La station ${st.name} est fondée en orbite de Vesper. Les corsaires de la Faille rôdent : préparez vos défenses.`);
 }
@@ -2270,6 +2351,7 @@ function refreshFc(setInputs) {
       else lines.push('<span class="bad">Garnison inconnue : espionnez d’abord ce nid pour connaître vos chances.</span>');
     }
   }
+  if (fc.m === 'attack' && shieldOn(st.t)) lines.push('<span class="bad">Lancer cet assaut coupe votre bouclier de veille.</span>');
   if (!chk.ok && chk.msg) lines.push(`<span class="bad">${chk.msg}</span>`);
   const sum = $('#fc-sum'); if (sum) sum.innerHTML = lines.map(l => `<span>${l}</span>`).join('') || '<span>Choisissez vos vaisseaux.</span>';
   const go = $('#fc-go'); if (go) go.disabled = !chk.ok;
@@ -2337,7 +2419,8 @@ function alertsHtml(r) {
   if (r.staff < 1) a.push(['hab', 'pop', `Pas assez de colons : postes pourvus à <b>${pct(r.staff)}</b>. Agrandissez l’Habitat.`]);
   if (st.res.ore >= r.store * 0.999 || st.res.ice >= r.store * 0.999) a.push(['depot', 'ore', 'Entrepôt plein : la production s’arrête. Agrandissez l’Entrepôt.']);
   let x = '';
-  if (threatVisible()) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>${raidName()} : arrivée dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
+  if (shieldOn(st.t)) x += `<button class="alert" data-act="leave" style="--c:var(--data)"><span class="dot"></span><span>Bouclier de veille actif jusqu’à <b>${clock(shieldEnd(st.t))}</b> : aucun raid ne passera, la production tourne à 50 %.</span></button>`;
+  if (threatVisible() && !shieldOn(st.raid.at)) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>${raidName()} : arrivée dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
   if (orbitTotal() >= 1) x += `<button class="alert" data-act="cell" data-k="${homeKey()}" style="--c:var(--ore)"><span class="dot"></span><span>Débris en orbite : <b>${fmtS(st.orbit.ore)}</b> minerai et <b>${fmtS(st.orbit.ice)}</b> glace. Envoyez des Drones foreurs les ramasser.</span></button>`;
   return x + a.map(([id, col, t]) => `<button class="alert" data-act="item" data-kind="mod" data-id="${id}" style="--c:var(--${col})"><span class="dot"></span><span>${t}</span></button>`).join('');
 }
@@ -2376,7 +2459,7 @@ const VIEWS = {
     const ids = seg.station === 'inst' ? INST : PROD;
     const d = DOCTRINE[st.doctrine], L = rankList(), rk = L.findIndex(x => x.me) + 1;
     return `<div class="vh"><h1>${esc(st.name)}</h1><span>${fmt(myPoints().total)} pts · Vesper ${pct(lumAt(lvl('beacon')))}</span>${GEAR}</div>
-      <div class="vh-sub"><button class="sub-chip${d ? '' : ' todo'}" data-act="doctrine" style="--c:var(--${d ? d.color : 'energy'})">${svg(d ? d.icon : 'beacon')}<span>Doctrine</span><b>${d ? d.name : 'À choisir'}</b></button><button class="sub-chip" data-act="ranking" style="--c:var(--vesper-2)">${svg('sheet')}<span>Classement</span><b>${rankTxt(rk)} sur ${L.length}</b></button></div>
+      <div class="vh-sub"><button class="sub-chip${d ? '' : ' todo'}" data-act="doctrine" style="--c:var(--${d ? d.color : 'energy'})">${svg(d ? d.icon : 'beacon')}<span>Doctrine</span><b>${d ? d.name : 'À choisir'}</b></button><button class="sub-chip" data-act="ranking" style="--c:var(--vesper-2)">${svg('sheet')}<span>Classement</span><b>${rankTxt(rk)} sur ${L.length}</b></button>${leaveBtn()}</div>
       ${cur ? `<button class="quest" data-act="quest-go"><span class="quest-k">Objectif</span><span class="quest-t">${cur.title}</span><span class="quest-d">${cur.text}</span><span class="quest-go">${curTarget() ? 'Y aller' : 'Voir'}</span></button>` : ''}
       <div id="alerts">${alertsHtml(r)}</div>
       ${segsHtml('station', [['prod', 'Production'], ['inst', 'Installations']])}
@@ -2432,16 +2515,21 @@ function activitySheet() {
 function openRes() { advanceTo(Date.now()); openModal('res', resSheet()); }
 function resSheet(r) {
   r = r || rates();
-  const line = (k, name, val, sub, warn) => `<div class="rs-row" style="--c:var(--${k})">${ri(k)}<span class="rs-n">${name}</span><span class="rs-v">${val}</span><span class="rs-s${warn ? ' warn' : ''}">${sub}</span></div>`;
+  const row = (k, name, val, sub, warn) => `<span class="rs-row" style="--c:var(--${k})">${ri(k)}<span class="rs-n">${name}</span><span class="rs-v">${val}</span><span class="rs-s${warn ? ' warn' : ''}">${sub}</span></span>`;
+  const block = (k, head, kind, total, unit) => {
+    const L = prodLines(kind);
+    return `<details class="rs-d"><summary>${head}</summary><div class="pb">${L.map(([l, v, c]) => `<div class="pb-l${c ? ' ' + c : ''}"><span>${l}</span><b>${v >= 0 ? '+' : '−'}${fmt(Math.abs(v))}</b></div>`).join('')}<div class="pb-l tot"><span>Total</span><b>${total >= 0 ? '' : '−'}${fmt(Math.abs(total))}${unit}</b></div></div></details>`;
+  };
   return `${XBTN}<div class="sh-title"><h2>Ressources</h2><p class="eyebrow">Production par heure · vitesse ×${st.speed}</p></div>
+    <p class="hint-s rs-hint">Touchez une ressource pour voir d’où vient sa production.</p>
     <div class="rs">
-      ${line('ore', 'Minerai', `${fmt(st.res.ore)} / ${fmtS(r.store)}`, `+${fmt(r.ore)} par heure`, st.res.ore >= r.store * 0.999)}
-      ${line('ice', 'Glace', `${fmt(st.res.ice)} / ${fmtS(r.store)}`, `+${fmt(r.ice)} par heure`, st.res.ice >= r.store * 0.999)}
-      ${line('data', 'Données', fmt(st.res.data), `+${fmt(r.data)} par heure, sans limite de stock`)}
-      ${line('energy', 'Énergie', `${fmt(r.eCons)} / ${fmt(r.eProd)}`, r.eff < 1 ? `Il manque de l’énergie : production à ${pct(r.eff)}` : `Surplus de ${fmt(r.eProd - r.eCons)}`, r.eff < 1)}
-      ${line('pop', 'Colons', `${fmt(st.pop)} / ${fmt(r.cap)}`, r.staff < 1 ? `Postes pourvus à ${pct(r.staff)} (${fmt(Math.ceil(r.need))} requis)` : `${fmt(Math.ceil(r.need))} au travail`, r.staff < 1)}
+      ${block('ore', row('ore', 'Minerai', `${fmt(st.res.ore)} / ${fmtS(r.store)}`, `+${fmt(r.ore)} par heure`, st.res.ore >= r.store * 0.999), 'ore', r.ore, ' /h')}
+      ${block('ice', row('ice', 'Glace', `${fmt(st.res.ice)} / ${fmtS(r.store)}`, `+${fmt(r.ice)} par heure`, st.res.ice >= r.store * 0.999), 'ice', r.ice, ' /h')}
+      ${block('data', row('data', 'Données', fmt(st.res.data), `+${fmt(r.data)} par heure, sans limite de stock`), 'data', r.data, ' /h')}
+      ${block('energy', row('energy', 'Énergie', `${fmt(r.eCons)} / ${fmt(r.eProd)}`, r.eff < 1 ? `Il manque de l’énergie : production à ${pct(r.eff)}` : `Surplus de ${fmt(r.eProd - r.eCons)}`, r.eff < 1), 'energy', r.eProd - r.eCons, r.eff < 1 ? ' (déficit)' : ' de surplus')}
+      ${row('pop', 'Colons', `${fmt(st.pop)} / ${fmt(r.cap)}`, r.staff < 1 ? `Postes pourvus à ${pct(r.staff)} (${fmt(Math.ceil(r.need))} requis)` : `${fmt(Math.ceil(r.need))} au travail`, r.staff < 1)}
     </div>
-    <div class="chips"><span class="chip">À l’abri des pillards <b>${fmt(protectedAmt())}</b></span><span class="chip">Avant-postes <b>${st.outk.length}/${maxOutposts()}</b></span></div>`;
+    <div class="chips"><span class="chip">À l’abri des pillards <b>${fmt(protectedAmt())}</b></span><span class="chip">Avant-postes <b>${st.outk.length}/${maxOutposts()}</b></span>${st.doctrine ? `<span class="chip">Doctrine <b>${DOCTRINE[st.doctrine].name}</b></span>` : ''}${shieldOn(st.t) ? '<span class="chip">Bouclier <b>−50 %</b></span>' : ''}</div>`;
 }
 function openCell(k) {
   if (!st.map[k]) return;
@@ -2571,9 +2659,99 @@ function rankingHtml() {
   const L = rankList(), me = myPoints(), max = Math.max(1, ...L.map(x => x.pts));
   const rows = L.map((x, i) => `<button class="rk${x.me ? ' me' : ''}${x.silent ? ' silent' : ''}" ${x.me ? 'data-act="tab" data-id="station"' : `data-act="cell" data-k="${x.k}"`}><span class="rk-n">${i + 1}</span><span class="rk-t"><b>${esc(x.name)}</b><span>${x.me ? 'Vous' : `Station ${RIVAL_PERS[x.pers].name} · ${x.silent ? 'silencieuse' : 'active'}`}</span><i><em style="width:${(x.pts / max * 100).toFixed(1)}%"></em></i></span><span class="rk-p">${fmt(x.pts)}</span></button>`).join('');
   const pt = (l, v, col) => `<div class="pt" style="--c:var(--${col})"><span>${l}</span><b>${fmt(v)}</b></div>`;
-  return `<section class="panel rk-me"><h3>Vos points</h3><div class="pts">${pt('Économie', me.econ, 'ore')}${pt('Recherche', me.res, 'data')}${pt('Militaire', me.mil, 'danger')}</div><p class="hint-s">Un point pour 1 000 unités investies (les données comptent triple). Les vaisseaux et défenses perdus ne comptent plus.</p></section>
+  return `${seasonHtml()}<section class="panel rk-me"><h3>Vos points</h3><div class="pts">${pt('Économie', me.econ, 'ore')}${pt('Recherche', me.res, 'data')}${pt('Militaire', me.mil, 'danger')}</div><p class="hint-s">Un point pour 1 000 unités investies (les données comptent triple). Les vaisseaux et défenses perdus ne comptent plus.</p></section>
     <div class="list rk-list">${rows}</div>
     <p class="hint-s">Une station silencieuse ne progresse plus et ne remplace plus ses pertes : ses réserves s’accumulent, c’est une cible de choix.</p>`;
+}
+function leaveBtn() {
+  const on = shieldOn(st.t);
+  return `<button class="sub-chip wide${on ? ' on' : ''}" data-act="leave" style="--c:var(--${on ? 'data' : 'ice'})">${svg('moon')}<span>${on ? 'Bouclier de veille actif' : 'Avant de partir'}</span><b>${on ? 'Jusqu’à ' + clock(shieldEnd(st.t)) : 'Prévisions, bouclier et mise à l’abri'}</b></button>`;
+}
+let leaveH = 8;
+function openLeave() { advanceTo(Date.now()); openModal('leave', leaveSheet()); }
+function leaveSheet() {
+  const t = st.t, D = leaveH * HOUR, r = rates(), on = shieldOn(t), left = shieldLeft(t), end = shieldEnd(t), covered = on && end >= t + D;
+  const nRaids = Math.round(D / (55 * MIN / st.speed)), sm = simRaid(), hold = sm ? 1 - sm.win : 1;
+  const prot = protectedAmt(), exp = { ore: Math.floor(Math.max(0, st.res.ore - prot) * 0.3), ice: Math.floor(Math.max(0, st.res.ice - prot) * 0.3) };
+  const civ = sm ? Object.keys(sm.lossD).filter(k => SHIP[k] && sm.lossD[k] >= 0.5).map(k => `${fmt(sm.lossD[k])} ${unitLabel(k, Math.round(sm.lossD[k]))}`).join(', ') : '';
+  const items = [];
+  if (covered) items.push(['ok', 'Raids', `Bouclier actif jusqu’à ${clock(end)} : aucun raid ne vous atteindra pendant votre absence.`]);
+  else {
+    items.push([hold >= 0.75 ? 'ok' : hold >= 0.4 ? 'energy' : 'danger', `Raids : ${nRaids >= 1 ? 'environ ' + nRaids : 'moins d’un'} pendant votre absence`, `Chances de tenir face au prochain : ${pct(hold)}.${civ ? ' Pertes probables à quai : ' + civ + '.' : ''}`]);
+    if (exp.ore + exp.ice > 0) items.push([hold >= 0.75 ? 'energy' : 'danger', 'Butin exposé', `Si un raid perce : jusqu’à ${fmt(exp.ore)} minerai et ${fmt(exp.ice)} glace emportés. ${fmt(prot)} de chaque restent à l’abri.`]);
+  }
+  for (const k of ['ore', 'ice']) if (r[k] > 0) { const tf = (r.store - st.res[k]) / r[k] * HOUR; if (tf < D) items.push(['energy', `Entrepôt plein ${tf <= 0 ? 'dès maintenant' : 'dans ' + fmtDur(tf)}`, `La production de ${RES_NAME[k]} s’arrêtera ensuite : agrandissez l’Entrepôt ou dépensez avant de partir.`]); }
+  const qEnd = (q, f) => q.length ? q.slice(1).reduce((e, j) => e + f(j.cost), q[0].end) : t;
+  const bE = qEnd(st.q.build, bTime), rE = qEnd(st.q.research, rTime);
+  if (bE < t + D) items.push(['energy', st.q.build.length ? `Constructions finies à ${clock(bE)}` : 'Aucune construction en cours', 'La file restera vide ensuite : ajoutez des chantiers avant de partir.']);
+  if (lvl('lab') && rE < t + D) items.push(['energy', st.q.research.length ? `Recherches finies à ${clock(rE)}` : 'Aucune recherche en cours', 'Le Laboratoire restera inactif ensuite.']);
+  if (items.length === 1 && items[0][0] === 'ok') items.push(['ok', 'Tout est prêt', 'Rien d’autre à prévoir : bon voyage.']);
+  const docked = SHIP_ORDER.some(k => st.ships[k] > 0);
+  const shBtn = on ? `<button class="btn block" data-act="shield-off">Couper le bouclier (actif jusqu’à ${clock(end)})</button>`
+    : left >= MIN ? `<button class="btn block primary" data-act="shield-on">Activer le bouclier jusqu’à ${clock(t + Math.min(D, left))}</button>` : '<button class="btn block" disabled>Bouclier épuisé pour aujourd’hui</button>';
+  return `${XBTN}<div class="sh-title"><h2>Avant de partir</h2><p class="eyebrow">Ce qui peut arriver pendant votre absence</p></div>
+    <p class="hud-k">Je reviens dans</p>
+    <div class="segs fc-opt" role="group">${[1, 4, 8, 12].map(h => `<button type="button" data-act="leave-h" data-v="${h}" aria-pressed="${leaveH === h}">${h} h</button>`).join('')}</div>
+    <div class="lv-list">${items.map(([c, h, p]) => `<div class="lv" style="--c:var(--${c})"><b>${h}</b><span>${p}</span></div>`).join('')}</div>
+    <section class="panel lv-sh"><h3>Bouclier de veille</h3><p>Tant qu’il est actif, les raids sont déviés sans combat, mais la production tourne à 50 %. Lancer un assaut le coupe. Budget : ${fmtDur(SHIELD_BUDGET)} par période de 24 h, il vous en reste <b>${fmtDur(left)}</b>.</p>${shBtn}</section>
+    ${docked ? `<button class="btn block" data-act="leave-shelter">Mettre la flotte à l’abri jusqu’à ${clock(t + D)}</button>` : ''}`;
+}
+function quickShelter(h) {
+  const sel = {}; for (const id of SHIP_ORDER) if (st.ships[id] > 0) sel[id] = st.ships[id];
+  fc = { k: '@abri', m: 'shelter', sel, pct: 100, hold: 0, ret: String(h) };
+  const ok = launch(); fc = null; return ok;
+}
+/* ---- d'où vient la production ---- */
+function prodLines(kind) {
+  const b = st.b, sp = st.speed, r = rates(), k = r.staff * r.eff, shM = shieldOn(st.t) ? 0.5 : 1, L = [];
+  if (kind === 'data') {
+    const raw = MOD.lab.prod(b.lab) * sp;
+    if (!b.lab) return [['Laboratoire non construit', 0]];
+    L.push([`Laboratoire niveau ${b.lab}`, raw]);
+    if (k < 1) L.push([`Colons et énergie (${pct(k)} d’efficacité)`, raw * (k - 1), 'bad']);
+    if (shM < 1) L.push(['Bouclier de veille (−50 %)', -raw * k * 0.5, 'bad']);
+    return L;
+  }
+  if (kind === 'energy') {
+    const raw = MOD.sail.out(b.sail);
+    L.push([`Voile solaire niveau ${b.sail}`, raw]);
+    if (r.staff < 1) L.push([`Colons à l’entretien (${pct(r.staff)})`, raw * (r.staff - 1), 'bad']);
+    if (tech('photon')) L.push([`${TECH.photon.name} niveau ${tech('photon')} (+${8 * tech('photon')} %)`, raw * r.staff * 0.08 * tech('photon')]);
+    for (const id of ['drill', 'ice', 'lab']) if (b[id]) L.push([`Consommation : ${MOD[id].name}`, -MOD[id].energy(b[id]), 'bad']);
+    return L;
+  }
+  const ore = kind === 'ore', mod = ore ? 'drill' : 'ice', tk = ore ? 'deep' : 'cryo', base = ore ? 30 : 15;
+  const raw = MOD[mod].prod(b[mod]) * sp; let o = 0, no = 0;
+  for (const key of st.outk) { const c = st.map[key]; if (c && c.outpost === kind) { o += outpostYield(c); no++; } }
+  L.push([`${MOD[mod].name} niveau ${b[mod]}`, raw]);
+  if (k < 1) L.push([`Colons et énergie (${pct(k)} d’efficacité)`, raw * (k - 1), 'bad']);
+  if (tech(tk)) L.push([`${TECH[tk].name} niveau ${tech(tk)} (+${8 * tech(tk)} %)`, raw * k * 0.08 * tech(tk)]);
+  L.push(['Base de la station', base * sp]);
+  if (o) L.push([`Avant-postes (${no})`, o * sp]);
+  const sub = (base + MOD[mod].prod(b[mod]) * k * (1 + 0.08 * tech(tk)) + o) * sp, docM = doc('forge') ? 1.2 : 1;
+  if (docM > 1) L.push(['Doctrine Les Forges (+20 %)', sub * 0.2]);
+  if (shM < 1) L.push(['Bouclier de veille (−50 %)', -sub * docM * 0.5, 'bad']);
+  return L;
+}
+/* ---- saisons ---- */
+function seasonHtml() {
+  if (!st.season) return '';
+  const a = st.season.start, b = a + seasonLen(), p = clamp01((st.t - a) / (b - a));
+  const day = d => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  const rw = SEASON_RW.map((x, i) => `<li><b>${i === SEASON_RW.length - 1 ? rankTxt(i + 1) + ' et au-delà' : rankTxt(i + 1)}</b><span>${x.title}</span></li>`).join('');
+  const pal = (st.palmares || []).slice(0, 6).map(x => `<li><span>Saison ${x.n}</span><b>${rankTxt(x.rank)} sur ${x.of}</b><em>${esc(x.title)} · ${fmt(x.pts)} pts</em></li>`).join('');
+  return `<section class="panel season"><div class="ss-h"><h3>Saison ${st.season.n}</h3><span>fin le ${day(b)} à ${clock(b)}</span></div>
+    <div class="ss-bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>
+    <p class="hint-s">Encore <b data-eta="${b}"></b>. À la fin, votre rang entre au palmarès avec une récompense, puis la saison suivante commence : votre partie continue.</p>
+    <ul class="ss-rw">${rw}</ul>${pal ? `<h3 class="ss-p">Palmarès</h3><ul class="ss-pal">${pal}</ul>` : ''}</section>`;
+}
+function openSeasonEnd() {
+  const rec = (st.palmares || [])[0]; st.seasonNew = 0; scheduleSave(); if (!rec) return;
+  openModal('season', `<div class="sheet-art bright" aria-hidden="true"></div><div class="sheet-h"><p class="eyebrow">Fin de la saison ${rec.n}</p><h2>${rankTxt(rec.rank)} sur ${rec.of}</h2></div>
+    <p class="lede">Titre obtenu : « ${esc(rec.title)} », avec ${fmt(rec.pts)} points.</p>
+    <div class="chips"><span class="chip"><b>+${fmt(rec.rw.ore)}</b> minerai</span><span class="chip"><b>+${fmt(rec.rw.ice)}</b> glace</span><span class="chip"><b>+${fmt(rec.rw.data)}</b> données</span></div>
+    <p class="muted">La saison ${rec.n + 1} commence. Les stations rivales, elles, continuent de grandir.</p>
+    <div class="sheet-actions one"><button class="btn primary" data-act="close">Continuer</button></div>`);
 }
 function openReport(id) {
   advanceTo(Date.now());
@@ -2605,6 +2783,7 @@ function refreshSheet() {
   else if (modalKind === 'activity') html = activitySheet();
   else if (modalKind === 'cell' && sel) html = cellSheet();
   else if (modalKind === 'doctrine') html = doctrineSheet();
+  else if (modalKind === 'leave') html = leaveSheet();
   if (html == null) return;
   const top = sh.scrollTop; sh.innerHTML = html; sh.scrollTop = top; paintThumbs();
 }
@@ -2896,7 +3075,7 @@ function updateDynamic() {
   const rp = document.getElementById('r-pop'); if (rp) rp.classList.toggle('warn', r.staff < 1);
   floaters(r);
   const al = document.getElementById('alerts'); if (al) { const h = alertsHtml(r); if (al._h !== h) { al.innerHTML = h; al._h = h; } }
-  if (modalKind === 'res') { const s = $('#sheet'), h = resSheet(r); if (s._h !== h) { s.innerHTML = h; s._h = h; } }
+  if (modalKind === 'res') { const s = $('#sheet'), h = resSheet(r); if (s._h !== h) { const open = [...s.querySelectorAll('details.rs-d')].map(d => d.open); s.innerHTML = h; s._h = h; s.querySelectorAll('details.rs-d').forEach((d, i) => { d.open = !!open[i]; }); } }
   for (const el of $$('[data-eta]')) setText2(el, fmtDur(+el.dataset.eta - now));
   for (const el of $$('[data-short]')) setText2(el, fmtShort(+el.dataset.short - now));
   for (const el of $$('[data-prog]')) { const [a, b] = el.dataset.prog.split(',').map(Number); el.style.width = clamp01((now - a) / (b - a)) * 100 + '%'; }
@@ -2963,6 +3142,11 @@ document.addEventListener('click', e => {
     case 'cell': openCell(el.dataset.k); break;
     case 'report': openReport(el.dataset.id); break;
     case 'doctrine': openDoctrine(); break;
+    case 'leave': openLeave(); break;
+    case 'leave-h': leaveH = +el.dataset.v; if (modalKind === 'leave') $('#sheet').innerHTML = leaveSheet(); break;
+    case 'shield-on': act(() => shieldStart(st.t, leaveH * HOUR)); if (modalKind === 'leave') $('#sheet').innerHTML = leaveSheet(); break;
+    case 'shield-off': act(() => { shieldOff(st.t); log('info', 'Bouclier de veille coupé.'); }); if (modalKind === 'leave') $('#sheet').innerHTML = leaveSheet(); break;
+    case 'leave-shelter': act(() => quickShelter(leaveH)); if (modalKind === 'leave') $('#sheet').innerHTML = leaveSheet(); break;
     case 'adopt': act(() => adoptDoctrine(id)); if (modalKind === 'doctrine') $('#sheet').innerHTML = doctrineSheet(); break;
     case 'ranking': seg.journal = 'rank'; if (tab !== 'journal') setTab('journal'); else { renderView(true); updateDynamic(); } break;
     case 'mission': openFleet(el.dataset.k, el.dataset.m); break;
@@ -3021,6 +3205,7 @@ function tick() {
   if (ver !== v0) scheduleSave();
   if (dirty || pendingView) flush(); else updateDynamic();
   if (st.won && !st.wonSeen && !modalKind) openVictory();
+  if (st.seasonNew && !modalKind) openSeasonEnd();
 }
 function catchUp(report) {
   const from = st.t, now = Date.now();
