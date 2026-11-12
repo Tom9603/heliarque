@@ -508,6 +508,44 @@ button.toast{appearance:none;border:0;font:inherit;color:inherit;text-align:left
 .fl-act span{font-size:12px;color:var(--ink-2)}
 .fl-act:disabled{opacity:.45;cursor:default}
 
+/* empire : doctrine, classement */
+.vh-sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sub-chip{appearance:none;display:grid;grid-template-columns:22px 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;padding:8px 10px;border:0;cursor:pointer;color:var(--ink);background:rgba(12,25,41,.85);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--c) 45%,transparent),inset 3px 0 0 var(--c);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.sub-chip svg{grid-row:span 2;width:22px;height:22px;fill:none;stroke:var(--c);stroke-width:1.8}
+.sub-chip span{font-family:var(--f-hud);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.sub-chip b{font-family:var(--f-hud);font-size:15px;font-weight:700;color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-chip.todo{animation:pulse 1.6s ease-in-out infinite}
+.docs{display:grid;gap:10px}
+.docc{display:grid;gap:8px;padding:12px;background:var(--noise),linear-gradient(180deg,color-mix(in oklab,var(--c) 16%,rgba(12,25,41,.9)),rgba(9,18,31,.95));background-size:160px 160px,auto;box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--c) 40%,transparent);clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.docc.cur{box-shadow:inset 0 0 0 2px var(--c),0 0 18px color-mix(in oklab,var(--c) 35%,transparent)}
+.docc-h{display:flex;gap:10px;align-items:center}
+.docc-i{width:40px;height:40px;flex:none;display:grid;place-items:center;background:color-mix(in oklab,var(--c) 18%,transparent);box-shadow:inset 0 0 0 1px var(--c)}
+.docc-i svg{width:26px;height:26px;fill:none;stroke:var(--c);stroke-width:1.8}
+.docc h3{margin:0;font-size:20px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--c)}
+.docc .eyebrow{margin:0}
+.docc-p{margin:0;font-size:13px;color:var(--ink-2);font-style:italic}
+.docc ul{margin:0;padding:0 0 0 18px;display:grid;gap:3px;font-size:13.5px}
+.docc li::marker{color:var(--c)}
+.docc-cur{margin:0;font-family:var(--f-hud);font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c);text-align:center}
+.rk-me{display:grid;gap:8px;padding:10px 12px}
+.rk-me h3{margin:0;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.pts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pt{display:grid;gap:1px;padding:6px 8px;background:rgba(12,25,41,.85);box-shadow:inset 0 2px 0 var(--c)}
+.pt span{font-size:11.5px;color:var(--ink-3)}
+.pt b{font-family:var(--f-hud);font-size:18px;color:var(--c)}
+.rk{appearance:none;width:100%;display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;text-align:left;padding:9px 12px;border:0;cursor:pointer;color:var(--ink);background:rgba(12,25,41,.85);box-shadow:inset 0 0 0 1px var(--edge)}
+.rk.me{box-shadow:inset 0 0 0 1px var(--vesper-2),inset 3px 0 0 var(--vesper-2);background:rgba(0,229,255,.07)}
+.rk.silent{opacity:.8}
+.rk-n{font-family:var(--f-hud);font-size:22px;font-weight:700;color:var(--ink-3);text-align:center}
+.rk.me .rk-n{color:var(--vesper-2)}
+.rk-t{display:grid;gap:2px;min-width:0}
+.rk-t b{font-family:var(--f-hud);font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-t span{font-size:12px;color:var(--ink-3)}
+.rk-t i{display:block;height:4px;background:rgba(255,255,255,.06)}
+.rk-t em{display:block;height:100%;background:linear-gradient(90deg,var(--vesper),var(--vesper-2))}
+.rk.silent .rk-t em{background:var(--ink-3)}
+.rk-p{font-family:var(--f-hud);font-size:17px;font-weight:700}
+
 /* illustrations des bâtiments */
 .rpano{position:absolute;top:0;right:0;bottom:0;width:86%;z-index:0;pointer-events:none;background:center 62%/cover no-repeat;opacity:.7;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.28) 28%,rgba(0,0,0,.85) 62%,#000);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.28) 28%,rgba(0,0,0,.85) 62%,#000);transition:opacity .2s}
 .row.pano{background:var(--noise),linear-gradient(90deg,rgba(9,18,31,.96) 30%,rgba(9,18,31,.55)),var(--card);background-size:160px 160px,auto,auto}
@@ -731,25 +769,34 @@ const MISSION = {
   expedition: { name: 'Expédition', need: 'any', hint: 'Requiert au moins un vaisseau à quai.' },
   shelter: { name: 'Mise à l’abri', need: 'any', hint: 'Aucun vaisseau à quai.' },
 };
+/* ---- doctrines : la voie que suit la station ---- */
+const DOCTRINE = {
+  forge: { name: 'Les Forges', tag: 'Voie industrielle', color: 'ore', icon: 'works', pitch: 'Produire plus, stocker mieux, transporter davantage.', perks: ['+20 % de minerai et de glace', '+40 % de soute pour les Drones foreurs et les Barges', '15 % du stock à l’abri des pillards, au lieu de 5 %'] },
+  garde: { name: 'La Garde', tag: 'Voie militaire', color: 'danger', icon: 'bastion', pitch: 'Frapper vite, loin, et tenir la ligne.', perks: ['+15 % de vitesse pour les vaisseaux armés', '−30 % de carburant', '+1 place de flotte', '+15 % de défenses réparées après un raid'] },
+  carto: { name: 'Les Cartographes', tag: 'Voie exploratrice', color: 'data', icon: 'radar', pitch: 'Savoir avant les autres, aller là où personne ne va.', perks: ['Recherches 15 % plus rapides', 'Expéditions : +40 % de gains et moins d’embuscades', '+1 expédition à la fois', 'Renseignements valables deux fois plus longtemps'] },
+};
+const DOC_ORDER = ['forge', 'garde', 'carto'];
+const DOC_WAIT = () => 12 * HOUR / st.speed;
 /* ---- flottes : carburant, places, destinations hors carte ---- */
 const FUEL = { drone: 2, scout: 1, lancer: 3, hauler: 6, corvette: 8, seed: 12, warden: 20 };
 const PCTS = [25, 50, 75, 100];
-const maxFleets = () => 3 + Math.floor(lvl('radar') / 2);
-const maxExpe = () => 1 + Math.floor(lvl('radar') / 3);
-const INTEL_OLD = () => 45 * MIN / st.speed;
+const maxFleets = () => 3 + Math.floor(lvl('radar') / 2) + (doc('garde') ? 1 : 0);
+const maxExpe = () => 1 + Math.floor(lvl('radar') / 3) + (doc('carto') ? 1 : 0);
+const INTEL_OLD = () => 45 * MIN / st.speed * (doc('carto') ? 2 : 1);
 const VIRT = {
   '@deep': { q: 0, r: 0, d: 5, type: 'deep', name: 'Espace profond', known: true, virt: true },
   '@abri': { q: 0, r: 0, d: 1, type: 'abri', name: 'Abri dans la ceinture', known: true, virt: true },
 };
 const cellOf = k => st.map[k] || VIRT[k];
 // carburant (glace) pour l'aller-retour : il grimpe vite quand on pousse les moteurs
-function fuelCost(ships, d, pct) { let f = 0; for (const k in ships) f += (ships[k] || 0) * (FUEL[k] || 0); return Math.ceil(f * Math.max(d, 0.3) * 2 * (0.3 + 0.7 * (pct / 100) ** 2)); }
+function fuelCost(ships, d, pct) { let f = 0; for (const k in ships) f += (ships[k] || 0) * (FUEL[k] || 0); return Math.ceil(f * Math.max(d, 0.3) * 2 * (0.3 + 0.7 * (pct / 100) ** 2) * (doc('garde') ? 0.7 : 1)); }
 const EXPE_HOLD = [1, 2, 4], EXPE_MUL = [1, 1.7, 2.8]; // heures d'exploration (à vitesse ×1) et multiplicateur de gains
 const EXPE_NAME = { res: 'Matières premières', data: 'Signal à étudier', ships: 'Épave réparable', early: 'Retour anticipé', none: 'Rien du tout', late: 'Retour retardé', ambush: 'Embuscade corsaire', tide: 'Marée gravitationnelle' };
 const EXPE_TONE = { res: 'ok', data: 'ok', ships: 'ok', early: 'ok', none: 'energy', late: 'energy', ambush: 'danger', tide: 'danger' };
 function expeOdds(ships) {
   const sc = Math.min(5, ships.scout || 0);
-  const w = { res: 33 + sc, data: 14 + sc, ships: 9, early: 5, none: 16 - sc, late: 8, ambush: 13 - sc, tide: 2 };
+  const cb = doc('carto') ? 5 : 0;
+  const w = { res: 33 + sc + cb, data: 14 + sc, ships: 9, early: 5, none: 16 - sc, late: 8, ambush: 13 - sc - cb, tide: 2 };
   const T = Object.values(w).reduce((a, b) => a + b, 0), o = {}; for (const k in w) o[k] = w[k] / T; return o;
 }
 const EXPE_TXT = {
@@ -762,7 +809,7 @@ const EXPE_TXT = {
   tide: ['Une marée gravitationnelle a disloqué une partie de la formation.'],
 };
 
-const TYPE_NAME = { home: 'Station', empty: 'Vide spatial', asteroid: 'Astéroïde', comet: 'Comète', wreck: 'Épave', debris: 'Champ de débris', nest: 'Nid corsaire', anomaly: 'Anomalie', depleted: 'Gisement épuisé' };
+const TYPE_NAME = { home: 'Station', rival: 'Station rivale', empty: 'Vide spatial', asteroid: 'Astéroïde', comet: 'Comète', wreck: 'Épave', debris: 'Champ de débris', nest: 'Nid corsaire', anomaly: 'Anomalie', depleted: 'Gisement épuisé' };
 const RES_NAME = { ore: 'minerai', ice: 'glace', data: 'données', pop: 'colons' };
 const KIND = { build: 'Construction', research: 'Recherche', yard: 'Chantier', fleet: 'Flotte', raid: 'Raid', quest: 'Objectif', info: 'Station' };
 
@@ -772,6 +819,7 @@ const QUESTS = [
   { id: 'q3', title: 'Tendre les voiles', text: 'Montez la Voile solaire au niveau 3.', ok: () => lvl('sail') >= 3, reward: { ore: 120, ice: 120 } },
   { id: 'q4', title: 'Faire de la place', text: 'Agrandissez l’Habitat au niveau 2.', ok: () => lvl('hab') >= 2, reward: { ore: 250 } },
   { id: 'q5', title: 'Écouter le secteur', text: 'Construisez le Laboratoire.', ok: () => lvl('lab') >= 1, reward: { data: 60 } },
+  { id: 'q5b', title: 'Choisir une voie', text: 'Adoptez une doctrine pour la station.', ok: () => !!st.doctrine, reward: { data: 150 } },
   { id: 'q6', title: 'Premier brevet', text: 'Recherchez Forage profond.', ok: () => tech('deep') >= 1, reward: { ore: 300 } },
   { id: 'q7', title: 'Bras mécaniques', text: 'Construisez les Ateliers d’assemblage.', ok: () => lvl('works') >= 1, reward: { ice: 250 } },
   { id: 'q8', title: 'Une cale sèche', text: 'Construisez le Chantier orbital.', ok: () => lvl('yard') >= 1, reward: { ore: 250, ice: 150 } },
@@ -782,6 +830,7 @@ const QUESTS = [
   { id: 'q12', title: 'Tenir la ligne', text: 'Repoussez un raid corsaire.', ok: () => st.stats.raidsWon >= 1, reward: { data: 300 } },
   { id: 'q12b', title: 'Savoir avant de frapper', text: 'Espionnez un nid corsaire avec un Éclaireur.', ok: () => st.stats.spied >= 1, reward: { data: 250 } },
   { id: 'q13', title: 'Brûler le nid', text: 'Détruisez un nid corsaire.', ok: () => st.stats.nests >= 1, reward: { ore: 1500, ice: 1000 } },
+  { id: 'q13b', title: 'La loi du plus fort', text: 'Pillez une station rivale.', ok: () => st.stats.pillages >= 1, reward: { ore: 2000, ice: 1500 } },
   { id: 'q14', title: 'Semer au loin', text: 'Fondez un avant-poste avec un Semeur.', ok: () => st.stats.outposts >= 1, reward: { data: 800 } },
   { id: 'q14b', title: 'Au-delà des cartes', text: 'Menez une expédition dans l’espace profond.', ok: () => st.stats.expeditions >= 1, reward: { data: 1000 } },
   { id: 'q15', title: 'Lire le cœur de Vesper', text: 'Recherchez Théorie stellaire au niveau 3.', ok: () => tech('stellar') >= 3, reward: { ore: 5000, ice: 5000 } },
@@ -797,6 +846,7 @@ function rnd() { const [n, v] = mulberry(st.rng); st.rng = n; return v; }
 /* ================= helpers d’état ================= */
 const lvl = id => st.b[id] || 0;
 const tech = id => st.tech[id] || 0;
+const doc = id => !!st && st.doctrine === id;
 const pendingB = id => lvl(id) + st.q.build.filter(j => j.id === id).length;
 const pendingT = id => tech(id) + st.q.research.filter(j => j.id === id).length;
 function cost(c) { const o = {}; for (const k in c) { const v = Math.round(c[k]); if (v > 0) o[k] = v; } return o; }
@@ -817,7 +867,7 @@ function reqHtml(req) {
 }
 const staffMul = () => 0.93 ** tech('auto');
 const storeCap = () => MOD.depot.store(lvl('depot'));
-const protectedAmt = () => 500 + 0.05 * storeCap();
+const protectedAmt = () => 500 + (doc('forge') ? 0.15 : 0.05) * storeCap();
 const radarRange = () => 1 + lvl('radar');
 const maxOutposts = () => 1 + Math.floor(lvl('radar') / 2);
 const lumAt = l => Math.min(1, 0.12 + 0.176 * l);
@@ -836,22 +886,22 @@ function rates() {
   let oOre = 0, oIce = 0;
   for (const key of st.outk) { const c = st.map[key]; if (!c || !c.outpost) continue; const v = outpostYield(c); if (c.outpost === 'ore') oOre += v; else oIce += v; }
   return {
-    ore: (30 + MOD.drill.prod(b.drill) * k * (1 + 0.08 * tech('deep')) + oOre) * sp,
-    ice: (15 + MOD.ice.prod(b.ice) * k * (1 + 0.08 * tech('cryo')) + oIce) * sp,
+    ore: (30 + MOD.drill.prod(b.drill) * k * (1 + 0.08 * tech('deep')) + oOre) * sp * (doc('forge') ? 1.2 : 1),
+    ice: (15 + MOD.ice.prod(b.ice) * k * (1 + 0.08 * tech('cryo')) + oIce) * sp * (doc('forge') ? 1.2 : 1),
     data: MOD.lab.prod(b.lab) * k * sp,
     eProd, eCons, eff, staff, need, cap: MOD.hab.cap(b.hab) * (1 + 0.1 * tech('terra')), store: storeCap(),
   };
 }
 function sumCost(c) { return (c.ore || 0) + (c.ice || 0) + (c.data || 0) * 3; }
 function bTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 * 0.88 ** lvl('works') / st.speed; }
-function rTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 / (1 + 0.1 * lvl('lab')) / st.speed; }
+function rTime(c) { return (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 / (1 + 0.1 * lvl('lab')) / st.speed * (doc('carto') ? 0.85 : 1); }
 function sTime(id) { return (6 + Math.pow(sumCost(UNIT(id).cost) / 5, 0.8)) * 1000 / (1 + 0.2 * Math.max(0, lvl('yard') - 1)) / st.speed; }
 function shipCost(id, n) { const u = UNIT(id), c = { ...u.cost }; if (u.colonists) c.pop = u.colonists; return mulCost(c, n); }
 function maxAfford(id) { const c = shipCost(id, 1); let m = DEF[id] && DEF[id].max ? Math.max(0, DEF[id].max - unitCount(id) - queuedUnits(id)) : 9999; for (const k in c) m = Math.min(m, Math.floor(getRes(k) / c[k])); return Math.max(0, m); }
 const shipAtk = id => SHIP[id].atk * (1 + 0.1 * tech('plasma'));
 const shipHull = id => SHIP[id].hull * (1 + 0.1 * tech('armor'));
-const shipSpeed = id => SHIP[id].speed * (1 + 0.1 * tech('ion'));
-const shipCargo = id => SHIP[id].cargo * (1 + 0.15 * tech('hold'));
+const shipSpeed = id => SHIP[id].speed * (1 + 0.1 * tech('ion')) * (doc('garde') && ARMED.includes(id) ? 1.15 : 1);
+const shipCargo = id => SHIP[id].cargo * (1 + 0.15 * tech('hold')) * (doc('forge') && (id === 'drone' || id === 'hauler') ? 1.4 : 1);
 const bastionAtk = () => MOD.bastion.atk(lvl('bastion')) * (1 + 0.1 * tech('plasma'));
 const bastionHull = () => MOD.bastion.hull(lvl('bastion')) * (1 + 0.1 * tech('armor'));
 const bastionShield = () => MOD.bastion.shield(lvl('bastion')) * (1 + 0.1 * tech('armor'));
@@ -862,7 +912,7 @@ const defShield = id => DEF[id].shield * (1 + 0.1 * tech('armor'));
 const unitAtk = id => DEF[id] ? defAtk(id) : shipAtk(id);
 const unitHull = id => DEF[id] ? defHull(id) : shipHull(id);
 const unitShield = id => DEF[id] ? defShield(id) : shipShield(id);
-const repairFrac = () => Math.min(0.8, 0.4 + 0.05 * lvl('works'));
+const repairFrac = () => Math.min(doc('garde') ? 0.95 : 0.8, 0.4 + 0.05 * lvl('works') + (doc('garde') ? 0.15 : 0));
 const DEBRIS = 0.4;
 function orbitTotal() { return st.orbit ? (st.orbit.ore || 0) + (st.orbit.ice || 0) : 0; }
 function homeKey() { for (const k in st.map) if (st.map[k].type === 'home') return k; return '0,0'; }
@@ -901,6 +951,40 @@ function corsairComp(P, R) {
   c.skiff = Math.max(1, Math.round(rem / pw('skiff')));
   return c;
 }
+/* ---- stations rivales : d'autres colonies du secteur, menées par le jeu ---- */
+const RIVAL_NAMES = ['Orvale', 'Halde-Neuve', 'Port-Sillage', 'Kerrion', 'Vigie-Haute', 'Albâtre', 'Brume-Basse', 'Tessel'];
+const RIVAL_PERS = { ind: { name: 'industrielle', mil: 0.08 }, mil: { name: 'militaire', mil: 0.2 }, exp: { name: 'exploratrice', mil: 0.12 } };
+const BASH_MAX = 3, BASH_WIN = () => 12 * HOUR / st.speed;
+function addRivals(map, seed, now) {
+  const R = makeRng((seed ^ 0x5a17) >>> 0), mix = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const cells = mix(Object.values(map).filter(c => c.type === 'empty' && c.d >= 3)), names = mix(RIVAL_NAMES.slice()), pers = mix(['ind', 'mil', 'exp']);
+  const sleep = [3 + 5 * R(), 30 + 30 * R(), null]; // une s'endort tôt, une plus tard, une jamais
+  for (let i = 0; i < 3 && i < cells.length; i++) Object.assign(cells[i], { type: 'rival', name: names[i], pers: pers[i], p0: 15 + 25 * R(), born: now, sleepH: sleep[i], stock: { ore: 0, ice: 0, data: 0 }, lost: {}, pill: [], silent: false });
+  return map;
+}
+// points : croissance continue tant que la station est active, figés une fois silencieuse
+function rivalPts(c, t) {
+  const end = c.sleepH == null ? t : Math.min(t, c.born + c.sleepH * HOUR / st.speed);
+  return c.p0 * (1 + Math.max(0, end - c.born) / HOUR * st.speed / 10) ** 1.1;
+}
+function rivalTech(c) { return Math.min(10, Math.floor(Math.log2(1 + rivalPts(c, st.t) / 40))); }
+function rivalFull(c) {
+  const P = rivalPts(c, st.t), V = P * 1000 * RIVAL_PERS[c.pers].mil, o = {};
+  const put = (id, share) => { const n = Math.floor(V * share / sumCost(UNIT(id).cost)); if (n > 0) o[id] = n; };
+  put('flak', P > 60 ? 0.28 : 0.55); if (P > 60) put('rail', 0.17); if (P > 400) put('arc', 0.1);
+  put('lancer', P > 80 ? 0.25 : 0.45); if (P > 80) put('corvette', 0.15); if (P > 500) put('warden', 0.05);
+  return o;
+}
+function rivalForces(c) { const F = rivalFull(c), o = {}; for (const k in F) { const n = F[k] - Math.round((c.lost && c.lost[k]) || 0); if (n > 0) o[k] = n; } return o; }
+function rivalTick(c, t, h) {
+  c.silent = c.sleepH != null && t >= c.born + c.sleepH * HOUR / st.speed;
+  if (!h) return;
+  const P = rivalPts(c, t), cap = (2000 + 300 * P) * (c.silent ? 1 : 0.4), r = 40 * P ** 0.6 * h * st.speed;
+  c.stock.ore = Math.min(cap, c.stock.ore + r); c.stock.ice = Math.min(cap * 0.8, c.stock.ice + r * 0.7); c.stock.data = Math.min(cap * 0.2, c.stock.data + r * 0.15);
+  if (!c.silent && c.lost) for (const k in c.lost) { c.lost[k] *= Math.max(0, 1 - 0.2 * h * st.speed); if (c.lost[k] < 0.5) delete c.lost[k]; }
+}
+function recentPill(c, t) { return (c.pill || []).filter(x => t - x < BASH_WIN()).length; }
+function pillable(c, t, stock) { const s = stock || c.stock, m = ([1, 0.6, 0.35][recentPill(c, t)] || 0) * 0.5; return { ore: s.ore * m, ice: s.ice * m, data: s.data * m }; }
 function genMap(seed) {
   const R = makeRng(seed); const cells = {};
   const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -959,9 +1043,9 @@ function newGame() {
     tech: {}, ships: {}, def: {},
     q: { build: [], research: [], yard: [] },
     fleets: [], fid: 1,
-    map: genMap(seed), outk: [],
+    map: addRivals(genMap(seed), seed, now), outk: [], rivalsInit: true, doctrine: null, docAt: 0,
     raid: null, log: [], quests: {}, reports: [], repId: 0, orbit: { ore: 0, ice: 0 },
-    stats: { spent: 0, explored: 0, extracted: 0, raidsWon: 0, raidsLost: 0, nests: 0, outposts: 0, spied: 0, expeditions: 0 }, intelInit: true,
+    stats: { spent: 0, explored: 0, extracted: 0, raidsWon: 0, raidsLost: 0, nests: 0, outposts: 0, spied: 0, expeditions: 0, pillages: 0 }, intelInit: true,
     won: false, wonSeen: false,
   };
 }
@@ -973,6 +1057,7 @@ function migrate(s) {
   s.q.build = s.q.build || []; s.q.research = s.q.research || []; s.q.yard = s.q.yard || [];
   s.fleets = s.fleets || []; s.log = s.log || []; s.outk = s.outk || [];
   if (!s.map) s.map = genMap(s.seed || 1);
+  if (!s.rivalsInit) { addRivals(s.map, s.seed || 1, s.t || Date.now()); s.rivalsInit = true; }
   if (!s.intelInit) { // les nids déjà en vue restent connus après la mise à jour
     for (const k in s.map) { const c = s.map[k]; if (c.type === 'nest' && c.garrison && !c.intel && (c.known || c.d <= 1 + ((s.b && s.b.radar) || 0))) c.intel = { t: s.t || Date.now(), garrison: { ...c.garrison }, loot: { ...c.loot }, lvl: c.lvl }; }
     s.intelInit = true;
@@ -987,7 +1072,7 @@ function produce(dt) {
   for (const k of ['ore', 'ice']) if (st.res[k] < r.store) st.res[k] = Math.min(r.store, st.res[k] + r[k] * h);
   st.res.data += r.data * h;
   if (st.pop < r.cap) st.pop = Math.min(r.cap, st.pop + (0.9 * st.pop * (1 - st.pop / r.cap) + 2.5) * h * st.speed);
-  for (const k in st.map) if (st.map[k].type === 'nest') nestGrow(st.map[k], h);
+  for (const k in st.map) { const c = st.map[k]; if (c.type === 'nest') nestGrow(c, h); else if (c.type === 'rival') rivalTick(c, st.t, h); }
 }
 function nextEvent() {
   let t = Infinity, kind = null, ref = null;
@@ -1106,8 +1191,14 @@ function simulate(mkA, mkD, key) {
   return r;
 }
 function simKey() { return [tech('plasma'), tech('armor'), lvl('bastion'), JSON.stringify(st.def)].join('|'); }
-function simAttack(ships, c) { const g = c.intel && c.intel.garrison; if (!g) return null; return simulate(() => playerGroups(ships, false), () => pirateGroups(g, c.lvl), 'a' + JSON.stringify(ships) + '@' + c.q + ':' + c.r + JSON.stringify(g) + c.intel.t + simKey()); }
-function simRaid() { return st.raid ? simulate(() => pirateGroups(st.raid.comp, 0), () => playerGroups(st.ships, true), 'r' + JSON.stringify(st.raid.comp) + JSON.stringify(st.ships) + simKey()) : null; }
+function rivalGroups(F, rt) { const m = 1 + 0.1 * rt, g = []; for (const id of SHIP_ORDER.concat(DEF_ORDER)) { const n = F[id] || 0; if (!n) continue; const u = UNIT(id); g.push(grp(id, n, u, u.atk * m, u.hull * m, (u.shield || 0) * m)); } return g; }
+function groupPower(G) { let a = 0, h = 0; for (const g of G) { a += g.n * g.atk; h += g.n * g.hull; } return { a, h }; }
+function simRival(ships, c) { const I = c.intel; if (!I) return null; return simulate(() => playerGroups(ships, false), () => rivalGroups(I.forces, I.rt), 'v' + JSON.stringify(ships) + '@' + c.q + ':' + c.r + I.t + simKey()); }
+function raidName() { const c = st.raid && st.raid.rival && st.map[st.raid.rival]; return c ? `Représailles de la station ${c.name}` : 'Raid corsaire'; }
+function raidText() { return st.raid.ships ? listText(st.raid.ships, SHIP) : listText(st.raid.comp, PIRATE); }
+function raidGroups(raid) { if (raid.ships) { const c = st.map[raid.rival]; return rivalGroups(raid.ships, c ? rivalTech(c) : 0); } return pirateGroups(raid.comp, 0); }
+function simAttack(ships, c) { if (c.type === 'rival') return simRival(ships, c); const g = c.intel && c.intel.garrison; if (!g) return null; return simulate(() => playerGroups(ships, false), () => pirateGroups(g, c.lvl), 'a' + JSON.stringify(ships) + '@' + c.q + ':' + c.r + JSON.stringify(g) + c.intel.t + simKey()); }
+function simRaid() { return st.raid ? simulate(() => raidGroups(st.raid), () => playerGroups(st.ships, true), 'r' + JSON.stringify(st.raid.ships || st.raid.comp) + JSON.stringify(st.ships) + simKey()) : null; }
 
 /* ---- débris et rapports ---- */
 function debrisOf(loss) {
@@ -1133,13 +1224,15 @@ function scheduleRaid(from) {
 }
 function resolveRaid() {
   const raid = st.raid; st.raid = null;
-  const rep = battle(pirateGroups(raid.comp, 0), playerGroups(st.ships, true));
+  const rep = battle(raidGroups(raid), playerGroups(st.ships, true));
   const fix = repairFrac(), repaired = {}, shipLoss = {};
   for (const k in rep.lossD) {
     if (SHIP[k]) { st.ships[k] -= rep.lossD[k]; shipLoss[k] = rep.lossD[k]; }
     else if (DEF[k]) { const r = Math.round(rep.lossD[k] * fix); st.def[k] = Math.max(0, (st.def[k] || 0) - rep.lossD[k] + r); if (r) repaired[k] = r; }
   }
-  const deb = debrisOf(Object.assign({}, rep.lossA, shipLoss));
+  const d1 = debrisOf(rep.lossA), d2 = debrisOf(shipLoss), deb = { ore: d1.ore + d2.ore, ice: d1.ice + d2.ice };
+  const rc = raid.rival && st.map[raid.rival];
+  if (rc) { if (!rc.lost) rc.lost = {}; for (const k in rep.lossA) rc.lost[k] = (rc.lost[k] || 0) + rep.lossA[k]; }
   st.orbit.ore = (st.orbit.ore || 0) + deb.ore; st.orbit.ice = (st.orbit.ice || 0) + deb.ice;
   const lines = []; let outcome, title;
   if (rep.attDead) { outcome = 'win'; title = 'Raid anéanti'; st.stats.raidsWon++; }
@@ -1147,12 +1240,14 @@ function resolveRaid() {
     outcome = 'loss'; title = 'Défenses percées';
     const prot = protectedAmt(), stolen = {};
     for (const k of ['ore', 'ice']) { stolen[k] = Math.floor(Math.max(0, st.res[k] - prot) * 0.3); st.res[k] -= stolen[k]; }
+    if (rc) { rc.stock.ore += stolen.ore; rc.stock.ice += stolen.ice; }
     st.stats.raidsLost++; lines.push(`Pillé : ${fmt(stolen.ore)} minerai et ${fmt(stolen.ice)} glace.`);
   } else { outcome = 'draw'; title = 'Raid repoussé'; st.stats.raidsWon++; lines.unshift('Les corsaires survivants battent en retraite sans rien emporter.'); }
   const nLost = DEF_ORDER.reduce((a, k) => a + (rep.lossD[k] || 0), 0), nFix = Object.values(repaired).reduce((a, b) => a + b, 0);
   if (nLost) lines.push(`Drones de maintenance : ${fmt(nFix)} défense${nFix > 1 ? 's' : ''} sur ${fmt(nLost)} remise${nFix > 1 ? 's' : ''} en état.`);
   if (deb.ore + deb.ice > 0) lines.push(`Débris en orbite : ${fmt(deb.ore)} minerai et ${fmt(deb.ice)} glace, à ramasser avec des Drones foreurs.`);
-  const id = saveReport({ kind: 'raid', place: st.name, outcome, title, rounds: rep.rounds, you: sideRows(rep.D), foe: sideRows(rep.A), tl: rep.tl.map(([a, d]) => [d, a]), lines, repaired });
+  if (rc) lines.unshift(`Représailles de la station ${rc.name}.`);
+  const id = saveReport({ kind: 'raid', foeName: rc ? rc.name : 'Corsaires', place: st.name, outcome, title, rounds: rep.rounds, you: sideRows(rep.D), foe: sideRows(rep.A), tl: rep.tl.map(([a, d]) => [d, a]), lines, repaired });
   const killed = listUnits(rep.lossA), lost = listUnits(rep.lossD);
   log('raid', `${title} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.${lines.length ? ' ' + lines.join(' ') : ''}`, id);
 }
@@ -1179,19 +1274,21 @@ function fleetArrive(f, t) {
       if (c[kind] <= 0 && !c.outpost) { c.was = c.type; c.type = 'depleted'; c.name = (c.was === 'comet' ? 'Comète dissipée' : 'Astéroïde épuisé'); note += ' Le gisement est épuisé.'; }
     }
   } else if (f.m === 'salvage') {
-    const home = c.type === 'home', src = home ? st.orbit : c;
+    const home = c.type === 'home', riv = c.type === 'rival', src = home ? st.orbit : riv ? (c.dbr || {}) : c;
     if (!(f.ships.drone > 0)) note = 'Aucun Drone foreur dans la flotte : récupération impossible.';
-    else if (home ? orbitTotal() < 1 : c.type !== 'wreck' && c.type !== 'debris') note = 'Il n’y a plus rien à récupérer ici.';
+    else if (home ? orbitTotal() < 1 : riv ? (src.ore || 0) + (src.ice || 0) < 1 : c.type !== 'wreck' && c.type !== 'debris') note = 'Il n’y a plus rien à récupérer ici.';
     else {
       const tot = (src.ore || 0) + (src.ice || 0) + (src.data || 0); const k = tot > 0 ? Math.min(1, cap / tot) : 0; const got = {};
       for (const r of ['ore', 'ice', 'data']) { got[r] = Math.floor((src[r] || 0) * k); src[r] = (src[r] || 0) - got[r]; f.cargo[r] = (f.cargo[r] || 0) + got[r]; }
       f.got = true;
       note = `Récupéré ${home ? 'en orbite de la station' : 'sur ' + title} : ${fmt(got.ore)} minerai, ${fmt(got.ice)} glace${got.data ? ', ' + fmt(got.data) + ' données' : ''}.`;
       if (home) { if (orbitTotal() < 1) { st.orbit = { ore: 0, ice: 0 }; note += ' L’orbite est dégagée.'; } }
+      else if (riv) { if ((src.ore || 0) + (src.ice || 0) < 1) delete c.dbr; }
       else if ((c.ore || 0) + (c.ice || 0) + (c.data || 0) < 1) { c.type = 'empty'; c.name = null; note += ' Le site est vidé.'; }
     }
   } else if (f.m === 'spy') {
-    if (c.type !== 'nest') note = `${title} : il n’y a plus rien à espionner.`;
+    if (c.type === 'rival') { const sp = spyRival(f, c, t); note = sp.note; repId = sp.repId; }
+    else if (c.type !== 'nest') note = `${title} : il n’y a plus rien à espionner.`;
     else {
       c.intel = { t, garrison: { ...c.garrison }, loot: { ...c.loot }, lvl: c.lvl }; st.stats.spied++;
       const lines = [];
@@ -1203,6 +1300,8 @@ function fleetArrive(f, t) {
     const ex = expedition(f, t); note = ex.note; repId = ex.repId;
   } else if (f.m === 'shelter') {
     note = '';
+  } else if (f.m === 'attack' && c.type === 'rival') {
+    const ar = attackRival(f, c, t); note = ar.note; repId = ar.repId;
   } else if (f.m === 'attack') {
     if (c.type !== 'nest') note = 'Le nid a disparu avant votre arrivée.';
     else {
@@ -1243,7 +1342,53 @@ function fleetArrive(f, t) {
   turnBack(f, t, 1);
   if (f.backMul) { f.back = t + f.dur * f.backMul; delete f.backMul; }
 }
-function expeValue() { return 500 + 40 * Math.pow(score(), 0.85); }
+function spyRival(f, c, t) {
+  rivalTick(c, t, 0);
+  const forces = rivalForces(c), rt = rivalTech(c), pts = rivalPts(c, t), lines = [];
+  c.intel = { t, forces, rt, stock: { ...c.stock }, pts, silent: c.silent }; st.stats.spied++;
+  if (rnd() < (c.silent ? 0.05 : 0.18) && f.ships.scout > 0) { f.ships.scout--; lines.push('Repéré par les patrouilles de la station : un Éclaireur abattu après avoir transmis son rapport.'); }
+  const pl = pillable(c, t);
+  const repId = saveReport({ kind: 'spy', rival: true, place: c.name, k: f.k, pts, rt, silent: c.silent, pers: c.pers, forces, stock: { ...c.stock }, pill: recentPill(c, t), outcome: 'win', title: 'Rapport d’espionnage', rounds: 0, you: [], foe: [], tl: [], lines });
+  return { repId, note: `Espionnage de ${c.name} : station ${c.silent ? 'silencieuse' : 'active'}, ${fmt(pl.ore + pl.ice + pl.data)} pillables.${lines.length ? ' ' + lines[0] : ''}` };
+}
+function retaliate(c, t) {
+  // la riposte part de la flotte de réserve de la rivale, pas des vaisseaux qu'on vient de détruire
+  const F = rivalFull(c), ships = {}; for (const k of SHIP_ORDER) if (F[k]) { const n = Math.floor(F[k] * 0.5); if (n) ships[k] = n; }
+  if (!Object.keys(ships).length || rnd() > 0.7) return '';
+  const at = t + (20 + 20 * rnd()) * MIN / st.speed;
+  if (st.raid && st.raid.at < at) return '';
+  st.raid = { at, comp: {}, rival: Object.keys(st.map).find(k => st.map[k] === c), ships };
+  return `${c.name} prépare des représailles : surveillez l’Antenne.`;
+}
+function attackRival(f, c, t) {
+  rivalTick(c, t, 0);
+  const rt = rivalTech(c), rep = battle(playerGroups(f.ships, false), rivalGroups(rivalForces(c), rt));
+  for (const k in rep.lossA) f.ships[k] -= rep.lossA[k];
+  // la rivale reconstruit ses vaisseaux si elle est active ; ses défenses sont à moitié réparées tout de suite
+  const shipLoss = {}; if (!c.lost) c.lost = {};
+  for (const k in rep.lossD) { if (SHIP[k]) shipLoss[k] = rep.lossD[k]; c.lost[k] = (c.lost[k] || 0) + (DEF[k] ? Math.ceil(rep.lossD[k] * 0.5) : rep.lossD[k]); }
+  const d1 = debrisOf(rep.lossA), d2 = debrisOf(shipLoss), deb = { ore: d1.ore + d2.ore, ice: d1.ice + d2.ice };
+  if (deb.ore + deb.ice > 0) c.dbr = { ore: ((c.dbr && c.dbr.ore) || 0) + deb.ore, ice: ((c.dbr && c.dbr.ice) || 0) + deb.ice };
+  const lines = []; let outcome, head;
+  if (rep.defDead) {
+    outcome = 'win'; head = `${c.name} pillée`;
+    const before = recentPill(c, t), av = pillable(c, t), tot = av.ore + av.ice + av.data;
+    const used = (f.cargo.ore || 0) + (f.cargo.ice || 0) + (f.cargo.data || 0), room = Math.max(0, fleetCargo(f.ships) - used), k = tot > 0 ? Math.min(1, room / tot) : 0, take = {};
+    for (const r of ['ore', 'ice', 'data']) { take[r] = Math.floor(av[r] * k); c.stock[r] -= take[r]; f.cargo[r] = (f.cargo[r] || 0) + take[r]; }
+    if (take.ore + take.ice + take.data > 0) f.got = true;
+    c.pill = (c.pill || []).filter(x => t - x < BASH_WIN()); c.pill.push(t); st.stats.pillages++;
+    lines.push(`Butin chargé : ${fmt(take.ore)} minerai, ${fmt(take.ice)} glace, ${fmt(take.data)} données.`);
+    if (before) lines.push(`Station déjà pillée ${before} fois récemment : butin réduit.`);
+    if (c.pill.length >= BASH_MAX) lines.push(`${c.name} passe sous protection : plus de pillage possible pendant ${fmtDur(BASH_WIN())}.`);
+    if (!c.silent) { const r = retaliate(c, t); if (r) lines.push(r); }
+  } else if (rep.attDead) { outcome = 'loss'; head = `Flotte anéantie devant ${c.name}`; }
+  else { outcome = 'draw'; head = `Assaut repoussé par ${c.name}`; }
+  if (deb.ore + deb.ice > 0) lines.push(`Débris autour de la station : ${fmt(deb.ore)} minerai, ${fmt(deb.ice)} glace, à récupérer.`);
+  c.intel = { t, forces: rivalForces(c), rt, stock: { ...c.stock }, pts: rivalPts(c, t), silent: c.silent };
+  const repId = saveReport({ kind: 'rival', foeName: c.name, place: c.name, outcome, title: head, rounds: rep.rounds, you: sideRows(rep.A), foe: sideRows(rep.D), tl: rep.tl, lines });
+  return { repId, note: `${head} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${listUnits(rep.lossD) || 'aucun'}. Pertes : ${listUnits(rep.lossA) || 'aucune'}.${outcome === 'win' ? ' ' + lines[0] : ''}` };
+}
+function expeValue() { return (500 + 40 * Math.pow(score(), 0.85)) * (doc('carto') ? 1.4 : 1); }
 function expedition(f, t) {
   const odds = expeOdds(f.ships), mul = EXPE_MUL[f.hold || 0], pick = a => a[Math.floor(rnd() * a.length)];
   let x = rnd(), kind = 'none'; for (const k in odds) { if ((x -= odds[k]) < 0) { kind = k; break; } }
@@ -1358,6 +1503,7 @@ function fcCheck() {
   if (fc.m === 'spy' && !n('scout')) return { ok: false, msg: 'Il faut au moins un Éclaireur.' };
   if ((fc.m === 'extract' || fc.m === 'salvage') && !n('drone')) return { ok: false, msg: 'Il faut au moins un Drone foreur.' };
   if (fc.m === 'attack' && !ARMED.some(k => n(k))) return { ok: false, msg: 'Il faut au moins un vaisseau armé.' };
+  if (fc.m === 'attack' && c.type === 'rival' && recentPill(c, st.t) >= BASH_MAX) return { ok: false, msg: `${c.name} est sous protection après ${BASH_MAX} pillages. Réessayez plus tard.` };
   if (fc.m === 'expedition') {
     if (lvl('radar') < 1) return { ok: false, msg: 'Construisez l’Antenne profonde pour viser l’espace profond.' };
     if (st.fleets.filter(f => f.m === 'expedition').length >= maxExpe()) return { ok: false, msg: `${maxExpe()} expédition${maxExpe() > 1 ? 's' : ''} à la fois au maximum. L’Antenne profonde en autorise davantage.` };
@@ -1666,6 +1812,7 @@ function bodyGlyph(c, vis) {
     case 'comet': g = '<path d="M2-6L-21 14l5 5L7 0z" fill="url(#g-tail)"/><g transform="translate(5 -4)"><circle r="15" fill="url(#h-cyan)"/><circle r="11" fill="url(#pt-comet)" style="mix-blend-mode:screen"/></g>'; break;
     case 'wreck': case 'debris': g = '<path d="M-14-2l9-5 4 6-9 5z" fill="url(#p-grey)" stroke="#0B0F16"/><path d="M1 1l11-4 2 7-10 3z" fill="url(#p-grey)" stroke="#0B0F16"/><path d="M-4 9l3-1 1 3-3 1z" fill="url(#p-grey)"/><circle cx="7" cy="-8" r="1.3" fill="#00E5FF" fill-opacity=".8"/>'; break;
     case 'nest': g = `<circle r="23" fill="url(#h-red)"/>${orbP('io', 13, '<circle r="13" fill="#EF4444" opacity=".18"/>', 0.5)}<circle cx="12" cy="-12" r="7" fill="#EF4444" stroke="#0B0F16" stroke-width="1.5"/><text x="12" y="-8.4" class="b-lvl">${c.lvl || 1}</text>`; break;
+    case 'rival': g = `<circle r="23" fill="url(#h-${c.silent ? 'purple' : 'cyan'})" opacity="${c.silent ? '.3' : '.7'}"/>${orbP('moon', 11, '', 0.45)}<ellipse rx="21" ry="6" fill="none" stroke="${c.silent ? '#64748B' : '#F59E0B'}" stroke-width="1.8" transform="rotate(22)"/><path d="M-1 -12V-24l8 3-8 3" fill="${c.silent ? '#64748B' : '#F59E0B'}" stroke="#0B0F16" stroke-width=".8"/>`; break;
     case 'deep': g = '<circle r="24" fill="url(#h-purple)"/><circle r="14" fill="url(#pt-helix)" style="mix-blend-mode:screen"/><circle r="4.5" fill="#0B0F16"/>'; break;
     case 'abri': g = `${orbP('vesta', 10, '', 0.4)}<g transform="translate(-14 9)">${orbP('vesta', 5, '', 0.4)}</g><g transform="translate(14 -9)">${orbP('moon', 4, '', 0.4)}</g>`; break;
     case 'anomaly': g = `<g opacity="${c.studied ? '.45' : '1'}"><circle r="21" fill="url(#h-purple)"/><circle r="13" fill="url(#pt-helix)" style="mix-blend-mode:screen"/></g>`; break;
@@ -1699,6 +1846,7 @@ function missionsFor(c) {
   if (vis && ((c.type === 'asteroid' && c.ore > 0) || (c.type === 'comet' && c.ice > 0))) m.push('extract');
   if (vis && (c.type === 'wreck' || c.type === 'debris')) m.push('salvage');
   if (vis && c.type === 'nest') m.push('spy', 'attack');
+  if (vis && c.type === 'rival') { m.push('spy', 'attack'); if (c.dbr && c.dbr.ore + c.dbr.ice >= 1) m.push('salvage'); }
   if (vis && (c.type === 'asteroid' || c.type === 'comet') && !c.outpost) m.push('outpost');
   return m;
 }
@@ -2093,7 +2241,7 @@ function openFleet(k, m) {
   const n = id => st.ships[id] || 0; const s = {};
   if (m === 'explore') { if (n('scout')) s.scout = 1; }
   else if (m === 'extract' || m === 'salvage') { if (n('drone')) s.drone = n('drone'); if (n('hauler')) s.hauler = n('hauler'); }
-  else if (m === 'attack') { for (const id of ARMED) if (n(id)) s[id] = n(id); }
+  else if (m === 'attack') { for (const id of ARMED) if (n(id)) s[id] = n(id); if (st.map[k] && st.map[k].type === 'rival' && n('hauler')) s.hauler = n('hauler'); }
   else if (m === 'outpost') { if (n('seed')) s.seed = 1; }
   else if (m === 'spy') { if (n('scout')) s.scout = Math.min(2, n('scout')); }
   else if (m === 'expedition') { if (n('hauler')) s.hauler = n('hauler'); else if (n('drone')) s.drone = n('drone'); if (n('scout')) s.scout = 1; if (!Object.keys(s).length) for (const id of SHIP_ORDER) if (n(id)) { s[id] = n(id); break; } }
@@ -2111,6 +2259,11 @@ function refreshFc(setInputs) {
     if (fc.m === 'shelter') lines.push(`Retour à quai vers <b>${clock(plan.back)}</b> · ${fmtDur(plan.total)} à l’abri`);
     else lines.push(`Trajet de <b>${fmtDur(plan.travel)}</b>${fc.m === 'expedition' ? ` + <b>${fmtDur(plan.hold)}</b> d’exploration` : ''} · retour vers <b>${clock(plan.back)}</b>`);
     lines.push(`Carburant <b${plan.fuel > st.res.ice ? ' class="bad"' : ''}>${fmt(plan.fuel)}</b> glace · soute <b>${fmt(fleetCargo(s))}</b> · feu <b>${fmt(p.a)}</b>`);
+    if (fc.m === 'attack' && c.type === 'rival') {
+      const I = c.intel;
+      if (I) { const g = groupPower(rivalGroups(I.forces, I.rt)), pl = pillable(c, st.t, I.stock); lines.push(`En face${intelAge(c) > INTEL_OLD() ? ' (renseignement ancien)' : ''} : feu <b>${fmt(g.a)}</b> · coque <b>${fmt(g.h)}</b>`); lines.push(`Pillable : <b>${fmt(pl.ore + pl.ice + pl.data)}</b> pour une soute de <b>${fmt(fleetCargo(s))}</b>`); }
+      else lines.push('<span class="bad">Défenses inconnues : espionnez d’abord cette station.</span>');
+    }
     if (fc.m === 'attack' && c.type === 'nest') {
       const I = c.intel;
       if (I) { const g = compPower(I.garrison); lines.push(`En face${intelAge(c) > INTEL_OLD() ? ' (renseignement ancien)' : ''} : feu <b>${fmt(g.a)}</b> · coque <b>${fmt(g.h)}</b> · rempart niveau <b>${c.lvl}</b>`); lines.push(`Butin du nid : <b>${fmt(I.loot.ore + I.loot.ice + I.loot.data)}</b> pour une soute de <b>${fmt(fleetCargo(s))}</b>`); }
@@ -2121,7 +2274,7 @@ function refreshFc(setInputs) {
   const sum = $('#fc-sum'); if (sum) sum.innerHTML = lines.map(l => `<span>${l}</span>`).join('') || '<span>Choisissez vos vaisseaux.</span>';
   const go = $('#fc-go'); if (go) go.disabled = !chk.ok;
   const sim = $('#fc-sim');
-  if (sim) { const armed = {}; for (const k in s) if (s[k] > 0) armed[k] = s[k]; sim.innerHTML = c.type === 'nest' && ARMED.some(k => armed[k]) ? simHtml(simAttack(armed, c), 'attack') : ''; }
+  if (sim) { const armed = {}; for (const k in s) if (s[k] > 0) armed[k] = s[k]; sim.innerHTML = (c.type === 'nest' || c.type === 'rival') && ARMED.some(k => armed[k]) ? simHtml(simAttack(armed, c), 'attack') : ''; }
   const odds = $('#fc-odds'); if (odds) odds.innerHTML = expeOddsHtml(s);
 }
 function refreshShipCard(id, setInput) {
@@ -2184,7 +2337,7 @@ function alertsHtml(r) {
   if (r.staff < 1) a.push(['hab', 'pop', `Pas assez de colons : postes pourvus à <b>${pct(r.staff)}</b>. Agrandissez l’Habitat.`]);
   if (st.res.ore >= r.store * 0.999 || st.res.ice >= r.store * 0.999) a.push(['depot', 'ore', 'Entrepôt plein : la production s’arrête. Agrandissez l’Entrepôt.']);
   let x = '';
-  if (threatVisible()) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>Raid corsaire dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
+  if (threatVisible()) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>${raidName()} : arrivée dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
   if (orbitTotal() >= 1) x += `<button class="alert" data-act="cell" data-k="${homeKey()}" style="--c:var(--ore)"><span class="dot"></span><span>Débris en orbite : <b>${fmtS(st.orbit.ore)}</b> minerai et <b>${fmtS(st.orbit.ice)}</b> glace. Envoyez des Drones foreurs les ramasser.</span></button>`;
   return x + a.map(([id, col, t]) => `<button class="alert" data-act="item" data-kind="mod" data-id="${id}" style="--c:var(--${col})"><span class="dot"></span><span>${t}</span></button>`).join('');
 }
@@ -2221,7 +2374,9 @@ const VIEWS = {
   station() {
     const r = rates(), cur = QUESTS.find(q => !st.quests[q.id]);
     const ids = seg.station === 'inst' ? INST : PROD;
-    return `<div class="vh"><h1>${esc(st.name)}</h1><span>${fmt(score())} pts · Vesper ${pct(lumAt(lvl('beacon')))}</span>${GEAR}</div>
+    const d = DOCTRINE[st.doctrine], L = rankList(), rk = L.findIndex(x => x.me) + 1;
+    return `<div class="vh"><h1>${esc(st.name)}</h1><span>${fmt(myPoints().total)} pts · Vesper ${pct(lumAt(lvl('beacon')))}</span>${GEAR}</div>
+      <div class="vh-sub"><button class="sub-chip${d ? '' : ' todo'}" data-act="doctrine" style="--c:var(--${d ? d.color : 'energy'})">${svg(d ? d.icon : 'beacon')}<span>Doctrine</span><b>${d ? d.name : 'À choisir'}</b></button><button class="sub-chip" data-act="ranking" style="--c:var(--vesper-2)">${svg('sheet')}<span>Classement</span><b>${rankTxt(rk)} sur ${L.length}</b></button></div>
       ${cur ? `<button class="quest" data-act="quest-go"><span class="quest-k">Objectif</span><span class="quest-t">${cur.title}</span><span class="quest-d">${cur.text}</span><span class="quest-go">${curTarget() ? 'Y aller' : 'Voir'}</span></button>` : ''}
       <div id="alerts">${alertsHtml(r)}</div>
       ${segsHtml('station', [['prod', 'Production'], ['inst', 'Installations']])}
@@ -2251,8 +2406,8 @@ const VIEWS = {
     st.seenLog = st.t;
     const cur = QUESTS.find(q => !st.quests[q.id]), done = QUESTS.filter(q => st.quests[q.id]).length;
     return `<div class="vh"><h1>Journal</h1><span>${done}/${QUESTS.length} objectifs</span>${GEAR}</div>
-      ${segsHtml('journal', [['quests', 'Objectifs'], ['log', 'Événements']])}
-      ${seg.journal === 'log'
+      ${segsHtml('journal', [['quests', 'Objectifs'], ['log', 'Événements'], ['rank', 'Classement']])}
+      ${seg.journal === 'rank' ? rankingHtml() : seg.journal === 'log'
         ? (st.log.length ? `<section class="panel"><ul class="timeline">${st.log.map(e => `<li class="k-${e.k}"><span class="when">${clock(e.t)} · <b>${KIND[e.k] || ''}</b></span>${esc(e.m)}${repBtn(e.r)}</li>`).join('')}</ul></section>` : '<p class="empty">Rien à signaler pour l’instant.</p>')
         : `<section class="panel"><ol class="qlist">${QUESTS.map((q, i) => `<li class="${st.quests[q.id] ? 'done' : q === cur ? 'cur' : ''}"><span class="qcheck" aria-hidden="true">${st.quests[q.id] ? '✓' : ''}</span><div><h4>${q.title}</h4>${q === cur ? `<p>${q.text}</p>` : ''}${rewardText(q.reward) && !st.quests[q.id] ? `<p class="rw">${rewardText(q.reward)}</p>` : ''}</div></li>`).join('')}</ol></section>`}`;
   },
@@ -2270,7 +2425,7 @@ function openItem(kind, id) {
 }
 function openActivity() { advanceTo(Date.now()); openModal('activity', activitySheet()); updateDynamic(); }
 function activitySheet() {
-  const th = threatVisible() ? `<div class="alert raid" style="--c:var(--danger)"><span class="dot"></span><span>Raid corsaire : ${listText(st.raid.comp, PIRATE)}. Arrivée dans <b data-eta="${st.raid.at}"></b>. Vos vaisseaux à quai, vos défenses et le Bastion défendront la station.</span></div>${simHtml(simRaid(), 'raid')}${SHIP_ORDER.some(k => st.ships[k] > 0) ? '<button class="btn block" data-act="mission" data-m="shelter" data-k="@abri">Mettre des vaisseaux à l’abri</button>' : ''}` : '';
+  const th = threatVisible() ? `<div class="alert raid" style="--c:var(--danger)"><span class="dot"></span><span>${raidName()} : ${raidText()}. Arrivée dans <b data-eta="${st.raid.at}"></b>. Vos vaisseaux à quai, vos défenses et le Bastion défendront la station.</span></div>${simHtml(simRaid(), 'raid')}${SHIP_ORDER.some(k => st.ships[k] > 0) ? '<button class="btn block" data-act="mission" data-m="shelter" data-k="@abri">Mettre des vaisseaux à l’abri</button>' : ''}` : '';
   return `${XBTN}<div class="sh-title"><h2>Activité</h2></div>${th}${queueHtml('build')}${queueHtml('research')}${queueHtml('yard')}
     <section class="panel"><div class="panel-h"><h3>Flottes en vol</h3><span class="pill">${st.fleets.length}</span></div>${st.fleets.length ? `<div class="list">${st.fleets.map(fleetRow).join('')}</div>` : '<p class="empty">Aucune flotte en vol.</p>'}</section>`;
 }
@@ -2304,6 +2459,7 @@ function cellSheet() {
     case 'comet': facts.push(`<div class="price">${resChips({ ice: c.ice })}<span class="muted">à extraire</span></div>`); break;
     case 'wreck': case 'debris': facts.push(`<div class="price">${resChips({ ore: c.ore, ice: c.ice, data: c.data })}<span class="muted">à récupérer</span></div>`); break;
     case 'nest': nestFacts(c, facts); break;
+    case 'rival': rivalFacts(c, facts); break;
     case 'anomaly': facts.push(c.studied ? '<p>Ce signal a déjà été étudié.</p>' : `<p>Un Éclaireur pourrait en tirer environ <b>${fmt(c.data)}</b> données.</p>`); break;
     case 'depleted': facts.push('<p>Il ne reste plus rien à extraire.</p>'); break;
   }
@@ -2329,6 +2485,33 @@ function simHtml(r, mode) {
     <p class="sim-k"><span class="w">${raid ? 'Repoussé' : 'Victoire'} ${pct(good)}</span><span class="d">${raid ? 'Retraite' : 'Repli'} ${pct(r.draw)}</span><span class="l">${raid ? 'Pillage' : 'Défaite'} ${pct(bad)}</span></p>
     <p class="sim-loss">Pertes probables : ${losses || 'aucune'} · ${NF1.format(r.rounds)} salve${r.rounds >= 2 ? 's' : ''} en moyenne</p></div>`;
 }
+function rankTxt(r) { return r === 1 ? '1re' : r + 'e'; }
+function rivalFacts(c, facts) {
+  rivalTick(c, st.t, 0);
+  const pts = rivalPts(c, st.t), I = c.intel, n = recentPill(c, st.t), rank = rankList().findIndex(x => !x.me && x.name === c.name) + 1;
+  facts.push(`<p><b>Station ${RIVAL_PERS[c.pers].name}</b> · ${fmt(pts)} pts · ${rankTxt(rank)} au classement</p>`);
+  facts.push(c.silent ? '<p class="intel old">Station silencieuse : plus aucune activité. Ses réserves s’accumulent et ses pertes ne sont plus remplacées.</p>' : '<p class="intel">Station active : elle reconstruit ses pertes et peut riposter si vous la pillez.</p>');
+  if (n) facts.push(`<p>Pillages récents : <b>${n} sur ${BASH_MAX}</b>${n >= BASH_MAX ? ' · station sous protection' : ' · le butin diminue à chaque pillage'}.</p>`);
+  if (c.dbr && c.dbr.ore + c.dbr.ice >= 1) facts.push(`<div class="price">${resChips({ ore: c.dbr.ore, ice: c.dbr.ice })}<span class="muted">de débris</span></div>`);
+  if (!I) { facts.push('<p class="intel none">Envoyez un Éclaireur espionner cette station pour connaître ses défenses et ses réserves.</p>'); return; }
+  const age = intelAge(c), old = age > INTEL_OLD(), g = groupPower(rivalGroups(I.forces, I.rt)), pl = pillable(c, st.t, I.stock);
+  facts.push(`<p class="intel${old ? ' old' : ''}">${old ? 'Renseignement ancien' : 'Renseignement'} · ${age < MIN ? 'à l’instant' : 'il y a ' + fmtDur(age)}</p>`);
+  facts.push(`<p>${listText(I.forces, Object.assign({}, SHIP, DEF)) || 'aucune défense'} · feu <b>${fmt(g.a)}</b> · coque <b>${fmt(g.h)}</b></p>`, `<div class="price">${resChips({ ore: pl.ore, ice: pl.ice, data: pl.data })}<span class="muted">pillables</span></div>`);
+  const armed = {}; for (const k of ARMED) if (st.ships[k] > 0) armed[k] = st.ships[k];
+  if (Object.keys(armed).length) facts.push(`<p class="hud-k">Si vous attaquez avec tous vos vaisseaux armés</p>${simHtml(simAttack(armed, c), 'attack')}`);
+}
+function spyRivalSheet(r) {
+  const c = st.map[r.k], g = groupPower(rivalGroups(r.forces, r.rt)), pl = c ? pillable(c, st.t, r.stock) : r.stock;
+  const rows = keys => keys.filter(k => r.forces[k] > 0).map(k => `<div class="rp-u"><span class="rp-n">${UNIT(k).pl}</span><span class="rp-c"><b>${fmt(r.forces[k])}</b></span><span class="rp-l ok">${esc(roleText(UNIT(k)).toLowerCase())}</span></div>`).join('') || '<p class="empty">Aucun.</p>';
+  const armed = {}; for (const k of ARMED) if (st.ships[k] > 0) armed[k] = st.ships[k];
+  const sim = c && Object.keys(armed).length ? simulate(() => playerGroups(armed, false), () => rivalGroups(r.forces, r.rt), 'sv' + r.id + JSON.stringify(armed) + simKey()) : null;
+  return `${XBTN}<div class="rp-head" style="--c:var(--data)"><p class="eyebrow">Rapport d’espionnage · ${clock(r.t)}</p><h2>${esc(r.place)}</h2><p class="rp-sub"><b>${r.silent ? 'Silencieuse' : 'Active'}</b> · station ${RIVAL_PERS[r.pers].name} · ${fmt(r.pts)} pts · technologie ${r.rt}</p></div>
+    <div class="rp-sides"><section class="panel"><h3>Vaisseaux</h3>${rows(SHIP_ORDER)}</section><section class="panel"><h3>Défenses</h3>${rows(DEF_ORDER)}</section></div>
+    <section class="panel rp-loot"><h3>Pillable${r.pill ? ` · déjà pillée ${r.pill} fois` : ''}</h3><div class="price">${resChips({ ore: pl.ore, ice: pl.ice, data: pl.data })}</div><p class="sim-loss">La moitié des réserves reste hors d’atteinte. En face : feu ${fmt(g.a)} · coque ${fmt(g.h)}.</p></section>
+    ${sim ? `<p class="hud-k">Si vous attaquez avec tous vos vaisseaux armés</p>${simHtml(sim, 'attack')}` : ''}
+    ${r.lines.length ? `<ul class="rp-lines">${r.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+    ${c ? `<div class="sheet-actions one"><button class="btn primary" data-act="mission" data-m="attack" data-k="${r.k}">Préparer le pillage</button></div>` : ''}`;
+}
 function intelAge(c) { return c.intel ? st.t - c.intel.t : Infinity; }
 function nestFacts(c, facts) {
   const r = rampart(c.lvl), I = c.intel;
@@ -2341,6 +2524,7 @@ function nestFacts(c, facts) {
   if (Object.keys(armed).length) facts.push(`<p class="hud-k">Si vous attaquez avec tous vos vaisseaux armés</p>${simHtml(simAttack(armed, c), 'attack')}`);
 }
 function spySheet(r) {
+  if (r.rival) return spyRivalSheet(r);
   const c = st.map[r.k], p = compPower(r.garrison), rr = rampart(r.lvl);
   const armed = {}; for (const k of ARMED) if (st.ships[k] > 0) armed[k] = st.ships[k];
   const sim = c && c.type === 'nest' && Object.keys(armed).length ? simulate(() => playerGroups(armed, false), () => pirateGroups(r.garrison, r.lvl), 's' + r.id + JSON.stringify(armed) + simKey()) : null;
@@ -2353,6 +2537,44 @@ function spySheet(r) {
     ${c && c.type === 'nest' ? `<div class="sheet-actions one"><button class="btn primary" data-act="mission" data-m="attack" data-k="${r.k}">Préparer l’assaut</button></div>` : ''}`;
 }
 function repBtn(id) { const x = id && st.reports.find(y => y.id === id); return x ? `<button class="rp-open${x.kind === 'spy' ? ' spy' : ''}" data-act="report" data-id="${id}">Voir le rapport ${x.kind === 'spy' ? 'd’espionnage' : 'de combat'} ›</button>` : ''; }
+function docWaitLeft() { return st.doctrine ? Math.max(0, (st.docAt || 0) + DOC_WAIT() - st.t) : 0; }
+function openDoctrine() { advanceTo(Date.now()); openModal('doctrine', doctrineSheet()); }
+function doctrineSheet() {
+  const left = docWaitLeft();
+  const cards = DOC_ORDER.map(id => {
+    const d = DOCTRINE[id], cur = st.doctrine === id;
+    return `<section class="docc${cur ? ' cur' : ''}" style="--c:var(--${d.color})"><div class="docc-h"><span class="docc-i">${svg(d.icon)}</span><div><p class="eyebrow">${d.tag}</p><h3>${d.name}</h3></div></div><p class="docc-p">${d.pitch}</p><ul>${d.perks.map(p => `<li>${p}</li>`).join('')}</ul>${cur ? '<p class="docc-cur">Doctrine actuelle</p>' : `<button class="btn block${left ? '' : ' primary'}" data-act="adopt" data-id="${id}"${left ? ' disabled' : ''}>${left ? `Changement possible dans ${fmtDur(left)}` : st.doctrine ? 'Changer pour cette voie' : 'Adopter cette voie'}</button>`}</section>`;
+  }).join('');
+  return `${XBTN}<div class="sh-title"><h2>Doctrine</h2></div><p class="desc">La voie que suit ${esc(st.name)}. ${st.doctrine ? `Changer est gratuit, au plus une fois toutes les ${fmtDur(DOC_WAIT())}.` : 'Le premier choix est gratuit et immédiat ; vous pourrez en changer plus tard.'}</p><div class="docs">${cards}</div>`;
+}
+function adoptDoctrine(id) {
+  if (!DOCTRINE[id] || st.doctrine === id || docWaitLeft() > 0) return;
+  const prev = st.doctrine; st.doctrine = id; st.docAt = st.t; simCache.clear();
+  log('info', prev ? `Nouvelle doctrine : ${DOCTRINE[id].name} remplace ${DOCTRINE[prev].name}.` : `Doctrine adoptée : ${DOCTRINE[id].name}.`);
+}
+/* ---- classement ---- */
+function myPoints() {
+  let econ = 0, res = 0, mil = 0;
+  for (const id in MOD) for (let l = 1; l <= lvl(id); l++) econ += sumCost(cost(MOD[id].cost(l)));
+  for (const id in TECH) for (let l = 1; l <= tech(id); l++) res += sumCost(cost(TECH[id].cost(l)));
+  const ships = { ...st.ships }; for (const f of st.fleets) for (const id in f.ships) ships[id] = (ships[id] || 0) + (f.ships[id] || 0);
+  for (const id in SHIP) mil += (ships[id] || 0) * sumCost(SHIP[id].cost);
+  for (const id in DEF) mil += (st.def[id] || 0) * sumCost(DEF[id].cost);
+  return { econ: econ / 1000, res: res / 1000, mil: mil / 1000, total: (econ + res + mil) / 1000 };
+}
+function rankList() {
+  const list = [{ me: true, name: st.name, pts: myPoints().total }];
+  for (const k in st.map) { const c = st.map[k]; if (c.type === 'rival') { rivalTick(c, st.t, 0); list.push({ k, name: c.name, pts: rivalPts(c, st.t), silent: c.silent, pers: c.pers }); } }
+  return list.sort((a, b) => b.pts - a.pts);
+}
+function rankingHtml() {
+  const L = rankList(), me = myPoints(), max = Math.max(1, ...L.map(x => x.pts));
+  const rows = L.map((x, i) => `<button class="rk${x.me ? ' me' : ''}${x.silent ? ' silent' : ''}" ${x.me ? 'data-act="tab" data-id="station"' : `data-act="cell" data-k="${x.k}"`}><span class="rk-n">${i + 1}</span><span class="rk-t"><b>${esc(x.name)}</b><span>${x.me ? 'Vous' : `Station ${RIVAL_PERS[x.pers].name} · ${x.silent ? 'silencieuse' : 'active'}`}</span><i><em style="width:${(x.pts / max * 100).toFixed(1)}%"></em></i></span><span class="rk-p">${fmt(x.pts)}</span></button>`).join('');
+  const pt = (l, v, col) => `<div class="pt" style="--c:var(--${col})"><span>${l}</span><b>${fmt(v)}</b></div>`;
+  return `<section class="panel rk-me"><h3>Vos points</h3><div class="pts">${pt('Économie', me.econ, 'ore')}${pt('Recherche', me.res, 'data')}${pt('Militaire', me.mil, 'danger')}</div><p class="hint-s">Un point pour 1 000 unités investies (les données comptent triple). Les vaisseaux et défenses perdus ne comptent plus.</p></section>
+    <div class="list rk-list">${rows}</div>
+    <p class="hint-s">Une station silencieuse ne progresse plus et ne remplace plus ses pertes : ses réserves s’accumulent, c’est une cible de choix.</p>`;
+}
 function openReport(id) {
   advanceTo(Date.now());
   const r = (st.reports || []).find(x => x.id === +id);
@@ -2370,8 +2592,8 @@ function reportSheet(r) {
   }).join('') : '<p class="empty">Personne.</p>';
   const cols = r.tl.map(([y, f], i) => `<div class="rp-col"><span class="rp-bar you" style="--h:${Math.round(y * 100)}%"></span><span class="rp-bar foe" style="--h:${Math.round(f * 100)}%"></span><em>${i || 'Avant'}</em></div>`).join('');
   return `${XBTN}<div class="rp-head" style="--c:var(--${tone})"><p class="eyebrow">Rapport de combat · ${clock(r.t)}</p><h2>${esc(r.title)}</h2><p class="rp-sub"><b>${verdict}</b> · ${esc(r.place)} · ${r.rounds} salve${r.rounds > 1 ? 's' : ''}</p></div>
-    <section class="panel rp-chart"><div class="rp-legend"><span class="you">Vos forces</span><span class="foe">${r.kind === 'attack' ? 'Le nid' : 'Corsaires'}</span><span class="muted">coque restante, salve par salve</span></div><div class="rp-cols">${cols}</div></section>
-    <div class="rp-sides"><section class="panel"><h3>Vos forces</h3>${side(r.you, true)}</section><section class="panel"><h3>${r.kind === 'attack' ? 'Le nid' : 'Corsaires'}</h3>${side(r.foe, false)}</section></div>
+    <section class="panel rp-chart"><div class="rp-legend"><span class="you">Vos forces</span><span class="foe">${(r.foeName || (r.kind === 'attack' ? 'Le nid' : 'Corsaires'))}</span><span class="muted">coque restante, salve par salve</span></div><div class="rp-cols">${cols}</div></section>
+    <div class="rp-sides"><section class="panel"><h3>Vos forces</h3>${side(r.you, true)}</section><section class="panel"><h3>${(r.foeName || (r.kind === 'attack' ? 'Le nid' : 'Corsaires'))}</h3>${side(r.foe, false)}</section></div>
     ${r.lines.length ? `<ul class="rp-lines">${r.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}`;
 }
 function refreshSheet() {
@@ -2382,6 +2604,7 @@ function refreshSheet() {
   if (modalKind === 'item' && itemSel) html = itemSheet();
   else if (modalKind === 'activity') html = activitySheet();
   else if (modalKind === 'cell' && sel) html = cellSheet();
+  else if (modalKind === 'doctrine') html = doctrineSheet();
   if (html == null) return;
   const top = sh.scrollTop; sh.innerHTML = html; sh.scrollTop = top; paintThumbs();
 }
@@ -2410,11 +2633,13 @@ function waitShort(c, r) {
   return fmtDur(worst);
 }
 /* ---- retours de jeu : lancement, décompte, célébration, dépenses, sons ---- */
-const QUEST_TARGET = { q1: ['mod', 'drill'], q2: ['mod', 'ice'], q3: ['mod', 'sail'], q4: ['mod', 'hab'], q5: ['mod', 'lab'], q6: ['tech', 'deep'], q7: ['mod', 'works'], q8: ['mod', 'yard'], q9: ['ship', 'scout'], q10: ['ship', 'drone'], q11: ['mod', 'bastion'], q11b: ['def', 'flak'], q12b: ['view', 'map'], q14b: ['view', 'fleets'], q14: ['ship', 'seed'], q15: ['tech', 'stellar'], q16: ['mod', 'beacon'], q17: ['mod', 'beacon'] };
+const QUEST_TARGET = { q1: ['mod', 'drill'], q2: ['mod', 'ice'], q3: ['mod', 'sail'], q4: ['mod', 'hab'], q5: ['mod', 'lab'], q6: ['tech', 'deep'], q7: ['mod', 'works'], q8: ['mod', 'yard'], q9: ['ship', 'scout'], q10: ['ship', 'drone'], q11: ['mod', 'bastion'], q5b: ['view', 'doctrine'], q11b: ['def', 'flak'], q13b: ['view', 'rank'], q12b: ['view', 'map'], q14b: ['view', 'fleets'], q14: ['ship', 'seed'], q15: ['tech', 'stellar'], q16: ['mod', 'beacon'], q17: ['mod', 'beacon'] };
 function curTarget() { const q = QUESTS.find(x => !st.quests[x.id]); return q ? QUEST_TARGET[q.id] || null : null; }
 function goQuest() {
   const t = curTarget();
   if (!t) { setTab('journal'); return; }
+  if (t[0] === 'view' && t[1] === 'doctrine') { openDoctrine(); return; }
+  if (t[0] === 'view' && t[1] === 'rank') { seg.journal = 'rank'; if (tab !== 'journal') setTab('journal'); else { renderView(true); updateDynamic(); } return; }
   if (t[0] === 'view') { seg.sector = t[1]; if (tab !== 'sector') setTab('sector'); else { renderView(true); updateDynamic(); } return; }
   if (t[0] === 'mod') { seg.station = INST.includes(t[1]) ? 'inst' : 'prod'; if (tab !== 'station') setTab('station'); else { renderView(true); updateDynamic(); } }
   else if (t[0] === 'tech' && tab !== 'research') setTab('research');
@@ -2737,6 +2962,9 @@ document.addEventListener('click', e => {
     case 'qty-set': qty[id] = el.dataset.v === 'max' ? Math.max(1, maxAfford(id)) : clampInt(el.dataset.v, 1, 9999); refreshShipCard(id, true); break;
     case 'cell': openCell(el.dataset.k); break;
     case 'report': openReport(el.dataset.id); break;
+    case 'doctrine': openDoctrine(); break;
+    case 'adopt': act(() => adoptDoctrine(id)); if (modalKind === 'doctrine') $('#sheet').innerHTML = doctrineSheet(); break;
+    case 'ranking': seg.journal = 'rank'; if (tab !== 'journal') setTab('journal'); else { renderView(true); updateDynamic(); } break;
     case 'mission': openFleet(el.dataset.k, el.dataset.m); break;
     case 'fc-step': if (fc) { fc.sel[id] = clampInt((fc.sel[id] || 0) + (+el.dataset.d), 0, st.ships[id] || 0); refreshFc(true); } break;
     case 'fc-opt': if (fc) { const k = el.dataset.k; fc[k] = k === 'ret' ? el.dataset.v : +el.dataset.v; el.parentNode.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === el))); refreshFc(false); } break;
@@ -2789,7 +3017,7 @@ function tick() {
   advanceTo(Date.now());
   checkQuests();
   const th = threatVisible();
-  if (th !== threatShown) { threatShown = th; dirty = true; if (th && live && st.raid) toast(`Raid corsaire détecté : ${listText(st.raid.comp, PIRATE)}. Arrivée dans ${fmtDur(st.raid.at - Date.now())}.`, 'raid'); }
+  if (th !== threatShown) { threatShown = th; dirty = true; if (th && live && st.raid) toast(`${raidName()} en approche : ${raidText()}. Arrivée dans ${fmtDur(st.raid.at - Date.now())}.`, 'raid'); }
   if (ver !== v0) scheduleSave();
   if (dirty || pendingView) flush(); else updateDynamic();
   if (st.won && !st.wonSeen && !modalKind) openVictory();
