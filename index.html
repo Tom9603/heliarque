@@ -885,6 +885,62 @@ body{font-size:14.5px}
 }
 .timeline li.k-rival{--c:var(--energy)}
 .toast.k-rival .tdot{background:var(--energy)}
+/* fiches d'information et guide */
+.dp-help,.rs-help{appearance:none;display:inline-grid;place-items:center;width:22px;height:22px;margin-left:8px;padding:0;border-radius:50%;border:1px solid #0A121D;background:linear-gradient(180deg,#B8D6F5,#5E8DC4);color:#0A1320;font-family:var(--f-hud);font-size:14px;font-weight:700;line-height:1;vertical-align:3px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 3px rgba(0,0,0,.6);text-shadow:none}
+.rs-help{width:19px;height:19px;font-size:12px;margin-left:6px;vertical-align:1px}
+.gear.help{font-family:var(--f-hud);font-size:19px;font-weight:700;color:#9CC3EE;margin-right:0}
+.inf-head{display:grid;grid-template-columns:76px minmax(0,1fr);gap:11px;align-items:center;padding-right:40px}
+.inf-img{width:76px;height:76px;border-radius:4px;overflow:hidden;box-shadow:0 0 0 1px #000,0 0 0 2px color-mix(in oklab,var(--c) 70%,transparent)}
+.inf-img img{width:100%;height:100%;object-fit:cover;display:block}
+.inf-img img:not([src]){visibility:hidden}
+.inf-ico{width:56px;height:56px;display:grid;place-items:center;border-radius:4px;background:#0A1320;box-shadow:0 0 0 1px #2B4462}
+.inf-ico .ri{width:30px;height:30px}
+.inf-head + .inf-lore,.inf-head ~ .pnl{margin-top:0}
+.inf-head h2{color:var(--title)}
+.inf-lv{font-size:13px;color:var(--ink-2)}
+.inf-lore{margin:0;font-size:13px;font-style:italic;color:var(--ink-3)}
+.inf-b{padding:9px 11px;display:grid;gap:6px}
+.inf-p{margin:0;font-size:13.5px;line-height:1.45;color:var(--ink-2)}
+.inf-kv{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13px;color:var(--ink-2);border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:4px}
+.inf-kv b{color:#fff;text-align:right}
+.inf-n{margin:0;font-size:11.5px;color:var(--ink-3)}
+.inf-t{width:100%;border-collapse:collapse;font-size:12px}
+.inf-t th{text-align:left;font-weight:700;color:#8FB6E2;padding:3px 4px;border-bottom:1px solid var(--frame)}
+.inf-t td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--ink-2);vertical-align:top}
+.inf-t td:first-child{color:var(--title);font-weight:700}
+.inf-t .cm{display:inline-flex;margin-right:6px;white-space:nowrap}
+.guide{display:grid;gap:5px}
+.g-d{border:1px solid var(--frame);border-radius:4px;background:linear-gradient(180deg,#17263B,#0C1625)}
+.g-d summary{list-style:none;cursor:pointer;padding:9px 30px 9px 11px;font-weight:700;color:#E6EEF8;position:relative}
+.g-d summary::-webkit-details-marker{display:none}
+.g-d summary::after{content:"›";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--ink-3);transition:transform .2s}
+.g-d[open] summary::after{transform:translateY(-50%) rotate(90deg)}
+.g-d p{margin:0;padding:0 11px 10px;font-size:13.5px;line-height:1.45;color:var(--ink-2)}
+/* arbre des technologies */
+.tr-step{display:grid;gap:6px}
+.tr-step h3{display:flex;align-items:center;gap:8px;margin:0;font-size:15px;color:#E6EEF8}
+.tr-step h3 span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,var(--title),#B07A1C);color:#1A0F00;font-size:13px;font-weight:700;flex:none}
+.tr-list{display:grid;gap:5px}
+.tr-arrow{text-align:center;color:var(--title);font-size:13px;line-height:1;opacity:.8}
+.tr-i{appearance:none;display:grid;grid-template-columns:46px minmax(0,1fr);gap:9px;align-items:start;width:100%;padding:7px 9px;text-align:left;cursor:pointer;color:var(--ink);border:1px solid var(--frame);border-radius:4px;background:linear-gradient(180deg,#17263B,#0C1625);box-shadow:inset 3px 0 0 #3A4D63}
+.tr-i.ok{box-shadow:inset 3px 0 0 var(--ok)}
+.tr-th{width:46px;height:46px;border-radius:3px;overflow:hidden;background:#0A1320}
+.tr-th img{width:100%;height:100%;object-fit:cover;display:block}
+.tr-th img:not([src]){visibility:hidden}
+.tr-i:not(.ok) .tr-th img{filter:grayscale(.7) brightness(.6)}
+.tr-t{display:grid;gap:2px;min-width:0}
+.tr-t b{font-size:14.5px;color:#F1F5FA}
+.tr-t em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8FB6E2}
+.tr-w{font-size:12.5px;line-height:1.35;color:var(--ink-2)}
+.tr-rs{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.tr-r{display:inline-flex;gap:4px;padding:1px 7px;border-radius:3px;font-size:11.5px;font-weight:600;color:#C9B07A;background:rgba(242,181,68,.1);box-shadow:inset 0 0 0 1px rgba(242,181,68,.3)}
+.tr-r.ok{color:#8BE36A;background:rgba(92,195,63,.1);box-shadow:inset 0 0 0 1px rgba(92,195,63,.35)}
+.tr-okk{color:#8BE36A}
+.tr-us{display:flex;flex-wrap:wrap;gap:5px}
+.tr-u{appearance:none;padding:4px 9px;border-radius:4px;border:1px solid #0A121D;background:linear-gradient(180deg,#2C4260,#1A2B42);color:#E6EEF8;font:inherit;font-size:12.5px;cursor:pointer}
+.tr-u b{color:var(--title)}
+.tr-link,.tree-link,.tr-back{appearance:none;justify-self:start;border:0;background:none;padding:2px 0;color:#8FC8FF;font:inherit;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.tr-back{margin:-4px 0 2px}
 </style>
 </head>
 <body>
@@ -2915,7 +2971,7 @@ const VIEWS = {
     const r = rates(), cur = curQuest();
     const ids = seg.station === 'inst' ? INST : PROD;
     const d = DOCTRINE[st.doctrine], L = rankList(), rk = L.findIndex(x => x.me) + 1;
-    return `<div class="vh"><h1>${esc(st.name)}</h1><span>${fmt(myPoints().total)} pts · Vesper ${pct(lumAt(lvl('beacon')))}</span>${GEAR}</div>
+    return `<div class="vh"><h1>${esc(st.name)}</h1><span>${fmt(myPoints().total)} pts · Vesper ${pct(lumAt(lvl('beacon')))}</span>${HELP}${GEAR}</div>
       <div class="vh-sub"><button class="sub-chip${d ? '' : ' todo'}" data-act="doctrine" style="--c:var(--${d ? d.color : 'energy'})">${svg(d ? d.icon : 'beacon')}<span>Doctrine</span><b>${d ? d.name : 'À choisir'}</b></button><button class="sub-chip" data-act="ranking" style="--c:var(--vesper-2)">${svg('sheet')}<span>Classement</span><b>${rankTxt(rk)} sur ${L.length}</b></button>${leaveBtn()}</div>
       ${cur ? `<button class="quest" data-act="quest-go"><span class="quest-k">Objectif</span><span class="quest-t">${cur.title}</span><span class="quest-d">${cur.text}</span><span class="quest-go">${curTarget() ? 'Y aller' : 'Voir'}</span></button>` : ''}
       <div id="alerts">${alertsHtml(r)}</div>
@@ -2925,12 +2981,14 @@ const VIEWS = {
   research() {
     return `<div class="vh"><h1>Laboratoire</h1><span>${lvl('lab') ? '+' + fmt(rates().data) + ' données/h' : 'Non construit'}</span></div>
       ${lvl('lab') ? '' : '<p class="note">Construisez le Laboratoire (Station › Installations) pour lancer des recherches.</p>'}
+      <button class="tree-link" data-act="tree">Arbre des technologies : que débloque quoi ? ›</button>
       ${detailPanel('tech', curPick('tech'))}${tileGrid('tech', TECH_ORDER)}`;
   },
   yard() {
     const n = SHIP_ORDER.reduce((a, id) => a + (st.ships[id] || 0), 0), nd = DEF_ORDER.reduce((a, id) => a + (st.def[id] || 0), 0), d = seg.yard === 'def';
     return `<div class="vh"><h1>Chantier</h1><span>${d ? `${fmt(nd)} défense${nd > 1 ? 's' : ''} en place` : `${fmt(n)} vaisseau${n > 1 ? 'x' : ''} à quai`}</span></div>
       ${lvl('yard') ? '' : '<p class="note">Construisez le Chantier orbital (Station › Installations) pour fabriquer des vaisseaux et des défenses.</p>'}
+      <button class="tree-link" data-act="tree">Arbre des technologies : que débloque quoi ? ›</button>
       ${segsHtml('yard', [['ships', 'Vaisseaux'], ['def', nd ? `Défenses · ${fmt(nd)}` : 'Défenses']])}
       ${d ? `<p class="hint-s">Les défenses ne quittent pas la station. Après un raid, les drones de maintenance en remettent <b>${pct(repairFrac())}</b> en état (plus avec les Ateliers).</p>` : ''}
       ${detailPanel(d ? 'def' : 'ship', curPick(d ? 'def' : 'ship'))}${tileGrid(d ? 'def' : 'ship', d ? DEF_ORDER : SHIP_ORDER)}`;
@@ -2945,7 +3003,7 @@ const VIEWS = {
   journal() {
     st.seenLog = st.t;
     const cur = curQuest(), done = QUESTS.filter(q => st.quests[q.id]).length;
-    return `<div class="vh"><h1>Journal</h1><span>${done}/${QUESTS.length} objectifs</span>${GEAR}</div>
+    return `<div class="vh"><h1>Journal</h1><span>${done}/${QUESTS.length} objectifs</span>${HELP}${GEAR}</div>
       ${segsHtml('journal', [['quests', 'Objectifs'], ['log', 'Événements'], ['rank', 'Classement']])}
       ${seg.journal === 'rank' ? rankingHtml() : seg.journal === 'log'
         ? (st.log.length ? `<section class="panel"><ul class="timeline">${st.log.map(e => `<li class="k-${e.k}"><span class="when">${clock(e.t)} · <b>${KIND[e.k] || ''}</b></span>${esc(e.m)}${repBtn(e.r)}</li>`).join('')}</ul></section>` : '<p class="empty">Rien à signaler pour l’instant.</p>')
@@ -2955,6 +3013,7 @@ const VIEWS = {
 
 /* ---- fiches ---- */
 const GEAR = `<button class="gear" data-act="settings" aria-label="Paramètres"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="3.5"/><circle cx="14" cy="14" r="8"/><path d="M14 2.5v3.5M14 22v3.5M2.5 14H6M22 14h3.5M5.9 5.9l2.4 2.4M19.7 19.7l2.4 2.4M22.1 5.9l-2.4 2.4M8.3 19.7l-2.4 2.4"/></svg></button>`;
+const HELP = '<button class="gear help" data-act="guide" aria-label="Guide du jeu">?</button>';
 const XBTN = '<button class="sh-x" data-act="close" aria-label="Fermer">×</button>';
 function openItem(kind, id) {
   if (!defOf(kind, id)) return;
@@ -2973,7 +3032,7 @@ function activitySheet() {
 function openRes() { advanceTo(Date.now()); openModal('res', resSheet()); }
 function resSheet(r) {
   r = r || rates();
-  const row = (k, name, val, sub, warn) => `<span class="rs-row" style="--c:var(--${k})">${ri(k)}<span class="rs-n">${name}</span><span class="rs-v">${val}</span><span class="rs-s${warn ? ' warn' : ''}">${sub}</span></span>`;
+  const row = (k, name, val, sub, warn) => `<span class="rs-row" style="--c:var(--${k})">${ri(k)}<span class="rs-n">${name}<button class="rs-help" data-act="info" data-kind="res" data-id="${k}" aria-label="À quoi sert : ${name}">?</button></span><span class="rs-v">${val}</span><span class="rs-s${warn ? ' warn' : ''}">${sub}</span></span>`;
   const block = (k, head, kind, total, unit) => {
     const L = prodLines(kind);
     return `<details class="rs-d"><summary>${head}</summary><div class="pb">${L.map(([l, v, c]) => `<div class="pb-l${c ? ' ' + c : ''}"><span>${l}</span><b>${v >= 0 ? '+' : '−'}${fmt(Math.abs(v))}</b></div>`).join('')}<div class="pb-l tot"><span>Total</span><b>${total >= 0 ? '' : '−'}${fmt(Math.abs(total))}${unit}</b></div></div></details>`;
@@ -3210,6 +3269,204 @@ function openSeasonEnd() {
     <div class="chips"><span class="chip"><b>+${fmt(rec.rw.ore)}</b> minerai</span><span class="chip"><b>+${fmt(rec.rw.ice)}</b> glace</span><span class="chip"><b>+${fmt(rec.rw.data)}</b> données</span></div>
     <p class="muted">La saison ${rec.n + 1} commence. Les stations rivales, elles, continuent de grandir.</p>
     <div class="sheet-actions one"><button class="btn primary" data-act="close">Continuer</button></div>`);
+}
+/* ---- fiches d'information : le bouton « ? » ---- */
+const INFO = {
+  mod: {
+    drill: { what: 'La source principale de minerai : il entre dans presque toutes les constructions, toutes les coques et la plupart des défenses.', how: 'Produit en continu, même pendant votre absence. Sa production dépend de l’énergie (Voile solaire) et des colons au travail (Habitat) : s’il en manque, elle baisse d’autant. Chaque niveau consomme un peu plus d’énergie et de colons ; la recherche Forage profond ajoute 8 % par niveau.', tip: 'Gardez-la un ou deux niveaux au-dessus du Collecteur de glace : le minerai part plus vite que la glace.' },
+    ice: { what: 'Produit la glace, à la fois matériau de construction, ingrédient de nombreuses recherches et carburant de toutes vos flottes.', how: 'Fonctionne comme la Foreuse : production continue, freinée s’il manque d’énergie ou de colons. La Cryogénie ajoute 8 % par niveau ; les comètes et leurs avant-postes en fournissent aussi.', tip: 'Si vous lancez beaucoup d’expéditions ou d’attaques, la glace devient vite le goulot : le carburant grimpe fort à pleine vitesse.' },
+    sail: { what: 'Fournit l’énergie qui fait tourner la Foreuse, le Collecteur de glace et le Laboratoire.', how: 'L’énergie ne se stocke pas. Si la consommation dépasse la production, ces trois installations tournent au même pourcentage : 80 % d’énergie, c’est 80 % de production partout. Les voiles ont besoin de colons pour l’entretien ; le Rendement photonique ajoute 8 % par niveau.', tip: 'Dès que l’énergie passe dans le rouge, montez la Voile avant tout le reste : c’est alors le niveau le plus rentable de la station.' },
+    hab: { what: 'Loge les colons, la main-d’œuvre de la station.', how: 'Chaque niveau relève la population maximale ; les colons arrivent peu à peu jusqu’à ce plafond. Mines, voiles et laboratoire ont besoin d’un certain nombre de colons pour tourner à plein, et chaque Semeur en emporte 25 pour fonder un avant-poste.', tip: 'Quand l’alerte « Pas assez de colons » s’affiche, un niveau d’Habitat relance toute la production d’un coup.' },
+    lab: { what: 'Produit les données et débloque les recherches.', how: 'Les données s’accumulent sans limite de stock : elles paient les recherches et quelques unités avancées. Chaque niveau accélère aussi les recherches de 10 % et en débloque de nouvelles. Le Laboratoire consomme de l’énergie et des colons comme une mine.', tip: 'Un niveau d’avance sur vos besoins évite d’attendre les données au moment de lancer une recherche importante.' },
+    depot: { what: 'Augmente le stock maximal de minerai et de glace, et met une part de vos réserves à l’abri des pillards.', how: 'Quand un stock est plein, sa production s’arrête : c’est de la production perdue. Lors d’un raid réussi, les pillards ne peuvent pas toucher 500 unités plus 5 % de la capacité de chaque ressource (15 % avec la doctrine des Forges).', tip: 'Visez une capacité qui couvre au moins une nuit de production, surtout avant de partir longtemps.' },
+    works: { what: 'Accélère toutes les constructions de bâtiments et améliore la réparation des défenses.', how: 'Chaque niveau raccourcit les chantiers de 12 % (l’effet se cumule) et fait remettre en état 5 % de défenses en plus après un raid, jusqu’à 80 %.', tip: 'Un des meilleurs investissements à moyen terme : tout ce que vous construisez ensuite ira plus vite.' },
+    yard: { what: 'Assemble vos vaisseaux et vos défenses.', how: 'Le niveau 1 ouvre la fabrication ; chaque niveau suivant accélère la cadence de 20 %. Certaines coques demandent un niveau minimal de Chantier. La file accepte cinq commandes, livrées une unité après l’autre.', tip: 'Lancez de grosses commandes avant de vous absenter : le Chantier tourne pendant votre absence.' },
+    radar: { what: 'Élargit la carte visible, repère les raids plus tôt et vous donne plus d’avant-postes, de flottes et d’expéditions.', how: 'Portée : 1 saut, plus 1 par niveau. Alerte de raid : 4 minutes plus 3 par niveau, divisées par la vitesse du temps. Avant-postes et places de flotte : +1 tous les 2 niveaux ; expéditions simultanées : +1 tous les 3 niveaux.', tip: 'Une alerte plus précoce laisse le temps de mettre la flotte à l’abri ou d’activer le bouclier de veille.' },
+    bastion: { what: 'La première ligne de défense : une structure armée qui combat à chaque raid et ne disparaît jamais.', how: 'Il attire huit fois plus de tirs qu’une unité ordinaire, ce qui protège le reste de la station, puis se répare entièrement après le combat. Ses niveaux débloquent les défenses : Tourelle à éclats (1), Batterie à rail (2), Voile déflecteur (3), Lance-arc (4).', tip: 'Montez-le tôt : il rend les premiers raids bien moins rentables pour les corsaires.' },
+    beacon: { what: 'Le but final de la partie : cinq étages pour rallumer Vesper.', how: 'Chaque étage augmente la luminosité de l’étoile ; le cinquième achève la mission, et vous pouvez continuer à jouer ensuite. Il faut une station très avancée (Chantier 6, Laboratoire 8, Ateliers 5) et la Théorie stellaire au niveau 3.', tip: 'Préparez un gros stock et un Entrepôt large : chaque étage coûte très cher.' },
+  },
+  tech: {
+    deep: { what: 'Augmente la production de minerai de toute la station.', how: '+8 % de minerai par niveau, sur la Foreuse comme sur les avant-postes miniers.', tip: 'Très rentable tant que la Foreuse tourne à plein : vérifiez l’énergie et les colons.' },
+    cryo: { what: 'Augmente la production de glace de toute la station.', how: '+8 % de glace par niveau, sur le Collecteur comme sur les avant-postes de comète.', tip: 'À pousser si vos flottes volent souvent : la glace sert aussi de carburant.' },
+    photon: { what: 'Augmente l’énergie produite par les voiles.', how: '+8 % d’énergie par niveau. Le niveau 2 débloque le Voile déflecteur, le niveau 4 la Théorie stellaire.', tip: 'Utile quand l’énergie manque : c’est parfois moins cher qu’un niveau de Voile.' },
+    hold: { what: 'Agrandit la soute de tous vos vaisseaux.', how: '+15 % de soute par niveau. Le niveau 1 débloque la Barge.', tip: 'Pillages, extractions et expéditions sont plafonnés par la soute : chaque niveau rapporte sur toutes ces missions.' },
+    ion: { what: 'Rend tous vos vaisseaux plus rapides.', how: '+10 % de vitesse par niveau, sans consommer plus de carburant. Le niveau 2 débloque la Corvette, le niveau 3 l’Hyperespace.', tip: 'Des trajets plus courts, ce sont des flottes moins longtemps exposées et plus de missions par jour.' },
+    auto: { what: 'Réduit le nombre de colons dont les installations ont besoin.', how: 'Chaque niveau réduit de 7 % les colons nécessaires (l’effet se cumule).', tip: 'Intéressante quand l’Habitat coûte cher et que les postes ne sont pas tous pourvus.' },
+    armor: { what: 'Renforce la coque et le bouclier de vos vaisseaux, de vos défenses et du Bastion.', how: '+10 % de coque et de bouclier par niveau. Le niveau 1 débloque la Batterie à rail ; avec les Lances à plasma, elle ouvre la voie au Gardien.', tip: 'Chaque niveau rend tous vos combats plus sûrs, en attaque comme en défense.' },
+    plasma: { what: 'Augmente la puissance de feu de vos vaisseaux, de vos défenses et du Bastion.', how: '+10 % de feu par niveau. Le niveau 2 débloque le Lance-arc, le niveau 3 le Gardien.', tip: 'À monter en parallèle du Blindage composite : feu et coque comptent autant l’un que l’autre.' },
+    terra: { what: 'Permet de loger plus de colons.', how: '+10 % de colons maximum par niveau.', tip: 'Un complément à l’Habitat quand ses niveaux deviennent très chers.' },
+    hyper: { what: 'Raccourcit tous les trajets de vos flottes.', how: 'Chaque niveau réduit la durée des trajets de 10 % (l’effet se cumule).', tip: 'Précieux pour les expéditions et les cibles lointaines.' },
+    stellar: { what: 'Prépare l’objectif final : comprendre le cœur de Vesper.', how: 'Le niveau 3 débloque l’Allumeur stellaire.', tip: 'Très coûteuse : lancez-la quand votre économie tourne déjà bien.' },
+  },
+  ship: {
+    drone: { what: 'Le travailleur de la flotte : il extrait la matière des astéroïdes et des comètes et ramasse les débris.', how: 'Une mission d’extraction ou de récupération exige au moins un drone ; la quantité rapportée dépend de la soute de toute la flotte, donc ajoutez des Barges. Coque légère, presque sans arme.', tip: 'Mettez vos drones à l’abri avant un raid : ce sont souvent les premières pertes.' },
+    scout: { what: 'Rapide et discret : il explore les cases inconnues, étudie les anomalies et espionne nids et stations.', how: 'Le plus rapide des vaisseaux, mais presque sans soute ni arme. Un espion peut être repéré et abattu, après avoir transmis son rapport. En expédition, il améliore les chances de bonnes trouvailles.', tip: 'Espionnez toujours avant d’attaquer : sans renseignement, le simulateur ne peut rien estimer.' },
+    lancer: { what: 'Chasseur léger, bon marché, redoutable en nombre.', how: 'Ses dégâts sont multipliés par 1,8 contre les coques légères (Écorcheurs, Lanciers adverses). Fragile face aux défenses, surtout aux Tourelles à éclats qui chassent justement les coques légères.', tip: 'Parfait contre les petits nids et les raids d’Écorcheurs ; accompagnez-le de Corvettes contre le reste.' },
+    hauler: { what: 'Une soute immense pour les extractions, les pillages et les expéditions.', how: 'Lente et quasi désarmée, elle emporte bien plus que n’importe quel autre vaisseau (et davantage avec les Soutes modulaires). Le butin d’un pillage ou d’une expédition est plafonné par la soute de la flotte.', tip: 'Ajoutez des Barges à chaque assaut contre une cible riche : sans soute, une victoire ne rapporte rien.' },
+    corvette: { what: 'Coque lourde polyvalente, le cœur d’une flotte d’assaut.', how: 'Ses dégâts sont multipliés par 1,6 contre les coques lourdes (Briseurs, Gueules-de-fer, Corvettes adverses). Bon équilibre entre feu, coque et vitesse.', tip: 'Mélangez-la aux Lanciers : les uns absorbent les tirs légers, les autres percent les coques lourdes.' },
+    seed: { what: 'Fonde un avant-poste sur un astéroïde ou une comète.', how: 'Il emporte 25 colons et s’installe à l’arrivée : l’avant-poste produit ensuite en continu. Le nombre d’avant-postes dépend de l’Antenne profonde, et plus le gisement est loin, plus il produit.', tip: 'Visez les gisements éloignés : ils rapportent nettement plus que les cases voisines.' },
+    warden: { what: 'Croiseur lourd taillé pour briser les remparts des nids et les défenses des stations.', how: 'Ses dégâts sont multipliés par 2,2 contre les structures. Lent et cher, mais sa coque énorme encaisse les salves.', tip: 'Indispensable contre les nids de haut niveau et les stations très défendues.' },
+  },
+  def: {
+    flak: { what: 'Défense légère et bon marché, à poser en nombre.', how: 'Dégâts multipliés par 1,8 contre les coques légères : elle déchire Écorcheurs et Lanciers. Après un raid, une partie des tourelles détruites est réparée par les drones de maintenance.', tip: 'La base de toute défense : quelques dizaines suffisent à décourager les premiers raids.' },
+    rail: { what: 'Défense lourde contre les grosses coques.', how: 'Dégâts multipliés par 1,7 contre les coques lourdes (Briseurs, Corvettes, Gueules-de-fer). Plus chère qu’une tourelle, mais bien plus solide.', tip: 'Ajoutez-en dès que les raids comptent des Briseurs.' },
+    arc: { what: 'Défense de haut niveau, efficace contre tout.', how: 'Dégâts multipliés par 1,3 contre les coques légères et lourdes, avec une coque et un bouclier énormes.', tip: 'Pour une station avancée : quelques Lance-arcs remplacent des dizaines de tourelles.' },
+    veil: { what: 'Une bulle d’énergie qui attire les salves ennemies sur elle.', how: 'Sans arme mais avec un bouclier immense, il détourne une grande partie des tirs et épargne le reste de vos défenses. Un seul par station.', tip: 'Particulièrement utile quand vos défenses sont nombreuses mais fragiles.' },
+  },
+  res: {
+    ore: { name: 'Minerai', what: 'La ressource de base : bâtiments, coques et défenses en consomment presque toujours.', from: 'La Foreuse, les avant-postes miniers, l’extraction d’astéroïdes, les débris et les pillages.', how: 'Le stock est limité par l’Entrepôt : une fois plein, la production s’arrête. Lors d’un raid réussi, jusqu’à 30 % de ce qui dépasse la part à l’abri est emporté.', tip: 'Dépensez avant de partir longtemps, ou agrandissez l’Entrepôt.' },
+    ice: { name: 'Glace', what: 'Matériau de construction, ingrédient de nombreuses recherches et carburant de toutes les flottes.', from: 'Le Collecteur de glace, les avant-postes sur comète, l’extraction de comètes, les débris et les pillages.', how: 'Même stockage que le minerai. Chaque départ de flotte en consomme : le carburant augmente avec la distance, et fortement avec la vitesse de vol choisie.', tip: 'Volez à 50 % quand rien ne presse : le trajet est deux fois plus long, mais la consommation chute.' },
+    data: { name: 'Données', what: 'Le fruit des analyses du Laboratoire : elles paient les recherches et certaines unités avancées.', from: 'Le Laboratoire, l’étude des anomalies par un Éclaireur, les expéditions et le butin des nids.', how: 'Aucune limite de stock, et les corsaires ne peuvent pas les voler. Pour les points, une donnée vaut 3 unités.', tip: 'Montez le Laboratoire régulièrement : les recherches avancées en demandent beaucoup.' },
+    energy: { name: 'Énergie', what: 'Fait tourner la Foreuse, le Collecteur de glace et le Laboratoire.', from: 'La Voile solaire, améliorée par le Rendement photonique.', how: 'L’énergie ne se stocke pas. Si la consommation dépasse la production, ces installations tournent toutes au même pourcentage réduit.', tip: 'Gardez toujours un petit surplus : chaque nouveau niveau de mine consomme davantage.' },
+    pop: { name: 'Colons', what: 'La main-d’œuvre : sans colons, les installations ne tournent pas à plein.', from: 'Ils arrivent peu à peu, jusqu’au maximum fixé par l’Habitat (et le Terraforming).', how: 'Chaque mine, voile et laboratoire demande des colons ; l’Automatisation réduit ce besoin. Les Semeurs emportent 25 colons pour fonder un avant-poste.', tip: 'Si les postes ne sont pas tous pourvus, un niveau d’Habitat rapporte plus que n’importe quelle mine.' },
+  },
+};
+const GUIDE = [
+  ['Premiers pas (à lire en premier)', '1. Montez la Foreuse, le Collecteur de glace et la Voile solaire jusqu’au niveau 3 ou 4 : ce sont vos revenus. 2. Passez l’Habitat au niveau 2 : cela débloque le Laboratoire et les Ateliers. 3. Ateliers niveau 1, puis Chantier orbital : vous pouvez fabriquer vos premiers vaisseaux (un Éclaireur pour explorer, des Drones pour récolter). 4. Au Laboratoire, lancez Forage profond et Cryogénie pour produire davantage. 5. Avant la fin des 15 jours de protection, construisez le Bastion orbital puis des Tourelles à éclats. 6. Espionnez un nid corsaire avant de l’attaquer avec des Lanciers et des Corvettes. 7. Montez l’Antenne profonde pour voir plus loin et fonder des avant-postes. L’arbre des technologies montre tout ce qui se débloque, étape par étape.'],
+  ['Le but du jeu', 'Vesper, la géante rouge, s’éteint. Développez votre station, défendez-la contre les corsaires de la Faille et les stations rivales, puis construisez les cinq étages de l’Allumeur stellaire pour rallumer l’étoile. La partie continue ensuite, saison après saison.'],
+  ['Les ressources', 'Le minerai et la glace servent à tout construire ; la glace sert aussi de carburant. Les données, produites par le Laboratoire, paient les recherches. L’énergie (Voile solaire) et les colons (Habitat) font tourner les installations : s’il en manque, toute la production ralentit. Touchez une ressource en haut de l’écran pour voir d’où vient sa production.'],
+  ['Bâtiments et files d’attente', 'Trois constructions peuvent attendre en file, deux recherches et cinq commandes au Chantier. Tout continue pendant votre absence. Les Ateliers raccourcissent les constructions de 12 % par niveau.'],
+  ['Les recherches', 'Elles améliorent durablement la station : production, vitesse, soutes, armes, blindage. Chacune demande un niveau de Laboratoire et parfois d’autres recherches. Chaque niveau de Laboratoire les accélère de 10 %.'],
+  ['Vaisseaux et défenses', 'Les vaisseaux partent en mission (exploration, extraction, attaque, colonisation) ; les défenses restent à la station. Chaque unité a une coque légère, lourde ou une structure fixe, et souvent une spécialité qui multiplie ses dégâts contre un type de coque.'],
+  ['Le combat', 'Un combat dure au plus 6 salves. À chaque salve, les boucliers se rechargent et absorbent les tirs ; le reste entame la coque. Les tirs se répartissent entre les unités adverses, le Bastion et le Voile déflecteur en attirant davantage. Le simulateur rejoue le combat 48 fois avant l’attaque pour vous donner vos chances.'],
+  ['Flottes et carburant', 'Choisissez la vitesse de vol : à 50 %, le trajet dure deux fois plus longtemps mais brûle bien moins de glace. Le nombre de flottes simultanées dépend de l’Antenne profonde. Une flotte rappelée revient en autant de temps qu’elle a déjà volé.'],
+  ['Espionnage', 'Un Éclaireur rapporte la garnison, les défenses et le butin d’une cible, ce qui permet au simulateur d’estimer vos chances. Le renseignement vieillit : les nids se reconstituent et les stations rivales évoluent.'],
+  ['Expéditions', 'Une flotte part explorer l’espace profond pendant 1, 2 ou 4 heures de jeu. Les chances de chaque issue sont affichées avant le départ, et un Éclaireur les améliore. Les gains sont plafonnés par la soute.'],
+  ['Débris', 'Les vaisseaux détruits laissent 40 % de leur coût en minerai et en glace. Envoyez des Drones foreurs les ramasser : en orbite de votre station, sur les ruines d’un nid ou autour d’une station rivale.'],
+  ['Raids et protection des débuts', 'Pendant les 15 premiers jours, aucune IA ne peut vous attaquer, et les IA ne s’attaquent pas entre elles. Ensuite, corsaires et stations rivales peuvent lancer des raids : l’Antenne les repère à l’avance et vous montre vos chances de tenir. En cas de défaite, 30 % des ressources hors abri sont emportées.'],
+  ['Bouclier de veille', 'Jusqu’à 8 heures par période de 24 heures, les raids sont déviés sans combat, mais la production tourne à 50 %. Lancer un assaut le coupe. Activez-le depuis « Avant de partir », en haut de la Station.'],
+  ['Stations rivales (IA)', 'Trois stations jouent avec les mêmes règles que vous : mines, recherches, vaisseaux, défenses. Elles ne vont jamais plus vite que vous et n’attaquent qu’après 15 jours, quand le butin vaut le risque. Vous pouvez piller une même station au plus 3 fois par période : au-delà, elle est protégée.'],
+  ['Doctrines', 'Trois voies au choix, industrielle, militaire ou exploratrice, avec des bonus permanents. Changer est gratuit, au plus une fois toutes les 12 heures de jeu.'],
+  ['Points, classement et saisons', 'Un point pour 1 000 unités investies (une donnée vaut 3 unités) dans les bâtiments, recherches, vaisseaux et défenses encore en service. Une saison dure 14 jours de jeu : votre rang entre au palmarès avec une récompense, puis la partie continue.'],
+];
+function withState(mut, fn) { const b = st.b, t = st.tech, p = st.pop; try { st.b = { ...b }; st.tech = { ...t }; mut(); return fn(); } finally { st.b = b; st.tech = t; st.pop = p; } }
+const rVal = r => r.ore + r.ice + r.data * 3;
+// gain de production (en unités par heure) entre le niveau prévu et le suivant, dans les conditions actuelles
+function ecoGain(kind, id) {
+  const filled = (kind === 'mod' && id === 'hab') || (kind === 'tech' && id === 'terra');
+  const at = l => withState(() => { if (kind === 'mod') st.b[id] = l; else st.tech[id] = l; if (filled) st.pop = rates().cap; }, () => rVal(rates()));
+  const P = kind === 'mod' ? pendingB(id) : pendingT(id);
+  return at(P + 1) - at(P);
+}
+const kvRow = (k, v) => `<div class="inf-kv"><span>${k}</span><b>${v}</b></div>`;
+function modLevelTxt(id, l) {
+  const m = MOD[id], sp = st.speed;
+  switch (id) {
+    case 'drill': return `${fmt(m.prod(l) * sp)} minerai/h · −${fmt(m.energy(l))} énergie`;
+    case 'ice': return `${fmt(m.prod(l) * sp)} glace/h · −${fmt(m.energy(l))} énergie`;
+    case 'sail': return `${fmt(m.out(l))} énergie`;
+    case 'hab': return `${fmt(m.cap(l))} colons max`;
+    case 'lab': return `${fmt(m.prod(l) * sp)} données/h · −${fmt(m.energy(l))} énergie`;
+    case 'depot': return `stock de ${fmtS(m.store(l))}`;
+    case 'works': return `chantiers −${Math.round((1 - 0.88 ** l) * 100)} %`;
+    case 'yard': return l === 1 ? 'ouvre le chantier' : `cadence +${(l - 1) * 20} %`;
+    case 'radar': return `portée de ${l + 1} sauts`;
+    case 'bastion': return `feu ${fmt(m.atk(l))} · coque ${fmtS(m.hull(l))}`;
+    case 'beacon': return `Vesper à ${pct(lumAt(l))}`;
+  }
+  return '';
+}
+function levelsHtml(kind, id) {
+  const def = defOf(kind, id), P = kind === 'mod' ? pendingB(id) : pendingT(id), max = def.max || 999, rows = [];
+  for (let l = P + 1; l <= Math.min(P + 5, max); l++) { const c = cost(def.cost(l)); rows.push(`<tr><td>${l}</td><td>${costMini(c)}</td><td>${kind === 'mod' ? modLevelTxt(id, l) : def.eff(l)}</td><td>${fmtDur(kind === 'mod' ? bTime(c) : rTime(c))}</td></tr>`); }
+  return rows.length ? `<table class="inf-t"><thead><tr><th>Niv.</th><th>Coût</th><th>Effet</th><th>Durée</th></tr></thead><tbody>${rows.join('')}</tbody></table><p class="inf-n">Durées calculées avec vos Ateliers et votre Laboratoire actuels.</p>` : '<p class="inf-p">Tous les niveaux sont construits.</p>';
+}
+function unitStatsHtml(kind, id) {
+  const u = UNIT(id), isDef = kind === 'def';
+  return [kvRow('Classe', CLS_ONE[u.cls] || '—'), kvRow('Spécialité', roleText(u)), kvRow('Feu', fmt(unitAtk(id))), kvRow('Coque', fmt(unitHull(id))), kvRow('Bouclier', fmt(unitShield(id))),
+    isDef ? '' : kvRow('Vitesse', NF1.format(shipSpeed(id))), isDef ? '' : kvRow('Soute', fmt(shipCargo(id))),
+    isDef ? '' : kvRow('Carburant', `${fmt(fuelCost({ [id]: 1 }, 1, 100))} glace par saut, aller-retour à pleine vitesse`),
+    kvRow('Coût', costMini(cost(u.cost))), kvRow('Assemblage', fmtDur(sTime(id)) + ' par unité')].join('');
+}
+function profitHtml(kind, id) {
+  const def = defOf(kind, id), L = [], unitNote = '<p class="inf-n">1 minerai = 1 glace = 1 unité ; 1 donnée vaut 3 unités.</p>';
+  if (kind === 'ship' || kind === 'def') {
+    const u = UNIT(id), cv = sumCost(u.cost), per = x => fmt(x * 1000 / cv);
+    L.push(kvRow('Coût par unité', `${fmt(cv)} unités`), kvRow('Feu pour 1 000 unités', per(unitAtk(id))), kvRow('Coque pour 1 000 unités', per(unitHull(id))));
+    if (kind === 'ship') L.push(kvRow('Soute pour 1 000 unités', per(shipCargo(id))));
+    else L.push(kvRow('Réparées après un raid', pct(repairFrac())));
+    const pool = (kind === 'def' ? DEF_ORDER : SHIP_ORDER).filter(k => UNIT(k).atk > 2 && reqOk(UNIT(k).req));
+    const best = pool.sort((x, y) => unitAtk(y) / sumCost(UNIT(y).cost) - unitAtk(x) / sumCost(UNIT(x).cost))[0];
+    if (best === id) L.push('<p class="inf-n">Meilleur rapport feu/prix parmi vos unités débloquées de ce type.</p>');
+    return L.join('') + unitNote;
+  }
+  const P = kind === 'mod' ? pendingB(id) : pendingT(id), N = P + 1;
+  if (kind === 'mod' && def.max && P >= def.max) return '<p class="inf-p">Tous les niveaux sont construits.</p>';
+  const c = cost(def.cost(N)), v = sumCost(c);
+  L.push(kvRow(`Coût du niveau ${N}`, `${fmt(v)} unités`));
+  const ECO = kind === 'mod' ? ['drill', 'ice', 'sail', 'lab', 'hab'] : ['deep', 'cryo', 'photon', 'auto', 'terra'];
+  if (ECO.includes(id)) {
+    const g = ecoGain(kind, id);
+    if (g > 0.5) L.push(kvRow('Production gagnée', `+${fmt(g)} unités par heure`), kvRow('Amorti en', fmtDur(v / g * HOUR)));
+    else L.push(kvRow('Production gagnée', id === 'sail' || id === 'photon' ? 'aucune pour l’instant : l’énergie est déjà suffisante' : id === 'auto' ? 'aucune pour l’instant : les postes sont déjà pourvus' : 'aucune pour l’instant'));
+    if (id === 'hab' || id === 'terra') L.push('<p class="inf-n">Calculé une fois les nouveaux colons arrivés.</p>');
+  } else {
+    const m = MOD[id], r = rates();
+    if (id === 'depot') { const pr = l => 500 + (doc('forge') ? 0.15 : 0.05) * m.store(l), fill = Math.min(...['ore', 'ice'].map(k => r[k] > 0 ? (r.store - st.res[k]) / r[k] : Infinity)); L.push(kvRow('Stock maximal', `${fmtS(m.store(P))} → ${fmtS(m.store(N))}`), kvRow('À l’abri des pillards', `${fmt(pr(P))} → ${fmt(pr(N))}`), kvRow('Entrepôt plein dans', fill <= 0 ? 'déjà plein' : isFinite(fill) ? fmtDur(fill * HOUR) : '—')); }
+    else if (id === 'works') L.push(kvRow('Durée des chantiers', `−${Math.round((1 - 0.88 ** P) * 100)} % → −${Math.round((1 - 0.88 ** N) * 100)} %`), kvRow('Réparation des défenses', `${pct(Math.min(0.8, 0.4 + 0.05 * P))} → ${pct(Math.min(0.8, 0.4 + 0.05 * N))}`));
+    else if (id === 'yard') L.push(kvRow('Cadence du chantier', N === 1 ? 'ouverture du chantier' : `+${(P - 1) * 20} % → +${(N - 1) * 20} %`));
+    else if (id === 'radar') L.push(kvRow('Portée', `${P + 1} → ${N + 1} sauts`), kvRow('Alerte de raid', `${fmtDur(warnMsAt(P))} → ${fmtDur(warnMsAt(N))}`), kvRow('Avant-postes', `${1 + Math.floor(P / 2)} → ${1 + Math.floor(N / 2)}`), kvRow('Places de flotte', `${3 + Math.floor(P / 2)} → ${3 + Math.floor(N / 2)}`));
+    else if (id === 'bastion') L.push(kvRow('Feu', `${fmt(m.atk(P))} → ${fmt(m.atk(N))}`), kvRow('Coque', `${fmtS(m.hull(P))} → ${fmtS(m.hull(N))}`), kvRow('Bouclier', `${fmt(m.shield(P))} → ${fmt(m.shield(N))}`));
+    else if (id === 'beacon') L.push(kvRow('Luminosité de Vesper', `${pct(lumAt(P))} → ${pct(lumAt(N))}`));
+    else if (kind === 'tech') L.push(kvRow(`Effet au niveau ${N}`, def.eff(N)));
+  }
+  return L.join('') + unitNote;
+}
+function infoSheet(kind, id) {
+  const sec = (t, body) => `<section class="panel pnl inf-s"><div class="pnl-h"><h3>${t}</h3></div><div class="inf-b">${body}</div></section>`;
+  if (kind === 'res') {
+    const I = INFO.res[id]; if (!I) return '';
+    const r = rates(), facts = id === 'energy' ? [kvRow('Production', fmt(r.eProd)), kvRow('Consommation', fmt(r.eCons)), kvRow('Efficacité', pct(r.eff))]
+      : id === 'pop' ? [kvRow('Colons', `${fmt(st.pop)} / ${fmt(r.cap)}`), kvRow('Postes à pourvoir', fmt(Math.ceil(r.need))), kvRow('Postes pourvus', pct(r.staff))]
+      : id === 'data' ? [kvRow('Stock', fmt(st.res.data)), kvRow('Production', `+${fmt(r.data)} par heure`)]
+      : [kvRow('Stock', `${fmt(st.res[id])} / ${fmtS(r.store)}`), kvRow('Production', `+${fmt(r[id])} par heure`), kvRow('À l’abri des pillards', fmt(protectedAmt()))];
+    return `${XBTN}<div class="inf-head" style="--c:var(--${id})"><span class="inf-ico">${ri(id)}</span><div><p class="eyebrow">Ressource</p><h2>${I.name}</h2></div></div>
+      ${sec('À quoi ça sert', `<p class="inf-p">${I.what}</p>`)}${sec('D’où ça vient', `<p class="inf-p">${I.from}</p>`)}${sec('Fonctionnement', `<p class="inf-p">${I.how}</p>`)}${sec('En ce moment', facts.join(''))}${sec('Conseil', `<p class="inf-p">${I.tip}</p>`)}`;
+  }
+  const def = defOf(kind, id), I = INFO[kind] && INFO[kind][id]; if (!def || !I) return '';
+  const it = itemState(kind, id), L = kind === 'mod' ? lvl(id) : kind === 'tech' ? tech(id) : unitCount(id);
+  const sub = kind === 'ship' ? `${fmt(L)} à quai` : kind === 'def' ? `${fmt(L)} en place` : `Niveau actuel : ${L}`;
+  return `${XBTN}${infoFrom === 'tree' ? '<button class="tr-back" data-act="tree">‹ Retour à l’arbre</button>' : ''}<div class="inf-head" style="--c:var(--${it.color})"><span class="inf-img">${thumbImg(kind, id, '240x240')}</span><div><p class="eyebrow">${DP_KIND[kind]}</p><h2>${def.name}</h2><p class="inf-lv">${sub}</p></div></div>
+    ${def.desc ? `<p class="inf-lore">${def.desc}</p>` : ''}
+    ${sec('À quoi ça sert', `<p class="inf-p">${I.what}</p>`)}
+    ${sec('Fonctionnement', `<p class="inf-p">${I.how}</p>${it.ok ? '' : reqPills(def.req)}`)}
+    ${sec('Rentabilité', profitHtml(kind, id))}
+    ${kind === 'mod' || kind === 'tech' ? sec('Niveaux suivants', levelsHtml(kind, id)) : sec('Caractéristiques', unitStatsHtml(kind, id))}
+    ${sec('Dans l’arbre des technologies', treeLinksHtml(kind, id))}
+    ${sec('Conseil', `<p class="inf-p">${I.tip}</p>`)}`;
+}
+let infoFrom = null;
+/* ---- arbre des technologies : chaque élément, ses conditions et ce qu'il débloque ---- */
+function allItems() { return MOD_ORDER.map(id => ['mod', id]).concat(TECH_ORDER.map(id => ['tech', id]), SHIP_ORDER.map(id => ['ship', id]), DEF_ORDER.map(id => ['def', id])); }
+function reqList(req) { const o = []; if (!req) return o; for (const k in req.b || {}) o.push(['mod', k, req.b[k]]); for (const k in req.t || {}) o.push(['tech', k, req.t[k]]); return o; }
+function reqDone(k, id, n) { return (k === 'mod' ? lvl(id) : tech(id)) >= n; }
+function reqChips(req, none) {
+  const rs = reqList(req);
+  return rs.length ? rs.map(([k, x, n]) => { const ok = reqDone(k, x, n); return `<span class="tr-r${ok ? ' ok' : ''}">${ok ? '✔' : '○'} ${defOf(k, x).name} ${n}</span>`; }).join('') : `<span class="tr-r ok">✔ ${none}</span>`;
+}
+function unlocksOf(kind, id) { const o = []; for (const [k2, i2] of allItems()) { const r = reqList(defOf(k2, i2).req).find(([k, x]) => k === kind && x === id); if (r) o.push([k2, i2, r[2]]); } return o; }
+function treeTier(kind, id, memo) { const key = kind + ':' + id; if (memo[key]) return memo[key]; const rs = reqList(defOf(kind, id).req); memo[key] = 1 + (rs.length ? Math.max(...rs.map(([k, x]) => treeTier(k, x, memo))) : 0); return memo[key]; }
+function treeLinksHtml(kind, id) {
+  const un = unlocksOf(kind, id), lv = kind === 'mod' || kind === 'tech';
+  const unl = un.length ? un.map(([k, x, n]) => `<button class="tr-u" data-act="info" data-kind="${k}" data-id="${x}">${lv ? `<b>niv. ${n}</b> → ` : ''}${defOf(k, x).name}</button>`).join('') : '<span class="inf-n">Rien d’autre ne dépend de cet élément.</span>';
+  return `<p class="hud-k">Nécessite</p><div class="tr-rs">${reqChips(defOf(kind, id).req, 'aucune condition')}</div><p class="hud-k">Débloque</p><div class="tr-us">${unl}</div><button class="tr-link" data-act="tree">Voir tout l’arbre des technologies ›</button>`;
+}
+function treeSheet() {
+  const memo = {}, tiers = {};
+  for (const [k, id] of allItems()) { const t = treeTier(k, id, memo); (tiers[t] = tiers[t] || []).push([k, id]); }
+  const node = ([k, id]) => {
+    const d = defOf(k, id), ok = reqOk(d.req), what = INFO[k] && INFO[k][id] ? INFO[k][id].what : '';
+    return `<button class="tr-i${ok ? ' ok' : ''}" data-act="info" data-from="tree" data-kind="${k}" data-id="${id}"><span class="tr-th">${thumbImg(k, id)}</span><span class="tr-t"><b>${d.name}</b><em>${DP_KIND[k]}${ok ? ' · disponible' : ''}</em><span class="tr-w">${what}</span><span class="tr-rs">${reqChips(d.req, 'disponible dès le départ')}</span></span></button>`;
+  };
+  const steps = Object.keys(tiers).sort((a, b) => a - b).map(n => `<section class="tr-step"><h3><span>${n}</span>Étape ${n}${+n === 1 ? ' : dès le départ' : ''}</h3><div class="tr-list">${tiers[n].map(node).join('')}</div></section>`).join('<div class="tr-arrow" aria-hidden="true">▼</div>');
+  return `${XBTN}<div class="sh-title"><h2>Arbre des technologies</h2><p class="eyebrow">Ce qu’il faut construire ou rechercher pour débloquer chaque élément</p></div>
+    <p class="inf-p">Chaque étape s’appuie sur la précédente. Sous chaque élément figurent ses conditions : <b class="tr-okk">✔</b> déjà atteint, <b>○</b> encore à faire, avec le niveau demandé. Touchez un élément pour sa fiche complète : à quoi il sert, sa rentabilité et ce qu’il débloque.</p>
+    ${steps}`;
+}
+function openTree() { advanceTo(Date.now()); infoFrom = null; openModal('tree', treeSheet()); paintThumbs(); }
+function openInfo(kind, id, from) { advanceTo(Date.now()); infoFrom = from || null; const h = infoSheet(kind, id); if (!h) return; openModal('info', h); paintThumbs(); updateDynamic(); }
+function openGuide() {
+  openModal('guide', `${XBTN}<div class="sh-title"><h2>Guide du jeu</h2><p class="eyebrow">Touchez un sujet pour le déplier. Chaque bâtiment, recherche, unité et ressource a aussi son propre « ? ».</p></div><button class="btn primary block" data-act="tree">Arbre des technologies : que faut-il pour débloquer quoi ?</button><div class="guide">${GUIDE.map(([t, p]) => `<details class="g-d"><summary>${t}</summary><p>${p}</p></details>`).join('')}</div>`);
 }
 function openReport(id) {
   advanceTo(Date.now());
@@ -3460,9 +3717,9 @@ function detailPanel(kind, id) {
   const req = it.ok ? '' : reqPills(def.req);
   return `<section class="dp" id="dp" style="--c:var(--${it.color})${pano ? `;--pano:url(${pano})` : ''}">
     <div class="dp-top"><div class="dp-img">${thumbImg(kind, id, '240x240')}<span class="dp-kind">${DP_KIND[kind]}</span></div>
-      <div class="dp-info"><h2>${def.name}</h2><p class="dp-lv">${lvLine}</p>${durLine ? `<p class="dp-dur">${durLine}</p>` : ''}<p class="dp-gain">${gain}</p></div></div>
+      <div class="dp-info"><h2>${def.name}<button class="dp-help" data-act="info" data-kind="${kind}" data-id="${id}" aria-label="Fiche complète : ${esc(def.name)}">?</button></h2><p class="dp-lv">${lvLine}</p>${durLine ? `<p class="dp-dur">${durLine}</p>` : ''}<p class="dp-gain">${gain}</p></div></div>
     ${busy}${req}${action}
-    <details class="dp-more"><summary><span class="dp-q">?</span><span class="dp-s">${def.desc || 'Détails'}</span></summary>${extra}</details>
+    <details class="dp-more"><summary><span class="dp-q">i</span><span class="dp-s">${def.desc || 'Détails'}</span></summary>${extra}</details>
   </section>`;
 }
 function rowHtml(kind, id, i) {
@@ -3665,6 +3922,9 @@ document.addEventListener('click', e => {
     case 'cell': openCell(el.dataset.k); break;
     case 'report': openReport(el.dataset.id); break;
     case 'doctrine': openDoctrine(); break;
+    case 'info': e.preventDefault(); openInfo(el.dataset.kind, id, el.dataset.from); break;
+    case 'tree': openTree(); break;
+    case 'guide': openGuide(); break;
     case 'leave': openLeave(); break;
     case 'leave-h': leaveH = +el.dataset.v; if (modalKind === 'leave') $('#sheet').innerHTML = leaveSheet(); break;
     case 'shield-on': act(() => shieldStart(st.t, leaveH * HOUR)); if (modalKind === 'leave') $('#sheet').innerHTML = leaveSheet(); break;
