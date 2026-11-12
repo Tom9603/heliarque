@@ -883,6 +883,8 @@ body{font-size:14.5px}
   .mini-go{font-size:12px;padding:4px 8px}
   .dock-p .tiles{padding:6px}
 }
+.timeline li.k-rival{--c:var(--energy)}
+.toast.k-rival .tdot{background:var(--energy)}
 </style>
 </head>
 <body>
@@ -1150,7 +1152,7 @@ const EXPE_TXT = {
 
 const TYPE_NAME = { home: 'Station', rival: 'Station rivale', empty: 'Vide spatial', asteroid: 'Astéroïde', comet: 'Comète', wreck: 'Épave', debris: 'Champ de débris', nest: 'Nid corsaire', anomaly: 'Anomalie', depleted: 'Gisement épuisé' };
 const RES_NAME = { ore: 'minerai', ice: 'glace', data: 'données', pop: 'colons' };
-const KIND = { build: 'Construction', research: 'Recherche', yard: 'Chantier', fleet: 'Flotte', raid: 'Raid', quest: 'Objectif', info: 'Station' };
+const KIND = { rival: 'Rivales', build: 'Construction', research: 'Recherche', yard: 'Chantier', fleet: 'Flotte', raid: 'Raid', quest: 'Objectif', info: 'Station' };
 
 const QUESTS = [
   { id: 'q1', title: 'Réveiller les foreuses', text: 'Montez la Foreuse au niveau 3.', ok: () => lvl('drill') >= 3, reward: { ore: 150 } },
@@ -1166,7 +1168,7 @@ const QUESTS = [
   { id: 'q10', title: 'Première récolte', text: 'Rapportez du minerai, de la glace ou des débris à la station.', ok: () => st.stats.extracted >= 1, reward: { ships: { drone: 2 } } },
   { id: 'q11', title: 'Hérisser le moyeu', text: 'Construisez le Bastion orbital.', ok: () => lvl('bastion') >= 1, reward: { ore: 500 } },
   { id: 'q11b', title: 'Première ligne', text: 'Posez 5 Tourelles à éclats autour du moyeu.', ok: () => (st.def.flak || 0) >= 5, reward: { ice: 600 } },
-  { id: 'q12', title: 'Tenir la ligne', text: 'Repoussez un raid corsaire.', ok: () => st.stats.raidsWon >= 1, reward: { data: 300 } },
+  { id: 'q12', title: 'Tenir la ligne', text: 'Repoussez un raid corsaire.', later: () => protectedAt(st.t), ok: () => st.stats.raidsWon >= 1, reward: { data: 300 } },
   { id: 'q12b', title: 'Savoir avant de frapper', text: 'Espionnez un nid corsaire avec un Éclaireur.', ok: () => st.stats.spied >= 1, reward: { data: 250 } },
   { id: 'q13', title: 'Brûler le nid', text: 'Détruisez un nid corsaire.', ok: () => st.stats.nests >= 1, reward: { ore: 1500, ice: 1000 } },
   { id: 'q13b', title: 'La loi du plus fort', text: 'Pillez une station rivale.', ok: () => st.stats.pillages >= 1, reward: { ore: 2000, ice: 1500 } },
@@ -1297,33 +1299,188 @@ const BASH_MAX = 3, BASH_WIN = () => 12 * HOUR / st.speed;
 function addRivals(map, seed, now) {
   const R = makeRng((seed ^ 0x5a17) >>> 0), mix = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const cells = mix(Object.values(map).filter(c => c.type === 'empty' && c.d >= 3)), names = mix(RIVAL_NAMES.slice()), pers = mix(['ind', 'mil', 'exp']);
-  const sleep = [3 + 5 * R(), 30 + 30 * R(), null]; // une s'endort tôt, une plus tard, une jamais
-  for (let i = 0; i < 3 && i < cells.length; i++) Object.assign(cells[i], { type: 'rival', name: names[i], pers: pers[i], p0: 15 + 25 * R(), born: now, sleepH: sleep[i], stock: { ore: 0, ice: 0, data: 0 }, lost: {}, pill: [], silent: false });
+  const sleep = [null, null, 30 + 15 * R()]; // en jours réels : deux IA jouent toujours, une seule peut s'endormir, au bout d'un mois
+  for (let i = 0; i < 3 && i < cells.length; i++) Object.assign(cells[i], { type: 'rival', name: names[i], pers: pers[i], born: now, sleepAt: sleep[i] == null ? null : now + sleep[i] * 24 * HOUR, pill: [], silent: false, ai: aiNew(now, R) });
   return map;
 }
-// points : croissance continue tant que la station est active, figés une fois silencieuse
-function rivalPts(c, t) {
-  const end = c.sleepH == null ? t : Math.min(t, c.born + c.sleepH * HOUR / st.speed);
-  return c.p0 * (1 + Math.max(0, end - c.born) / HOUR * st.speed / 10) ** 1.1;
+/* ---- protection des débuts : aucune IA n'attaque pendant 15 jours (ni le joueur, ni une autre IA) ---- */
+const PROTECT_DAYS = 15;
+const protEnd = () => (st && st.created ? st.created : 0) + PROTECT_DAYS * 24 * HOUR;
+const protectedAt = t => !!st && !!st.founded && t < protEnd();
+/* ---- IA des stations rivales : une vraie économie avec les mêmes règles que le joueur ---- */
+const AI_PROFILE = {
+  ind: { mil: 0.16, defShare: 0.65, techs: ['deep', 'cryo', 'photon', 'hold', 'auto', 'terra', 'armor', 'ion', 'plasma', 'hyper'] },
+  mil: { mil: 0.36, defShare: 0.4, techs: ['armor', 'plasma', 'ion', 'deep', 'cryo', 'photon', 'auto', 'hold', 'hyper', 'terra'] },
+  exp: { mil: 0.24, defShare: 0.5, techs: ['photon', 'ion', 'deep', 'cryo', 'hold', 'hyper', 'auto', 'armor', 'terra', 'plasma'] },
+};
+const AI_THINK = 3 * MIN; // une décision toutes les 3 minutes réelles
+function aiNew(now, R) {
+  return { b: { drill: 1, ice: 1, sail: 1, hab: 1, lab: 0, depot: 0, works: 0, yard: 0, radar: 0, bastion: 0 }, tech: {}, ships: {}, def: {},
+    res: { ore: 600, ice: 400, data: 0 }, pop: 18, qb: null, qr: null, qy: null, t: now, next: now, pace: 0.75 + 0.2 * R(), spent: { eco: 0, mil: 0 } };
 }
-function rivalTech(c) { return Math.min(10, Math.floor(Math.log2(1 + rivalPts(c, st.t) / 40))); }
-function rivalFull(c) {
-  const P = rivalPts(c, st.t), V = P * 1000 * RIVAL_PERS[c.pers].mil, o = {};
-  const put = (id, share) => { const n = Math.floor(V * share / sumCost(UNIT(id).cost)); if (n > 0) o[id] = n; };
-  put('flak', P > 60 ? 0.28 : 0.55); if (P > 60) put('rail', 0.17); if (P > 400) put('arc', 0.1);
-  put('lancer', P > 80 ? 0.25 : 0.45); if (P > 80) put('corvette', 0.15); if (P > 500) put('warden', 0.05);
-  return o;
+// anciennes parties : on donne aux rivales un état plausible, un peu en retrait du joueur
+function aiBootstrap(c) {
+  const R = makeRng(hashStr(c.name || 'rivale')), a = aiNew(st.t, R), P = AI_PROFILE[c.pers];
+  for (const id in a.b) a.b[id] = Math.max(['drill', 'ice', 'sail', 'hab'].includes(id) ? 1 : 0, Math.round(lvl(id) * a.pace));
+  for (const id in st.tech) if (id !== 'stellar' && st.tech[id]) { const n = Math.floor(st.tech[id] * a.pace); if (n && aiReq(a, TECH[id].req)) a.tech[id] = n; }
+  let budget = myPoints().total * a.pace * 1000 * P.mil;
+  for (let i = 0; i < 600 && budget > 0; i++) { const id = aiPickUnit(a, P); if (!id) break; const v = sumCost(UNIT(id).cost); if (v > budget) break; const o = DEF[id] ? a.def : a.ships; o[id] = (o[id] || 0) + 1; budget -= v; }
+  const pts = aiPoints(a), r = aiRates(a);
+  a.spent = { eco: (pts.econ + pts.res) * 1000, mil: pts.mil * 1000 };
+  a.res = { ore: (c.stock && c.stock.ore) || r.store * 0.4, ice: (c.stock && c.stock.ice) || r.store * 0.3, data: (c.stock && c.stock.data) || 0 }; a.pop = r.cap * 0.85;
+  c.sleepAt = c.sleepH != null && c.sleepH >= 20 ? st.t + (30 + 15 * R()) * 24 * HOUR : null;
+  delete c.stock; delete c.lost; delete c.p0; delete c.sleepH;
+  return a;
 }
-function rivalForces(c) { const F = rivalFull(c), o = {}; for (const k in F) { const n = F[k] - Math.round((c.lost && c.lost[k]) || 0); if (n > 0) o[k] = n; } return o; }
-function rivalTick(c, t, h) {
-  c.silent = c.sleepH != null && t >= c.born + c.sleepH * HOUR / st.speed;
-  if (!h) return;
-  const P = rivalPts(c, t), cap = (2000 + 300 * P) * (c.silent ? 1 : 0.4), r = 40 * P ** 0.6 * h * st.speed;
-  c.stock.ore = Math.min(cap, c.stock.ore + r); c.stock.ice = Math.min(cap * 0.8, c.stock.ice + r * 0.7); c.stock.data = Math.min(cap * 0.2, c.stock.data + r * 0.15);
-  if (!c.silent && c.lost) for (const k in c.lost) { c.lost[k] *= Math.max(0, 1 - 0.2 * h * st.speed); if (c.lost[k] < 0.5) delete c.lost[k]; }
+function aiOf(c) { if (!c.ai) c.ai = aiBootstrap(c); return c.ai; }
+function aiReq(a, req) { if (!req) return true; for (const k in req.b || {}) if ((a.b[k] || 0) < req.b[k]) return false; for (const k in req.t || {}) if ((a.tech[k] || 0) < req.t[k]) return false; return true; }
+function aiAfford(a, c) { for (const k in c) if ((a.res[k] || 0) < c[k]) return false; return true; }
+function aiPay(a, c) { for (const k in c) a.res[k] -= c[k]; }
+function aiRates(a) {
+  const b = a.b, sp = st.speed, sm = 0.93 ** (a.tech.auto || 0);
+  const need = (MOD.drill.staff(b.drill) + MOD.ice.staff(b.ice) + MOD.sail.staff(b.sail) + MOD.lab.staff(b.lab)) * sm;
+  const staff = need > 0 ? Math.min(1, a.pop / need) : 1;
+  const eProd = MOD.sail.out(b.sail) * staff * (1 + 0.08 * (a.tech.photon || 0)), eCons = MOD.drill.energy(b.drill) + MOD.ice.energy(b.ice) + MOD.lab.energy(b.lab);
+  const eff = eCons > 0 ? Math.min(1, eProd / eCons) : 1, k = staff * eff;
+  return { ore: (30 + MOD.drill.prod(b.drill) * k * (1 + 0.08 * (a.tech.deep || 0))) * sp, ice: (15 + MOD.ice.prod(b.ice) * k * (1 + 0.08 * (a.tech.cryo || 0))) * sp,
+    data: MOD.lab.prod(b.lab) * k * sp, eff, staff, cap: MOD.hab.cap(b.hab) * (1 + 0.1 * (a.tech.terra || 0)), store: MOD.depot.store(b.depot) };
 }
+function aiPoints(a) {
+  let e = 0, r = 0, m = 0;
+  for (const id in a.b) for (let l = 1; l <= a.b[id]; l++) e += sumCost(cost(MOD[id].cost(l)));
+  for (const id in a.tech) for (let l = 1; l <= a.tech[id]; l++) r += sumCost(cost(TECH[id].cost(l)));
+  for (const id in a.ships) m += a.ships[id] * sumCost(SHIP[id].cost);
+  for (const id in a.def) m += a.def[id] * sumCost(DEF[id].cost);
+  return { econ: e / 1000, res: r / 1000, mil: m / 1000, total: (e + r + m) / 1000 };
+}
+const aiBTime = (a, c) => (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 * 0.88 ** a.b.works / st.speed;
+const aiRTime = (a, c) => (8 + Math.pow(sumCost(c) / 4, 0.85)) * 1000 / (1 + 0.1 * a.b.lab) / st.speed;
+const aiSTime = (a, id) => (6 + Math.pow(sumCost(UNIT(id).cost) / 5, 0.8)) * 1000 / (1 + 0.2 * Math.max(0, a.b.yard - 1)) / st.speed;
+// bâtiments : d'abord ce qui bloque (énergie, colons, stockage), puis le moins cher parmi ce qui manque
+function aiPickBuild(a, r, pers) {
+  const b = a.b;
+  if (r.eff < 0.95) return 'sail';
+  if (r.staff < 0.95) return 'hab';
+  if (Math.max(a.res.ore, a.res.ice) > r.store * 0.85) return 'depot';
+  const want = [b.drill <= b.ice + 1 ? 'drill' : 'ice'];
+  if (b.lab < Math.ceil(b.drill / 2)) want.push('lab');
+  if (b.drill >= 4 && b.works < Math.floor(b.drill / 3)) want.push('works');
+  if (b.works >= 1 && b.yard < Math.floor(b.drill / 3)) want.push('yard');
+  if (b.lab >= 1 && b.radar < Math.floor(b.drill / 4)) want.push('radar');
+  if (b.yard >= 1 && b.bastion < Math.floor(b.drill / (pers === 'mil' ? 3 : 4))) want.push('bastion');
+  return want.filter(id => aiReq(a, MOD[id].req)).sort((x, y) => sumCost(cost(MOD[x].cost(b[x] + 1))) - sumCost(cost(MOD[y].cost(b[y] + 1))))[0] || null;
+}
+// recherches : les favorites du caractère avancent plus vite, mais toutes progressent, sans dépasser ce que le Laboratoire justifie
+function aiPickTech(a, P) {
+  const cap = Math.max(1, Math.round(a.b.lab * 1.3)), n = P.techs.length;
+  let best = null, bs = Infinity;
+  P.techs.forEach((id, i) => {
+    const L = a.tech[id] || 0; if (L >= cap || !aiReq(a, TECH[id].req)) return;
+    const sc = (L + 1) / (1 - i / (n + 2));
+    if (sc < bs) { bs = sc; best = id; }
+  });
+  return best;
+}
+// chantier : équilibre défenses / vaisseaux, et passe aux modèles supérieurs dès qu'ils sont débloqués
+function aiPickUnit(a, P) {
+  if (!a.b.yard) return null;
+  const val = o => Object.keys(o).reduce((x, k) => x + o[k] * sumCost(UNIT(k).cost), 0), dv = val(a.def), sv = val(a.ships);
+  const can = id => aiReq(a, UNIT(id).req) && !(DEF[id] && DEF[id].max && (a.def[id] || 0) >= DEF[id].max);
+  const d = k => a.def[k] || 0, sh = k => a.ships[k] || 0;
+  if (dv <= (dv + sv) * P.defShare && can('flak')) {
+    if (can('veil') && d('flak') >= 20) return 'veil';
+    if (can('arc') && d('rail') > 3 * (d('arc') + 1)) return 'arc';
+    if (can('rail') && d('flak') > 3 * (d('rail') + 1)) return 'rail';
+    return 'flak';
+  }
+  if (can('warden') && sh('corvette') > 3 * (sh('warden') + 1)) return 'warden';
+  if (can('corvette') && sh('lancer') > 2 * (sh('corvette') + 1)) return 'corvette';
+  if (can('hauler') && sh('lancer') + sh('corvette') > 8 * (sh('hauler') + 1)) return 'hauler';
+  return can('lancer') ? 'lancer' : can('flak') ? 'flak' : null;
+}
+function aiTick(c, t, me) {
+  const a = aiOf(c); if (t <= a.t) return;
+  c.silent = c.sleepAt != null && t >= c.sleepAt;
+  const r = aiRates(a), h = (t - a.t) / HOUR;
+  if (a.res.ore < r.store) a.res.ore = Math.min(r.store, a.res.ore + r.ore * h);
+  if (a.res.ice < r.store) a.res.ice = Math.min(r.store, a.res.ice + r.ice * h);
+  a.res.data += r.data * h;
+  if (a.pop < r.cap) a.pop = Math.min(r.cap, a.pop + (0.9 * a.pop * (1 - a.pop / r.cap) + 2.5) * h * st.speed);
+  if (a.qb && a.qb.end <= t) { a.b[a.qb.id] = a.qb.lvl; a.qb = null; }
+  if (a.qr && a.qr.end <= t) { a.tech[a.qr.id] = a.qr.lvl; a.qr = null; }
+  if (a.qy && a.qy.end <= t) { const o = DEF[a.qy.id] ? a.def : a.ships; o[a.qy.id] = (o[a.qy.id] || 0) + a.qy.n; a.qy = null; }
+  a.t = t;
+  if (t >= a.next) { a.next = t + AI_THINK; if (!c.silent) aiThink(c, t, me()); }
+}
+// une IA ne dépasse jamais le joueur : chaque chantier doit tenir sous « points du joueur × son allure », une fois terminé
+function aiThink(c, t, me) {
+  const a = c.ai, P = AI_PROFILE[c.pers], r = aiRates(a);
+  const queued = ((a.qb && a.qb.v) || 0) + ((a.qr && a.qr.v) || 0) + ((a.qy && a.qy.v) || 0);
+  let room = Math.max(4, me * a.pace) - aiPoints(a).total - queued;
+  const fits = cc => sumCost(cc) / 1000 <= room;
+  if (room > 0 && !a.qb) { const id = aiPickBuild(a, r, c.pers); if (id) { const cc = cost(MOD[id].cost(a.b[id] + 1)); if (aiAfford(a, cc) && fits(cc)) { aiPay(a, cc); a.spent.eco += sumCost(cc); room -= sumCost(cc) / 1000; a.qb = { id, lvl: a.b[id] + 1, end: t + aiBTime(a, cc), v: sumCost(cc) / 1000 }; } } }
+  if (room > 0 && !a.qr && a.b.lab > 0) { const id = aiPickTech(a, P); if (id) { const cc = cost(TECH[id].cost((a.tech[id] || 0) + 1)); if (aiAfford(a, cc) && fits(cc)) { aiPay(a, cc); a.spent.eco += sumCost(cc); room -= sumCost(cc) / 1000; a.qr = { id, lvl: (a.tech[id] || 0) + 1, end: t + aiRTime(a, cc), v: sumCost(cc) / 1000 }; } } }
+  if (room > 0 && !a.qy && a.spent.mil < P.mil * (a.spent.eco + a.spent.mil)) {
+    const id = aiPickUnit(a, P);
+    if (id) {
+      const each = UNIT(id).cost; let n = Math.min(25, Math.floor(room * 1000 / sumCost(each)));
+      for (const k in each) n = Math.min(n, Math.floor(a.res[k] * 0.6 / each[k]));
+      if (DEF[id] && DEF[id].max) n = Math.min(n, 1);
+      if (n >= 1) { const cc = mulCost(each, n); aiPay(a, cc); a.spent.mil += sumCost(cc); a.qy = { id, n, end: t + n * aiSTime(a, id), v: sumCost(cc) / 1000 }; }
+    }
+  }
+  if (!protectedAt(t)) aiAggress(c, t);
+}
+function aiTech(a) { return { plasma: a.tech.plasma || 0, armor: a.tech.armor || 0 }; }
+function aiProt(a) { return 500 + 0.05 * MOD.depot.store(a.b.depot); }
+// attaque seulement si la simulation la donne gagnante et que le butin vaut le voyage
+function aiAggress(c, t) {
+  const a = c.ai, rate = c.pers === 'mil' ? 0.035 : 0.015; // tentatives par heure de jeu
+  if (rnd() > rate * AI_THINK / HOUR * st.speed) return;
+  const send = {}; for (const k of SHIP_ORDER) { const n = Math.floor((a.ships[k] || 0) * 0.7); if (n > 0) send[k] = n; }
+  if (Object.values(send).reduce((x, y) => x + y, 0) < 3) return;
+  const cargo = Object.keys(send).reduce((x, k) => x + send[k] * SHIP[k].cargo, 0);
+  let best = null;
+  if (!st.raid || (!st.raid.rival && st.raid.at - t > warnMsAt(lvl('radar')))) {
+    const prot = protectedAmt(), loot = Math.min(cargo, (Math.max(0, st.res.ore - prot) + Math.max(0, st.res.ice - prot)) * 0.3);
+    if (loot >= 800) { const sm = simulate(() => rivalGroups(send, aiTech(a)), () => playerGroups(st.ships, true), null); if (sm.win >= 0.6) best = { you: true, score: sm.win * loot }; }
+  }
+  for (const k in st.map) {
+    const d = st.map[k]; if (d.type !== 'rival' || d === c) continue;
+    if ((d.aiPill || []).filter(x => t - x < BASH_WIN()).length >= BASH_MAX) continue;
+    const da = aiOf(d), loot = Math.min(cargo, (Math.max(0, da.res.ore - aiProt(da)) + Math.max(0, da.res.ice - aiProt(da))) * 0.3);
+    if (loot < 800) continue;
+    const sm = simulate(() => rivalGroups(send, aiTech(a)), () => rivalGroups(rivalForces(d), aiTech(da)), null);
+    if (sm.win >= 0.7 && (!best || sm.win * loot > best.score)) best = { d, score: sm.win * loot };
+  }
+  if (!best) return;
+  for (const k in send) a.ships[k] -= send[k];
+  if (best.you) { st.raid = { at: t + (25 + 20 * rnd()) * MIN / st.speed, comp: {}, rival: Object.keys(st.map).find(k => st.map[k] === c), ships: send, why: 'raid' }; return; }
+  aiVsAi(c, best.d, send, t);
+}
+function aiVsAi(c, d, send, t) {
+  const a = c.ai, da = d.ai, rep = battle(rivalGroups(send, aiTech(a)), rivalGroups(rivalForces(d), aiTech(da)));
+  const fix = Math.min(0.8, 0.4 + 0.05 * da.b.works);
+  for (const k in rep.lossD) { if (SHIP[k]) da.ships[k] = Math.max(0, (da.ships[k] || 0) - rep.lossD[k]); else if (DEF[k]) da.def[k] = Math.max(0, (da.def[k] || 0) - rep.lossD[k] + Math.round(rep.lossD[k] * fix)); }
+  const back = {}; for (const k in send) { const n = send[k] - (rep.lossA[k] || 0); if (n > 0) { back[k] = n; a.ships[k] = (a.ships[k] || 0) + n; } }
+  let msg;
+  if (rep.defDead) {
+    const cargo = Object.keys(back).reduce((x, k) => x + back[k] * SHIP[k].cargo, 0), prot = aiProt(da), take = {};
+    const av = { ore: Math.max(0, da.res.ore - prot) * 0.3, ice: Math.max(0, da.res.ice - prot) * 0.3 }, tot = av.ore + av.ice, k = tot > 0 ? Math.min(1, cargo / tot) : 0;
+    for (const r of ['ore', 'ice']) { take[r] = Math.floor(av[r] * k); da.res[r] -= take[r]; a.res[r] += take[r]; }
+    d.aiPill = (d.aiPill || []).filter(x => t - x < BASH_WIN()); d.aiPill.push(t);
+    msg = `${c.name} a pillé ${d.name} : ${fmt(take.ore)} minerai et ${fmt(take.ice)} glace emportés.`;
+  } else if (rep.attDead) msg = `${d.name} a repoussé une attaque de ${c.name} et détruit toute sa flotte.`;
+  else msg = `${d.name} a tenu face à ${c.name} : les assaillants se sont retirés.`;
+  log('rival', `${msg} Pertes : ${listUnits(rep.lossA) || 'aucune'} contre ${listUnits(rep.lossD) || 'aucune'}.`);
+}
+// interface avec le reste du jeu
+function rivalPts(c) { return aiPoints(aiOf(c)).total; }
+function rivalTech(c) { return aiTech(aiOf(c)); }
+function rivalForces(c) { const a = aiOf(c), o = {}; for (const k in a.ships) if (a.ships[k] > 0) o[k] = a.ships[k]; for (const k in a.def) if (a.def[k] > 0) o[k] = a.def[k]; return o; }
+function rivalTick(c, t) { aiOf(c); c.silent = c.sleepAt != null && t >= c.sleepAt; }
 function recentPill(c, t) { return (c.pill || []).filter(x => t - x < BASH_WIN()).length; }
-function pillable(c, t, stock) { const s = stock || c.stock, m = ([1, 0.6, 0.35][recentPill(c, t)] || 0) * 0.5; return { ore: s.ore * m, ice: s.ice * m, data: s.data * m }; }
+function pillable(c, t, stock) { const s = stock || aiOf(c).res, m = ([1, 0.6, 0.35][recentPill(c, t)] || 0) * 0.5; return { ore: s.ore * m, ice: s.ice * m, data: (s.data || 0) * m }; }
 function genMap(seed) {
   const R = makeRng(seed); const cells = {};
   const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -1413,7 +1570,8 @@ function produce(dt) {
   for (const k of ['ore', 'ice']) if (st.res[k] < r.store) st.res[k] = Math.min(r.store, st.res[k] + r[k] * h);
   st.res.data += r.data * h;
   if (st.pop < r.cap) st.pop = Math.min(r.cap, st.pop + (0.9 * st.pop * (1 - st.pop / r.cap) + 2.5) * h * st.speed);
-  for (const k in st.map) { const c = st.map[k]; if (c.type === 'nest') nestGrow(c, h); else if (c.type === 'rival') rivalTick(c, st.t, h); }
+  let mp = null; const me = () => mp == null ? (mp = myPoints().total) : mp;
+  for (const k in st.map) { const c = st.map[k]; if (c.type === 'nest') nestGrow(c, h); else if (c.type === 'rival') aiTick(c, st.t + dt, me); }
 }
 function nextEvent() {
   let t = Infinity, kind = null, ref = null;
@@ -1456,7 +1614,7 @@ function handle(ev) {
   } else if (ev.kind === 'season') {
     endSeason(t);
   } else if (ev.kind === 'raid') {
-    if (shieldOn(t)) deflectRaid(); else resolveRaid(); scheduleRaid(t);
+    if (protectedAt(t)) st.raid = null; else if (shieldOn(t)) deflectRaid(); else resolveRaid(); scheduleRaid(t);
   }
 }
 
@@ -1535,10 +1693,10 @@ function simulate(mkA, mkD, key) {
   return r;
 }
 function simKey() { return [tech('plasma'), tech('armor'), lvl('bastion'), JSON.stringify(st.def)].join('|'); }
-function rivalGroups(F, rt) { const m = 1 + 0.1 * rt, g = []; for (const id of SHIP_ORDER.concat(DEF_ORDER)) { const n = F[id] || 0; if (!n) continue; const u = UNIT(id); g.push(grp(id, n, u, u.atk * m, u.hull * m, (u.shield || 0) * m)); } return g; }
+function rivalGroups(F, rt) { const ob = rt && typeof rt === 'object', am = 1 + 0.1 * (ob ? rt.plasma || 0 : rt || 0), dm = 1 + 0.1 * (ob ? rt.armor || 0 : rt || 0), g = []; for (const id of SHIP_ORDER.concat(DEF_ORDER)) { const n = F[id] || 0; if (!n) continue; const u = UNIT(id); g.push(grp(id, n, u, u.atk * am, u.hull * dm, (u.shield || 0) * dm)); } return g; }
 function groupPower(G) { let a = 0, h = 0; for (const g of G) { a += g.n * g.atk; h += g.n * g.hull; } return { a, h }; }
 function simRival(ships, c) { const I = c.intel; if (!I) return null; return simulate(() => playerGroups(ships, false), () => rivalGroups(I.forces, I.rt), 'v' + JSON.stringify(ships) + '@' + c.q + ':' + c.r + I.t + simKey()); }
-function raidName() { const c = st.raid && st.raid.rival && st.map[st.raid.rival]; return c ? `Représailles de la station ${c.name}` : 'Raid corsaire'; }
+function raidName() { const c = st.raid && st.raid.rival && st.map[st.raid.rival]; return c ? (st.raid.why === 'raid' ? `Attaque de la station ${c.name}` : `Représailles de la station ${c.name}`) : 'Raid corsaire'; }
 function raidText() { return st.raid.ships ? listText(st.raid.ships, SHIP) : listText(st.raid.comp, PIRATE); }
 function raidGroups(raid) { if (raid.ships) { const c = st.map[raid.rival]; return rivalGroups(raid.ships, c ? rivalTech(c) : 0); } return pirateGroups(raid.comp, 0); }
 function simAttack(ships, c) { if (c.type === 'rival') return simRival(ships, c); const g = c.intel && c.intel.garrison; if (!g) return null; return simulate(() => playerGroups(ships, false), () => pirateGroups(g, c.lvl), 'a' + JSON.stringify(ships) + '@' + c.q + ':' + c.r + JSON.stringify(g) + c.intel.t + simKey()); }
@@ -1564,7 +1722,7 @@ function saveReport(r) { st.repId = (st.repId || 0) + 1; r.id = st.repId; r.t = 
 function scheduleRaid(from) {
   const gap = (35 + 40 * rnd()) * MIN / st.speed;
   const P = (60 + 7 * Math.pow(score(), 0.9)) * (1 + 0.08 * aliveNests()) * (0.8 + 0.4 * rnd());
-  st.raid = { at: from + gap, comp: corsairComp(P, rnd) };
+  st.raid = { at: Math.max(from, protEnd()) + gap, comp: corsairComp(P, rnd) };
 }
 function deflectRaid() {
   const c = st.raid.rival && st.map[st.raid.rival];
@@ -1590,7 +1748,7 @@ function resolveRaid() {
   }
   const d1 = debrisOf(rep.lossA), d2 = debrisOf(shipLoss), deb = { ore: d1.ore + d2.ore, ice: d1.ice + d2.ice };
   const rc = raid.rival && st.map[raid.rival];
-  if (rc) { if (!rc.lost) rc.lost = {}; for (const k in rep.lossA) rc.lost[k] = (rc.lost[k] || 0) + rep.lossA[k]; }
+  if (rc) { const ra = aiOf(rc); for (const k in raid.ships) { const n = raid.ships[k] - (rep.lossA[k] || 0); if (n > 0) ra.ships[k] = (ra.ships[k] || 0) + n; } }
   st.orbit.ore = (st.orbit.ore || 0) + deb.ore; st.orbit.ice = (st.orbit.ice || 0) + deb.ice;
   const lines = []; let outcome, title;
   if (rep.attDead) { outcome = 'win'; title = 'Raid anéanti'; st.stats.raidsWon++; }
@@ -1598,13 +1756,13 @@ function resolveRaid() {
     outcome = 'loss'; title = 'Défenses percées';
     const prot = protectedAmt(), stolen = {};
     for (const k of ['ore', 'ice']) { stolen[k] = Math.floor(Math.max(0, st.res[k] - prot) * 0.3); st.res[k] -= stolen[k]; }
-    if (rc) { rc.stock.ore += stolen.ore; rc.stock.ice += stolen.ice; }
+    if (rc) { aiOf(rc).res.ore += stolen.ore; aiOf(rc).res.ice += stolen.ice; }
     st.stats.raidsLost++; lines.push(`Pillé : ${fmt(stolen.ore)} minerai et ${fmt(stolen.ice)} glace.`);
   } else { outcome = 'draw'; title = 'Raid repoussé'; st.stats.raidsWon++; lines.unshift('Les corsaires survivants battent en retraite sans rien emporter.'); }
   const nLost = DEF_ORDER.reduce((a, k) => a + (rep.lossD[k] || 0), 0), nFix = Object.values(repaired).reduce((a, b) => a + b, 0);
   if (nLost) lines.push(`Drones de maintenance : ${fmt(nFix)} défense${nFix > 1 ? 's' : ''} sur ${fmt(nLost)} remise${nFix > 1 ? 's' : ''} en état.`);
   if (deb.ore + deb.ice > 0) lines.push(`Débris en orbite : ${fmt(deb.ore)} minerai et ${fmt(deb.ice)} glace, à ramasser avec des Drones foreurs.`);
-  if (rc) lines.unshift(`Représailles de la station ${rc.name}.`);
+  if (rc) lines.unshift(`${raid.why === 'raid' ? 'Attaque' : 'Représailles'} de la station ${rc.name}.`);
   const id = saveReport({ kind: 'raid', foeName: rc ? rc.name : 'Corsaires', place: st.name, outcome, title, rounds: rep.rounds, you: sideRows(rep.D), foe: sideRows(rep.A), tl: rep.tl.map(([a, d]) => [d, a]), lines, repaired });
   const killed = listUnits(rep.lossA), lost = listUnits(rep.lossD);
   log('raid', `${title} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${killed || 'aucun'}. Pertes : ${lost || 'aucune'}.${lines.length ? ' ' + lines.join(' ') : ''}`, id);
@@ -1701,30 +1859,30 @@ function fleetArrive(f, t) {
   if (f.backMul) { f.back = t + f.dur * f.backMul; delete f.backMul; }
 }
 function spyRival(f, c, t) {
-  rivalTick(c, t, 0);
-  const forces = rivalForces(c), rt = rivalTech(c), pts = rivalPts(c, t), lines = [];
-  c.intel = { t, forces, rt, stock: { ...c.stock }, pts, silent: c.silent }; st.stats.spied++;
+  rivalTick(c, t);
+  const ai = aiOf(c), forces = rivalForces(c), rt = rivalTech(c), pts = rivalPts(c), lines = [];
+  c.intel = { t, forces, rt, stock: { ...ai.res }, pts, silent: c.silent }; st.stats.spied++;
   if (rnd() < (c.silent ? 0.05 : 0.18) && f.ships.scout > 0) { f.ships.scout--; lines.push('Repéré par les patrouilles de la station : un Éclaireur abattu après avoir transmis son rapport.'); }
   const pl = pillable(c, t);
-  const repId = saveReport({ kind: 'spy', rival: true, place: c.name, k: f.k, pts, rt, silent: c.silent, pers: c.pers, forces, stock: { ...c.stock }, pill: recentPill(c, t), outcome: 'win', title: 'Rapport d’espionnage', rounds: 0, you: [], foe: [], tl: [], lines });
+  const repId = saveReport({ kind: 'spy', rival: true, place: c.name, k: f.k, pts, rt, silent: c.silent, pers: c.pers, forces, stock: { ...ai.res }, blds: { ...ai.b }, techs: { ...ai.tech }, pill: recentPill(c, t), outcome: 'win', title: 'Rapport d’espionnage', rounds: 0, you: [], foe: [], tl: [], lines });
   return { repId, note: `Espionnage de ${c.name} : station ${c.silent ? 'silencieuse' : 'active'}, ${fmt(pl.ore + pl.ice + pl.data)} pillables.${lines.length ? ' ' + lines[0] : ''}` };
 }
 function retaliate(c, t) {
-  // la riposte part de la flotte de réserve de la rivale, pas des vaisseaux qu'on vient de détruire
-  const F = rivalFull(c), ships = {}; for (const k of SHIP_ORDER) if (F[k]) { const n = Math.floor(F[k] * 0.5); if (n) ships[k] = n; }
+  const ai = aiOf(c), ships = {}; for (const k of SHIP_ORDER) { const n = Math.floor((ai.ships[k] || 0) * 0.6); if (n) ships[k] = n; }
   if (!Object.keys(ships).length || rnd() > 0.7) return '';
   const at = t + (20 + 20 * rnd()) * MIN / st.speed;
-  if (st.raid && st.raid.at < at) return '';
-  st.raid = { at, comp: {}, rival: Object.keys(st.map).find(k => st.map[k] === c), ships };
+  if (protectedAt(at) || (st.raid && st.raid.at < at)) return '';
+  for (const k in ships) ai.ships[k] -= ships[k];
+  st.raid = { at, comp: {}, rival: Object.keys(st.map).find(k => st.map[k] === c), ships, why: 'retal' };
   return `${c.name} prépare des représailles : surveillez l’Antenne.`;
 }
 function attackRival(f, c, t) {
-  rivalTick(c, t, 0);
-  const rt = rivalTech(c), rep = battle(playerGroups(f.ships, false), rivalGroups(rivalForces(c), rt));
+  rivalTick(c, t);
+  const ai = aiOf(c), rt = rivalTech(c), rep = battle(playerGroups(f.ships, false), rivalGroups(rivalForces(c), rt));
   for (const k in rep.lossA) f.ships[k] -= rep.lossA[k];
-  // la rivale reconstruit ses vaisseaux si elle est active ; ses défenses sont à moitié réparées tout de suite
-  const shipLoss = {}; if (!c.lost) c.lost = {};
-  for (const k in rep.lossD) { if (SHIP[k]) shipLoss[k] = rep.lossD[k]; c.lost[k] = (c.lost[k] || 0) + (DEF[k] ? Math.ceil(rep.lossD[k] * 0.5) : rep.lossD[k]); }
+  // comme le joueur, l'IA perd ses vaisseaux et répare une partie de ses défenses
+  const fix = Math.min(0.8, 0.4 + 0.05 * ai.b.works), shipLoss = {};
+  for (const k in rep.lossD) { if (SHIP[k]) { shipLoss[k] = rep.lossD[k]; ai.ships[k] = Math.max(0, (ai.ships[k] || 0) - rep.lossD[k]); } else if (DEF[k]) ai.def[k] = Math.max(0, (ai.def[k] || 0) - rep.lossD[k] + Math.round(rep.lossD[k] * fix)); }
   const d1 = debrisOf(rep.lossA), d2 = debrisOf(shipLoss), deb = { ore: d1.ore + d2.ore, ice: d1.ice + d2.ice };
   if (deb.ore + deb.ice > 0) c.dbr = { ore: ((c.dbr && c.dbr.ore) || 0) + deb.ore, ice: ((c.dbr && c.dbr.ice) || 0) + deb.ice };
   const lines = []; let outcome, head;
@@ -1732,7 +1890,7 @@ function attackRival(f, c, t) {
     outcome = 'win'; head = `${c.name} pillée`;
     const before = recentPill(c, t), av = pillable(c, t), tot = av.ore + av.ice + av.data;
     const used = (f.cargo.ore || 0) + (f.cargo.ice || 0) + (f.cargo.data || 0), room = Math.max(0, fleetCargo(f.ships) - used), k = tot > 0 ? Math.min(1, room / tot) : 0, take = {};
-    for (const r of ['ore', 'ice', 'data']) { take[r] = Math.floor(av[r] * k); c.stock[r] -= take[r]; f.cargo[r] = (f.cargo[r] || 0) + take[r]; }
+    for (const r of ['ore', 'ice', 'data']) { take[r] = Math.floor(av[r] * k); ai.res[r] -= take[r]; f.cargo[r] = (f.cargo[r] || 0) + take[r]; }
     if (take.ore + take.ice + take.data > 0) f.got = true;
     c.pill = (c.pill || []).filter(x => t - x < BASH_WIN()); c.pill.push(t); st.stats.pillages++;
     lines.push(`Butin chargé : ${fmt(take.ore)} minerai, ${fmt(take.ice)} glace, ${fmt(take.data)} données.`);
@@ -1742,7 +1900,7 @@ function attackRival(f, c, t) {
   } else if (rep.attDead) { outcome = 'loss'; head = `Flotte anéantie devant ${c.name}`; }
   else { outcome = 'draw'; head = `Assaut repoussé par ${c.name}`; }
   if (deb.ore + deb.ice > 0) lines.push(`Débris autour de la station : ${fmt(deb.ore)} minerai, ${fmt(deb.ice)} glace, à récupérer.`);
-  c.intel = { t, forces: rivalForces(c), rt, stock: { ...c.stock }, pts: rivalPts(c, t), silent: c.silent };
+  c.intel = { t, forces: rivalForces(c), rt, stock: { ...ai.res }, pts: rivalPts(c), silent: c.silent };
   const repId = saveReport({ kind: 'rival', foeName: c.name, place: c.name, outcome, title: head, rounds: rep.rounds, you: sideRows(rep.A), foe: sideRows(rep.D), tl: rep.tl, lines });
   return { repId, note: `${head} après ${rep.rounds} salve${rep.rounds > 1 ? 's' : ''}. Abattus : ${listUnits(rep.lossD) || 'aucun'}. Pertes : ${listUnits(rep.lossA) || 'aucune'}.${outcome === 'win' ? ' ' + lines[0] : ''}` };
 }
@@ -1900,7 +2058,7 @@ function found(name, speed) {
   const now = Date.now();
   st.name = (name || '').trim().slice(0, 24) || 'Kestrel-7';
   st.speed = speed; st.created = now; st.t = now; st.founded = true; st.season = { n: 1, start: now };
-  st.raid = { at: now + 40 * MIN / speed, comp: corsairComp(70, rnd) };
+  st.raid = { at: protEnd() + 40 * MIN / speed, comp: corsairComp(70, rnd) };
   log('info', `La station ${st.name} est fondée en orbite de Vesper. Les corsaires de la Faille rôdent : préparez vos défenses.`);
 }
 
@@ -2215,7 +2373,7 @@ function missionReady(m) {
   return MISSION[m].need === 'armed' ? ARMED.some(k => n(k) > 0) : n(MISSION[m].need) > 0;
 }
 const RES_HUD = [['ore', 'Minerai'], ['ice', 'Glace'], ['data', 'Données'], ['energy', 'Énergie'], ['pop', 'Colons']];
-function threatVisible() { return !!(st.founded && st.raid && st.raid.at - Date.now() <= warnMsAt(lvl('radar'))); }
+function threatVisible() { return !!(st.founded && st.raid && !protectedAt(st.raid.at) && st.raid.at - Date.now() <= warnMsAt(lvl('radar'))); }
 const PAL = { void: '#0B0F16', navy: '#0F1E2E', steel: '#1F3B5B', blue: '#3B82F6', cyan: '#00E5FF', grey: '#9CA3AF', slate: '#6B7280', amber: '#F59E0B', red: '#EF4444', green: '#22C55E', purple: '#A855F7' };
 const TAU = Math.PI * 2;
 function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
@@ -2697,6 +2855,7 @@ function alertsHtml(r) {
   if (r.staff < 1) a.push(['hab', 'pop', `Pas assez de colons : postes pourvus à <b>${pct(r.staff)}</b>. Agrandissez l’Habitat.`]);
   if (st.res.ore >= r.store * 0.999 || st.res.ice >= r.store * 0.999) a.push(['depot', 'ore', 'Entrepôt plein : la production s’arrête. Agrandissez l’Entrepôt.']);
   let x = '';
+  if (protectedAt(st.t)) x += `<div class="alert" style="--c:var(--ok)"><span class="dot"></span><span>Protection des débuts : aucune IA (corsaires ou stations rivales) ne peut vous attaquer avant le <b>${new Date(protEnd()).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</b>.</span></div>`;
   if (false) x += `<button class="alert" data-act="leave" style="--c:var(--data)"><span class="dot"></span><span>Bouclier de veille actif jusqu’à <b>${clock(shieldEnd(st.t))}</b> : aucun raid ne passera, la production tourne à 50 %.</span></button>`;
   if (threatVisible() && !shieldOn(st.raid.at)) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>${raidName()} : arrivée dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
   if (orbitTotal() >= 1) x += `<button class="alert" data-act="cell" data-k="${homeKey()}" style="--c:var(--ore)"><span class="dot"></span><span>Débris en orbite : <b>${fmtS(st.orbit.ore)}</b> minerai et <b>${fmtS(st.orbit.ice)}</b> glace. Envoyez des Drones foreurs les ramasser.</span></button>`;
@@ -2722,7 +2881,7 @@ const SITE_TONE = { rival: 'energy', nest: 'danger', wreck: 'ore', debris: 'ore'
 const SITE_ORD = { rival: 0, nest: 1, wreck: 2, debris: 2, anomaly: 3, asteroid: 4, comet: 4 };
 function siteStatus(c) {
   if (c.type === 'nest') return `niveau ${c.lvl} · ${c.intel ? (intelAge(c) > INTEL_OLD() ? 'renseignement ancien' : 'espionné') : 'garnison inconnue'}`;
-  if (c.type === 'rival') { rivalTick(c, st.t, 0); return `${RIVAL_PERS[c.pers].name} · ${c.silent ? 'silencieuse' : 'active'}`; }
+  if (c.type === 'rival') { rivalTick(c, st.t); return `${RIVAL_PERS[c.pers].name} · ${c.silent ? 'silencieuse' : 'active'}`; }
   if (c.type === 'asteroid') return `${fmtS(c.ore)} minerai${c.outpost ? ' · avant-poste' : ''}`;
   if (c.type === 'comet') return `${fmtS(c.ice)} glace${c.outpost ? ' · avant-poste' : ''}`;
   if (c.type === 'anomaly') return `environ ${fmt(c.data)} données`;
@@ -2753,7 +2912,7 @@ function fleetsHtml() {
 }
 const VIEWS = {
   station() {
-    const r = rates(), cur = QUESTS.find(q => !st.quests[q.id]);
+    const r = rates(), cur = curQuest();
     const ids = seg.station === 'inst' ? INST : PROD;
     const d = DOCTRINE[st.doctrine], L = rankList(), rk = L.findIndex(x => x.me) + 1;
     return `<div class="vh"><h1>${esc(st.name)}</h1><span>${fmt(myPoints().total)} pts · Vesper ${pct(lumAt(lvl('beacon')))}</span>${GEAR}</div>
@@ -2785,7 +2944,7 @@ const VIEWS = {
   fleets() { seg.sector = 'fleets'; return VIEWS.sector(); },
   journal() {
     st.seenLog = st.t;
-    const cur = QUESTS.find(q => !st.quests[q.id]), done = QUESTS.filter(q => st.quests[q.id]).length;
+    const cur = curQuest(), done = QUESTS.filter(q => st.quests[q.id]).length;
     return `<div class="vh"><h1>Journal</h1><span>${done}/${QUESTS.length} objectifs</span>${GEAR}</div>
       ${segsHtml('journal', [['quests', 'Objectifs'], ['log', 'Événements'], ['rank', 'Classement']])}
       ${seg.journal === 'rank' ? rankingHtml() : seg.journal === 'log'
@@ -2874,9 +3033,9 @@ function simHtml(r, mode) {
 }
 function rankTxt(r) { return r === 1 ? '1re' : r + 'e'; }
 function rivalFacts(c, facts) {
-  rivalTick(c, st.t, 0);
-  const pts = rivalPts(c, st.t), I = c.intel, n = recentPill(c, st.t), rank = rankList().findIndex(x => !x.me && x.name === c.name) + 1;
-  facts.push(`<p><b>Station ${RIVAL_PERS[c.pers].name}</b> · ${fmt(pts)} pts · ${rankTxt(rank)} au classement</p>`);
+  rivalTick(c, st.t);
+  const pts = rivalPts(c), I = c.intel, n = recentPill(c, st.t), rank = rankList().findIndex(x => !x.me && x.name === c.name) + 1;
+  facts.push(`<p><b>IA ${RIVAL_PERS[c.pers].name}</b> · ${fmt(pts)} pts · ${rankTxt(rank)} au classement</p>`);
   facts.push(c.silent ? '<p class="intel old">Station silencieuse : plus aucune activité. Ses réserves s’accumulent et ses pertes ne sont plus remplacées.</p>' : '<p class="intel">Station active : elle reconstruit ses pertes et peut riposter si vous la pillez.</p>');
   if (n) facts.push(`<p>Pillages récents : <b>${n} sur ${BASH_MAX}</b>${n >= BASH_MAX ? ' · station sous protection' : ' · le butin diminue à chaque pillage'}.</p>`);
   if (c.dbr && c.dbr.ore + c.dbr.ice >= 1) facts.push(`<div class="price">${resChips({ ore: c.dbr.ore, ice: c.dbr.ice })}<span class="muted">de débris</span></div>`);
@@ -2892,7 +3051,7 @@ function spyRivalSheet(r) {
   const rows = keys => keys.filter(k => r.forces[k] > 0).map(k => `<div class="rp-u"><span class="rp-n">${UNIT(k).pl}</span><span class="rp-c"><b>${fmt(r.forces[k])}</b></span><span class="rp-l ok">${esc(roleText(UNIT(k)).toLowerCase())}</span></div>`).join('') || '<p class="empty">Aucun.</p>';
   const armed = {}; for (const k of ARMED) if (st.ships[k] > 0) armed[k] = st.ships[k];
   const sim = c && Object.keys(armed).length ? simulate(() => playerGroups(armed, false), () => rivalGroups(r.forces, r.rt), 'sv' + r.id + JSON.stringify(armed) + simKey()) : null;
-  return `${XBTN}<div class="rp-head" style="--c:var(--data)"><p class="eyebrow">Rapport d’espionnage · ${clock(r.t)}</p><h2>${esc(r.place)}</h2><p class="rp-sub"><b>${r.silent ? 'Silencieuse' : 'Active'}</b> · station ${RIVAL_PERS[r.pers].name} · ${fmt(r.pts)} pts · technologie ${r.rt}</p></div>
+  return `${XBTN}<div class="rp-head" style="--c:var(--data)"><p class="eyebrow">Rapport d’espionnage · ${clock(r.t)}</p><h2>${esc(r.place)}</h2><p class="rp-sub"><b>${r.silent ? 'Silencieuse' : 'Active'}</b> · station ${RIVAL_PERS[r.pers].name} · ${fmt(r.pts)} pts · ${r.rt && typeof r.rt === 'object' ? `armes ${r.rt.plasma} · blindage ${r.rt.armor}` : 'technologie ' + r.rt}</p></div>${r.blds ? `<section class="panel rp-loot"><h3>Bâtiments et recherches</h3><p class="sim-loss">${Object.keys(r.blds).filter(k => r.blds[k] > 0).map(k => `${MOD[k].name} ${r.blds[k]}`).join(' · ')}</p><p class="sim-loss">${Object.keys(r.techs || {}).filter(k => r.techs[k] > 0).map(k => `${TECH[k].name} ${r.techs[k]}`).join(' · ') || 'Aucune recherche'}</p></section>` : ''}
     <div class="rp-sides"><section class="panel"><h3>Vaisseaux</h3>${rows(SHIP_ORDER)}</section><section class="panel"><h3>Défenses</h3>${rows(DEF_ORDER)}</section></div>
     <section class="panel rp-loot"><h3>Pillable${r.pill ? ` · déjà pillée ${r.pill} fois` : ''}</h3><div class="price">${resChips({ ore: pl.ore, ice: pl.ice, data: pl.data })}</div><p class="sim-loss">La moitié des réserves reste hors d’atteinte. En face : feu ${fmt(g.a)} · coque ${fmt(g.h)}.</p></section>
     ${sim ? `<p class="hud-k">Si vous attaquez avec tous vos vaisseaux armés</p>${simHtml(sim, 'attack')}` : ''}
@@ -2951,16 +3110,16 @@ function myPoints() {
 }
 function rankList() {
   const list = [{ me: true, name: st.name, pts: myPoints().total }];
-  for (const k in st.map) { const c = st.map[k]; if (c.type === 'rival') { rivalTick(c, st.t, 0); list.push({ k, name: c.name, pts: rivalPts(c, st.t), silent: c.silent, pers: c.pers }); } }
+  for (const k in st.map) { const c = st.map[k]; if (c.type === 'rival') { rivalTick(c, st.t); list.push({ k, name: c.name, pts: rivalPts(c), silent: c.silent, pers: c.pers }); } }
   return list.sort((a, b) => b.pts - a.pts);
 }
 function rankingHtml() {
   const L = rankList(), me = myPoints(), max = Math.max(1, ...L.map(x => x.pts));
-  const rows = L.map((x, i) => `<button class="rk${x.me ? ' me' : ''}${x.silent ? ' silent' : ''}" ${x.me ? 'data-act="tab" data-id="station"' : `data-act="cell" data-k="${x.k}"`}><span class="rk-n">${i + 1}</span><span class="rk-t"><b>${esc(x.name)}</b><span>${x.me ? 'Vous' : `Station ${RIVAL_PERS[x.pers].name} · ${x.silent ? 'silencieuse' : 'active'}`}</span><i><em style="width:${(x.pts / max * 100).toFixed(1)}%"></em></i></span><span class="rk-p">${fmt(x.pts)}</span></button>`).join('');
+  const rows = L.map((x, i) => `<button class="rk${x.me ? ' me' : ''}${x.silent ? ' silent' : ''}" ${x.me ? 'data-act="tab" data-id="station"' : `data-act="cell" data-k="${x.k}"`}><span class="rk-n">${i + 1}</span><span class="rk-t"><b>${esc(x.name)}</b><span>${x.me ? 'Vous' : `IA ${RIVAL_PERS[x.pers].name} · ${x.silent ? 'silencieuse' : 'active'}`}</span><i><em style="width:${(x.pts / max * 100).toFixed(1)}%"></em></i></span><span class="rk-p">${fmt(x.pts)}</span></button>`).join('');
   const pt = (l, v, col) => `<div class="pt" style="--c:var(--${col})"><span>${l}</span><b>${fmt(v)}</b></div>`;
   return `${seasonHtml()}<section class="panel rk-me"><h3>Vos points</h3><div class="pts">${pt('Économie', me.econ, 'ore')}${pt('Recherche', me.res, 'data')}${pt('Militaire', me.mil, 'danger')}</div><p class="hint-s">Un point pour 1 000 unités investies (les données comptent triple). Les vaisseaux et défenses perdus ne comptent plus.</p></section>
     <div class="list rk-list">${rows}</div>
-    <p class="hint-s">Une station silencieuse ne progresse plus et ne remplace plus ses pertes : ses réserves s’accumulent, c’est une cible de choix.</p>`;
+    <p class="hint-s">Partie solo : les stations rivales sont des IA qui jouent avec les mêmes règles que vous (mines, recherches, vaisseaux, défenses) et ne vont jamais plus vite que vous. Une station silencieuse ne construit plus : ses réserves s’accumulent, c’est une cible de choix.</p>`;
 }
 function leaveBtn() {
   const on = shieldOn(st.t);
@@ -2969,12 +3128,12 @@ function leaveBtn() {
 let leaveH = 8;
 function openLeave() { advanceTo(Date.now()); openModal('leave', leaveSheet()); }
 function leaveSheet() {
-  const t = st.t, D = leaveH * HOUR, r = rates(), on = shieldOn(t), left = shieldLeft(t), end = shieldEnd(t), covered = on && end >= t + D;
+  const t = st.t, D = leaveH * HOUR, r = rates(), on = shieldOn(t), left = shieldLeft(t), end = shieldEnd(t), covered = (on && end >= t + D) || protEnd() >= t + D;
   const nRaids = Math.round(D / (55 * MIN / st.speed)), sm = simRaid(), hold = sm ? 1 - sm.win : 1;
   const prot = protectedAmt(), exp = { ore: Math.floor(Math.max(0, st.res.ore - prot) * 0.3), ice: Math.floor(Math.max(0, st.res.ice - prot) * 0.3) };
   const civ = sm ? Object.keys(sm.lossD).filter(k => SHIP[k] && sm.lossD[k] >= 0.5).map(k => `${fmt(sm.lossD[k])} ${unitLabel(k, Math.round(sm.lossD[k]))}`).join(', ') : '';
   const items = [];
-  if (covered) items.push(['ok', 'Raids', `Bouclier actif jusqu’à ${clock(end)} : aucun raid ne vous atteindra pendant votre absence.`]);
+  if (covered) items.push(['ok', 'Raids', protEnd() >= t + D ? `Protection des débuts jusqu’au ${new Date(protEnd()).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} : aucune IA ne peut vous attaquer.` : `Bouclier actif jusqu’à ${clock(end)} : aucun raid ne vous atteindra pendant votre absence.`]);
   else {
     items.push([hold >= 0.75 ? 'ok' : hold >= 0.4 ? 'energy' : 'danger', `Raids : ${nRaids >= 1 ? 'environ ' + nRaids : 'moins d’un'} pendant votre absence`, `Chances de tenir face au prochain : ${pct(hold)}.${civ ? ' Pertes probables à quai : ' + civ + '.' : ''}`]);
     if (exp.ore + exp.ice > 0) items.push([hold >= 0.75 ? 'energy' : 'danger', 'Butin exposé', `Si un raid perce : jusqu’à ${fmt(exp.ore)} minerai et ${fmt(exp.ice)} glace emportés. ${fmt(prot)} de chaque restent à l’abri.`]);
@@ -3113,7 +3272,8 @@ function waitShort(c, r) {
 }
 /* ---- retours de jeu : lancement, décompte, célébration, dépenses, sons ---- */
 const QUEST_TARGET = { q1: ['mod', 'drill'], q2: ['mod', 'ice'], q3: ['mod', 'sail'], q4: ['mod', 'hab'], q5: ['mod', 'lab'], q6: ['tech', 'deep'], q7: ['mod', 'works'], q8: ['mod', 'yard'], q9: ['ship', 'scout'], q10: ['ship', 'drone'], q11: ['mod', 'bastion'], q5b: ['view', 'doctrine'], q11b: ['def', 'flak'], q13b: ['view', 'rank'], q12b: ['view', 'map'], q14b: ['view', 'fleets'], q14: ['ship', 'seed'], q15: ['tech', 'stellar'], q16: ['mod', 'beacon'], q17: ['mod', 'beacon'] };
-function curTarget() { const q = QUESTS.find(x => !st.quests[x.id]); return q ? QUEST_TARGET[q.id] || null : null; }
+function curQuest() { return QUESTS.find(q => !st.quests[q.id] && !(q.later && q.later())) || QUESTS.find(q => !st.quests[q.id]); }
+function curTarget() { const q = curQuest(); return q ? QUEST_TARGET[q.id] || null : null; }
 function goQuest() {
   const t = curTarget();
   if (!t) { setTab('journal'); return; }
