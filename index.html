@@ -827,6 +827,62 @@ body{font-size:14.5px}
   .t-max{font-size:9px;padding:0 4px}
   .tile .tring b{font-size:11px}
 }
+/* ============ charte classique : carte, flottes, journal ============ */
+.pnl,.mapp,.sites{padding:0;overflow:hidden}
+.pnl-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:7px 11px;background:linear-gradient(180deg,#2A4262,#1A2B42);border-bottom:1px solid #070D16;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.pnl-h h3{margin:0;font-size:14.5px;font-weight:700;letter-spacing:.03em;color:#E6EEF8;text-shadow:0 1px 0 #000}
+.pnl-h span{font-size:12px;color:#9FB6D2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mapp .map-wrap{margin:8px;clip-path:none;border-radius:4px;border:1px solid #0A121D;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.legend{display:flex;flex-wrap:wrap;gap:3px 12px;padding:0 10px 4px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:var(--c);box-shadow:0 0 6px var(--c)}
+.mapp .hint-s{padding:0 10px 9px;text-align:left}
+.site{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 10px 6px 9px;border-top:1px solid rgba(0,0,0,.5);box-shadow:inset 3px 0 0 var(--c),inset 0 1px 0 rgba(255,255,255,.04)}
+.site-main{appearance:none;border:0;background:none;color:inherit;display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:center;text-align:left;padding:0;cursor:pointer;min-width:0}
+.site-g{width:34px;height:34px;display:block}
+.site-t{display:grid;min-width:0}
+.site-t b{font-size:14px;color:#F1F5FA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.site-t span{font-size:11.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.site-a{display:grid;gap:4px}
+.mini-go{appearance:none;border:1px solid var(--go-edge);border-radius:4px;background:linear-gradient(180deg,var(--go-a) 0%,var(--go-b) 46%,var(--go-c) 54%,var(--go-d) 100%);color:#fff;font-family:var(--f-hud);font-weight:700;font-size:12.5px;line-height:1.2;padding:5px 9px;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 1px 3px rgba(0,0,0,.5);cursor:pointer;white-space:nowrap}
+.mini-go:disabled{background:linear-gradient(180deg,#4A5566,#2C3442);border-color:#151A22;color:#AEB7C4;text-shadow:none;cursor:not-allowed}
+.dock-p .tiles{padding:8px}
+.pnl .empty{padding:10px 12px}
+.mis-p .list{padding:8px}
+.fl-act,.fl-act + .fl-act{border-radius:4px}
+/* journal : événements en liste de messages */
+.timeline::before{display:none}
+.timeline li{padding:7px 2px 8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:var(--ink-2)}
+.timeline li:last-child{border-bottom:0}
+.timeline li::before{display:none}
+.timeline .when{display:flex;align-items:center;gap:6px;margin-bottom:2px;font-size:11.5px;letter-spacing:.02em}
+.timeline .when b{padding:0 6px;border-radius:3px;font-size:10px;letter-spacing:.06em;color:#0A1320;background:var(--c);text-transform:uppercase}
+.rp-open{border-radius:4px}
+/* journal : objectifs */
+.qlist li{grid-template-columns:20px minmax(0,1fr);gap:9px;padding:7px 4px}
+.qcheck{transform:none;width:18px;height:18px;border-radius:3px;border:1px solid #3A5576;background:#0A1320;color:#fff}
+.qcheck > *{transform:none}
+.qlist li.done .qcheck{background:linear-gradient(180deg,var(--go-a),var(--go-c));border-color:var(--go-edge)}
+.qlist li.cur{background:linear-gradient(90deg,rgba(242,181,68,.13),transparent 80%);box-shadow:inset 3px 0 0 var(--title);padding-left:9px;border-radius:3px}
+.qlist li.cur .qcheck{border-color:var(--title);box-shadow:none}
+.qlist li.cur h4{color:var(--title)}
+.qlist h4{font-size:15px}
+.qlist .mini-go{margin-top:5px}
+.qlist .rw{color:#7EDB5F}
+/* classement : podium */
+.rk-list .rk:nth-child(1) .rk-n{color:var(--title)}
+.rk-list .rk:nth-child(2) .rk-n{color:#C9D3DF}
+.rk-list .rk:nth-child(3) .rk-n{color:#C98A4B}
+.rk{border-radius:4px}
+@media (max-width:560px){
+  .pnl-h{padding:6px 9px}
+  .pnl-h h3{font-size:14px}
+  .site{padding:5px 8px 5px 8px;gap:6px}
+  .site-g{width:30px;height:30px}
+  .site-main{grid-template-columns:30px minmax(0,1fr);gap:7px}
+  .mini-go{font-size:12px;padding:4px 8px}
+  .dock-p .tiles{padding:6px}
+}
 </style>
 </head>
 <body>
@@ -2661,6 +2717,27 @@ function queueHtml(kind) {
     return jobRow(UNIT(y.id).pl, i === 0 ? `${fmt(y.done)}/${fmt(y.n)}` : `×${fmt(y.n)}`, active, 'cancel-yard', i, `var(--${UNIT(y.id).color})`, UNIT(y.id).icon);
   }).join('') : null, 'Aucune commande.');
 }
+const MAP_LEGEND = [['vesper-2', 'Station'], ['energy', 'Rivale'], ['danger', 'Nid corsaire'], ['ore', 'Astéroïde, épave'], ['ice', 'Comète'], ['data', 'Anomalie']];
+const SITE_TONE = { rival: 'energy', nest: 'danger', wreck: 'ore', debris: 'ore', anomaly: 'data', asteroid: 'ore', comet: 'ice' };
+const SITE_ORD = { rival: 0, nest: 1, wreck: 2, debris: 2, anomaly: 3, asteroid: 4, comet: 4 };
+function siteStatus(c) {
+  if (c.type === 'nest') return `niveau ${c.lvl} · ${c.intel ? (intelAge(c) > INTEL_OLD() ? 'renseignement ancien' : 'espionné') : 'garnison inconnue'}`;
+  if (c.type === 'rival') { rivalTick(c, st.t, 0); return `${RIVAL_PERS[c.pers].name} · ${c.silent ? 'silencieuse' : 'active'}`; }
+  if (c.type === 'asteroid') return `${fmtS(c.ore)} minerai${c.outpost ? ' · avant-poste' : ''}`;
+  if (c.type === 'comet') return `${fmtS(c.ice)} glace${c.outpost ? ' · avant-poste' : ''}`;
+  if (c.type === 'anomaly') return `environ ${fmt(c.data)} données`;
+  return `${fmtS((c.ore || 0) + (c.ice || 0))} à récupérer`;
+}
+function sitesHtml() {
+  const L = Object.keys(st.map).map(k => [k, st.map[k]]).filter(([, c]) => visible(c) && c.type in SITE_ORD && !(c.type === 'anomaly' && c.studied) && !(c.type === 'asteroid' && !(c.ore > 0)) && !(c.type === 'comet' && !(c.ice > 0)));
+  if (!L.length) return '';
+  L.sort((x, y) => SITE_ORD[x[1].type] - SITE_ORD[y[1].type] || x[1].d - y[1].d);
+  const rows = L.map(([k, c]) => {
+    const ms = missionsFor(c).filter(m => m !== 'outpost').slice(0, 2);
+    return `<div class="site" style="--c:var(--${SITE_TONE[c.type]})"><button class="site-main" data-act="cell" data-k="${k}"><svg viewBox="-32 -32 64 64" class="site-g" aria-hidden="true">${bodyGlyph(c, true)}</svg><span class="site-t"><b>${esc(cellTitle(c))}</b><span>${c.d} saut${c.d > 1 ? 's' : ''} · ${siteStatus(c)}</span></span></button><span class="site-a">${ms.map(m => { const ok = missionReady(m); return `<button class="mini-go" data-act="mission" data-m="${m}" data-k="${k}"${ok ? '' : ' disabled'}>${MISSION[m].name}</button>`; }).join('')}</span></div>`;
+  }).join('');
+  return `<section class="panel sites"><div class="pnl-h"><h3>Points repérés</h3><span>${L.length}</span></div>${rows}</section>`;
+}
 function fleetRow(f) {
   const c = cellOf(f.k), out = f.phase === 'out', a = out ? f.depart : f.bs, b = out ? f.arrive : f.back;
   const stage = f.m === 'shelter' ? (out ? 'À l’abri' : 'Retour') : out ? (f.m === 'expedition' && st.t > f.depart + f.dur ? 'Exploration' : 'Aller') : 'Retour';
@@ -2668,12 +2745,11 @@ function fleetRow(f) {
 }
 function fleetsHtml() {
   const def = fleetPower(st.ships), dp = defPower(), ba = (lvl('bastion') ? bastionAtk() : 0) + dp.a, bh = (lvl('bastion') ? bastionHull() : 0) + dp.h;
-  const docked = SHIP_ORDER.filter(id => (st.ships[id] || 0) > 0);
-  return `<div class="duo2"><div class="stat2"><span>Feu de défense</span><b style="color:var(--danger)">${fmt(def.a + ba)}</b></div><div class="stat2"><span>Coque de défense</span><b style="color:var(--ice)">${fmt(def.h + bh)}</b></div></div>
-    <div class="chips">${docked.length ? docked.map(id => `<span class="chip"><b>${fmt(st.ships[id])}</b>${shipName(id, st.ships[id])}</span>`).join('') : '<span class="empty">Aucun vaisseau à quai.</span>'}</div>
-    <div class="fl-acts"><button class="fl-act" data-act="mission" data-m="expedition" data-k="@deep"${lvl('radar') && docked.length ? '' : ' disabled'}><b>Expédition</b><span>${lvl('radar') ? `Espace profond · ${st.fleets.filter(f => f.m === 'expedition').length}/${maxExpe()} en cours` : 'Requiert l’Antenne profonde'}</span></button><button class="fl-act" data-act="mission" data-m="shelter" data-k="@abri"${docked.length ? '' : ' disabled'}><b>Mise à l’abri</b><span>Hors de portée des raids</span></button></div>
-    <h2 class="sub-h">En mission · ${st.fleets.length}/${maxFleets()}</h2>
-    ${st.fleets.length ? `<div class="list">${st.fleets.map(fleetRow).join('')}</div>` : '<p class="empty">Aucune flotte en vol. Touchez un astre sur la carte pour en envoyer une.</p>'}`;
+  const docked = SHIP_ORDER.filter(id => (st.ships[id] || 0) > 0), nE = st.fleets.filter(f => f.m === 'expedition').length;
+  const tiles = docked.map(id => `<button class="tile" data-act="item" data-kind="ship" data-id="${id}" style="--c:var(--${SHIP[id].color})" aria-label="${esc(SHIP[id].name)} : ${fmt(st.ships[id])} à quai"><span class="t-img">${thumbImg('ship', id, '240x240')}<span class="t-lv">${fmtS(st.ships[id])}</span></span><span class="t-n">${SHIP[id].name}</span></button>`).join('');
+  return `<section class="panel pnl dock-p"><div class="pnl-h"><h3>À quai</h3><span>défense : feu ${fmt(def.a + ba)} · coque ${fmtS(def.h + bh)}</span></div>${docked.length ? `<div class="tiles">${tiles}</div>` : '<p class="empty">Aucun vaisseau à quai.</p>'}</section>
+    <div class="fl-acts"><button class="fl-act" data-act="mission" data-m="expedition" data-k="@deep"${lvl('radar') && docked.length ? '' : ' disabled'}><b>Expédition</b><span>${lvl('radar') ? `Espace profond · ${nE}/${maxExpe()} en cours` : 'Requiert l’Antenne profonde'}</span></button><button class="fl-act" data-act="mission" data-m="shelter" data-k="@abri"${docked.length ? '' : ' disabled'}><b>Mise à l’abri</b><span>Hors de portée des raids</span></button></div>
+    <section class="panel pnl mis-p"><div class="pnl-h"><h3>En mission</h3><span>${st.fleets.length}/${maxFleets()} places</span></div>${st.fleets.length ? `<div class="list">${st.fleets.map(fleetRow).join('')}</div>` : '<p class="empty">Aucune flotte en vol. Touchez un astre ou un point repéré pour en envoyer une.</p>'}</section>`;
 }
 const VIEWS = {
   station() {
@@ -2704,7 +2780,7 @@ const VIEWS = {
     const r = radarRange(), nf = st.fleets.length;
     return `<div class="vh"><h1>Secteur</h1><span>Antenne : ${r} saut${r > 1 ? 's' : ''}</span></div>
       ${segsHtml('sector', [['map', 'Carte'], ['fleets', nf ? `Flottes · ${nf}` : 'Flottes']])}
-      ${seg.sector === 'fleets' ? fleetsHtml() : `<div class="map-wrap">${mapSvg()}</div><p class="hint-s">Touchez un astre pour l’inspecter. Les « ? » sont hors de portée.</p>`}`;
+      ${seg.sector === 'fleets' ? fleetsHtml() : `<section class="panel mapp"><div class="pnl-h"><h3>Secteur de Vesper</h3><span>${Object.values(st.map).filter(visible).length} cases en vue sur ${Object.keys(st.map).length}</span></div><div class="map-wrap">${mapSvg()}</div><div class="legend">${MAP_LEGEND.map(([c, l]) => `<span style="--c:var(--${c})"><i></i>${l}</span>`).join('')}</div><p class="hint-s">Touchez un astre pour l’inspecter. Les « ? » sont hors de portée de l’Antenne.</p></section>${sitesHtml()}`}`;
   },
   fleets() { seg.sector = 'fleets'; return VIEWS.sector(); },
   journal() {
@@ -2714,7 +2790,7 @@ const VIEWS = {
       ${segsHtml('journal', [['quests', 'Objectifs'], ['log', 'Événements'], ['rank', 'Classement']])}
       ${seg.journal === 'rank' ? rankingHtml() : seg.journal === 'log'
         ? (st.log.length ? `<section class="panel"><ul class="timeline">${st.log.map(e => `<li class="k-${e.k}"><span class="when">${clock(e.t)} · <b>${KIND[e.k] || ''}</b></span>${esc(e.m)}${repBtn(e.r)}</li>`).join('')}</ul></section>` : '<p class="empty">Rien à signaler pour l’instant.</p>')
-        : `<section class="panel"><ol class="qlist">${QUESTS.map((q, i) => `<li class="${st.quests[q.id] ? 'done' : q === cur ? 'cur' : ''}"><span class="qcheck" aria-hidden="true">${st.quests[q.id] ? '✓' : ''}</span><div><h4>${q.title}</h4>${q === cur ? `<p>${q.text}</p>` : ''}${rewardText(q.reward) && !st.quests[q.id] ? `<p class="rw">${rewardText(q.reward)}</p>` : ''}</div></li>`).join('')}</ol></section>`}`;
+        : `<section class="panel"><ol class="qlist">${QUESTS.map((q, i) => `<li class="${st.quests[q.id] ? 'done' : q === cur ? 'cur' : ''}"><span class="qcheck" aria-hidden="true">${st.quests[q.id] ? '✓' : ''}</span><div><h4>${q.title}</h4>${q === cur ? `<p>${q.text}</p><button class="mini-go" data-act="quest-go">Y aller</button>` : ''}${rewardText(q.reward) && !st.quests[q.id] ? `<p class="rw">${rewardText(q.reward)}</p>` : ''}</div></li>`).join('')}</ol></section>`}`;
   },
 };
 
