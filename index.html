@@ -15,7 +15,7 @@
 <meta name="description" content="Jeu de stratégie spatiale par navigateur : bâtissez une station autour d’une étoile mourante.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap">
 <style>
 :root{
   /* Mise en page : interface de jeu compacte pour mobile. Fond spatial vivant (nébuleuse assombrie, grain, lignes de balayage), plaques de coque biseautées aux bords lumineux, lignes de 76 px avec compte à rebours circulaire, bandeau de lancement, célébration de fin de chantier. Thème sombre unique, par choix. */
@@ -605,6 +605,144 @@ button.toast{appearance:none;border:0;font:inherit;color:inherit;text-align:left
 .cel-pano{position:absolute;left:0;right:0;top:0;height:170px;z-index:0;background:center 62%/cover no-repeat;opacity:.8;-webkit-mask-image:linear-gradient(180deg,#000 35%,transparent);mask-image:linear-gradient(180deg,#000 35%,transparent)}
 .cel-card > .hud-k{position:relative}
 .cel-card .cel-thumb{z-index:1}
+/* ============ charte classique ============ */
+:root{
+  --f-hud:"Titillium Web","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --f-body:"Titillium Web","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --title:#F2B544;
+  --steel-1:#2E4562;--steel-2:#18273C;--steel-3:#0E1828;
+  --frame:#33506F;--frame-hi:#6F93BC;
+  --go-a:#A4EC7E;--go-b:#5CC33F;--go-c:#3A9625;--go-d:#4DB233;--go-edge:#1E5612;
+}
+body{font-size:14.5px}
+.hud-k{letter-spacing:.06em;color:#8FB6E2;font-size:12.5px}
+/* cadres d'acier : bord net, reflet en haut, ombre portée, coins rivetés */
+.row,.panel,.quest,.stat2,.alert,.note,.segs,.launch,.cel-card,.busybox,.cbars,.dp,.sub-chip,.fl-act,.docc,.rk,.lv,.sim,.odds,.fc-sum,.season,.rk-me{clip-path:none;border-radius:4px;border:1px solid var(--frame);background:linear-gradient(180deg,#1A2B43 0%,#101D30 46%,#0C1625 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 0 0 1px rgba(0,0,0,.35),0 2px 8px rgba(0,0,0,.5)}
+.row::before,.panel::before,.quest::before,.stat2::before,.segs::before,.launch::before,.cel-card::before,.busybox::before,.cbars::before{display:none}
+.panel,.dp,.season,.rk-me{background-image:radial-gradient(circle at 6px 6px,var(--frame-hi) 0 1.6px,transparent 2px),radial-gradient(circle at calc(100% - 6px) 6px,var(--frame-hi) 0 1.6px,transparent 2px),radial-gradient(circle at 6px calc(100% - 6px),var(--frame-hi) 0 1.6px,transparent 2px),radial-gradient(circle at calc(100% - 6px) calc(100% - 6px),var(--frame-hi) 0 1.6px,transparent 2px),linear-gradient(180deg,#1A2B43 0%,#101D30 46%,#0C1625 100%)}
+.top{background:linear-gradient(180deg,#121F33,#0A1220);border-bottom:1px solid var(--frame);box-shadow:0 2px 0 rgba(0,0,0,.6),0 8px 20px rgba(0,0,0,.45)}
+.vh{border-bottom:1px solid var(--frame);background:none;padding-bottom:6px}
+.vh h1{font-size:23px;letter-spacing:.03em;text-shadow:0 1px 0 #000}
+.vh span{font-size:13.5px}
+/* boutons */
+.btn,.chipbtn,.stepper,.quest-go,.up{clip-path:none;border-radius:4px}
+.btn,.chipbtn{background:linear-gradient(180deg,#3A5576 0%,#22364F 52%,#1A2A40 100%);border:1px solid #0A121D;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 2px rgba(0,0,0,.5);text-transform:none;letter-spacing:.02em;font-size:15.5px}
+.btn.primary,.dp-go,.quest-go,.up.go{background:linear-gradient(180deg,var(--go-a) 0%,var(--go-b) 46%,var(--go-c) 54%,var(--go-d) 100%);border:1px solid var(--go-edge);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.18),0 2px 5px rgba(0,0,0,.55)}
+.btn.primary:not(:disabled)::after,.up.go::after{display:none}
+.dp-go{appearance:none;display:block;width:100%;min-height:46px;padding:8px 12px;border-radius:5px;font-family:var(--f-hud);font-size:17px;font-weight:700;cursor:pointer;letter-spacing:.02em}
+.dp-go:active:not(:disabled){filter:brightness(1.12);transform:translateY(1px)}
+.dp-go:disabled{background:linear-gradient(180deg,#4A5566,#2C3442);border-color:#151A22;color:#AEB7C4;text-shadow:none;cursor:not-allowed}
+.stepper{border:1px solid var(--frame);background:#0A1320}
+/* onglets */
+.segs{padding:3px;background:#0A1320}
+.segs button{clip-path:none;border-radius:3px;text-transform:none;letter-spacing:.03em;font-size:15px}
+.segs button[aria-pressed="true"]{background:linear-gradient(180deg,#3E6189,#24405F);box-shadow:inset 0 1px 0 rgba(255,255,255,.25);text-shadow:0 1px 0 #000}
+/* barre de ressources illustrée */
+.r{clip-path:none;border-radius:4px;border:1px solid var(--frame);background:linear-gradient(180deg,#1A2B43,#0C1625);padding:3px 4px 3px}
+.r .top2{gap:5px}
+.rimg{width:28px;height:22px;flex:none;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.6),0 0 0 2px color-mix(in oklab,var(--c) 45%,transparent)}
+.rimg img{width:100%;height:100%;object-fit:cover;display:block}
+.rimg img:not([src]){visibility:hidden}
+.rtx{display:grid;min-width:0;line-height:1.05}
+.rn{font-size:9.5px;font-weight:600;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r .v{font-size:14px;text-shadow:none;color:#F1F5FA}
+/* fiche de détail */
+.dp{display:grid;gap:9px;padding:10px;scroll-margin-top:96px;position:relative;overflow:hidden}
+.dp::after{content:"";position:absolute;inset:0 0 auto;height:118px;background:var(--pano) center 62%/cover no-repeat;opacity:.28;-webkit-mask-image:linear-gradient(180deg,#000,transparent);mask-image:linear-gradient(180deg,#000,transparent);pointer-events:none}
+.dp > *{position:relative;z-index:1}
+.dp-top{display:grid;grid-template-columns:118px minmax(0,1fr);gap:11px;align-items:start}
+.dp-img{position:relative;width:118px;height:118px;border-radius:4px;overflow:hidden;background:#000;box-shadow:0 0 0 1px #000,0 0 0 2px color-mix(in oklab,var(--c) 70%,transparent),0 4px 12px rgba(0,0,0,.6)}
+.dp-img img{width:100%;height:100%;object-fit:cover;display:block}
+.dp-img img:not([src]){visibility:hidden}
+.dp-kind{position:absolute;left:0;right:0;bottom:0;padding:2px 6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#E7EEF7;background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0))}
+.dp-info{display:grid;gap:3px;min-width:0}
+.dp-info h2{font-size:21px;line-height:1.1;color:var(--title);text-shadow:0 1px 0 #000;overflow-wrap:anywhere}
+.dp-lv{font-size:14px;color:var(--ink-2)}.dp-lv b{color:#fff}
+.dp-dur{display:flex;align-items:center;gap:5px;font-size:13.5px;color:var(--ink-2)}.dp-dur b{color:#fff}
+.dp-dur .ri{--c:var(--ink-2)}
+.dp-gain{font-size:13.5px;font-weight:600;color:color-mix(in oklab,var(--c) 70%,#fff)}
+.dp-cost{display:flex;flex-wrap:wrap;gap:6px}
+.dpc{gap:5px;padding:4px 9px 4px 6px;border-radius:3px;background:#0A1320;border:1px solid #23384F;font-size:14px}
+.dpc b{font-weight:700;color:#fff}
+.dpc.short{border-color:#7A2323;background:#2A0E10}.dpc.short b{color:#FF8A8A}
+.dp .wait{margin:-4px 0 0;font-size:12.5px;color:var(--ink-3);text-align:center}
+.dp .wait:empty{display:none}
+.dp-busy{display:grid;gap:4px;font-size:13.5px;color:#8FE3FF}
+.dp-bar{height:6px;border-radius:3px;background:#06101C;overflow:hidden;box-shadow:inset 0 0 0 1px #1B3047}
+.dp-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2E86F0,#5BE6FF)}
+.dp-more{font-size:13px;color:var(--ink-2)}
+.dp-more summary{list-style:none;cursor:pointer;display:flex;gap:7px;align-items:flex-start}
+.dp-more summary::-webkit-details-marker{display:none}
+.dp-more[open] summary{margin-bottom:8px}
+.dp-q{flex:none;width:18px;height:18px;border-radius:3px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#0A1320;background:linear-gradient(180deg,#9CC3EE,#5E8DC4)}
+.dp .qrow{display:flex;gap:6px}.dp .qrow .stepper{flex:1}.dp .quick{display:flex;gap:6px}
+/* grille de vignettes */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:7px}
+.tile{appearance:none;position:relative;display:grid;padding:0;border:0;border-radius:4px;overflow:hidden;cursor:pointer;color:var(--ink);background:#0A1320;box-shadow:0 0 0 1px #000,0 0 0 2px #2B4462,0 3px 8px rgba(0,0,0,.55);text-align:left;animation:rowIn .3s ease both}
+.tile.on{box-shadow:0 0 0 1px #000,0 0 0 3px var(--title),0 0 14px rgba(242,181,68,.45)}
+.tile.obj:not(.on){box-shadow:0 0 0 1px #000,0 0 0 2px var(--energy),0 3px 8px rgba(0,0,0,.55)}
+.t-img{position:relative;display:block;aspect-ratio:1;overflow:hidden}
+.t-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.t-img img:not([src]){visibility:hidden}
+.tile:hover .t-img img{transform:scale(1.05)}
+.tile.locked .t-img img{filter:grayscale(.9) brightness(.45)}
+.t-c{position:absolute;top:4px;left:4px;z-index:3;display:grid;place-items:center;border-radius:3px}
+.t-up{width:20px;height:20px;background:rgba(5,10,18,.8);box-shadow:inset 0 0 0 1px #3A4D63;color:#5F6F82}
+.t-up svg{width:12px;height:12px;fill:currentColor}
+.t-up.go{background:linear-gradient(180deg,var(--go-a),var(--go-c));box-shadow:0 0 0 1px var(--go-edge),0 0 8px rgba(92,195,63,.6);color:#fff}
+.t-lock{width:20px;height:20px;background:rgba(5,10,18,.85);color:#9AA6B5}
+.t-lock svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2}
+.t-max{padding:1px 5px;font-size:10.5px;font-weight:700;color:#0A1320;background:var(--ok)}
+.t-lv{position:absolute;right:4px;top:calc(100% - 46px);z-index:3;min-width:22px;padding:0 5px;border-radius:3px;font-size:14px;font-weight:700;line-height:20px;text-align:center;color:var(--title);background:rgba(5,10,18,.85);box-shadow:inset 0 0 0 1px rgba(242,181,68,.35)}
+.t-n{display:block;padding:4px 6px 5px;font-size:12.5px;font-weight:600;line-height:1.15;min-height:2.6em;background:linear-gradient(180deg,#16263B,#0C1625);border-top:1px solid #000;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tile.on .t-n{color:var(--title)}
+.tile.locked .t-n{color:var(--ink-3)}
+.tile .tring{z-index:2}
+/* menu latéral : caché sur téléphone */
+.dkx-l{display:none}
+@media (min-width:980px){
+  .nav{top:0;bottom:0;right:auto;width:212px;padding:0;background:linear-gradient(90deg,#0E192A,#0A1220);border-top:0;border-right:1px solid var(--frame);box-shadow:4px 0 18px rgba(0,0,0,.45)}
+  .nav-in{display:block;max-width:none;height:100%;overflow:auto;padding:14px 12px 20px}
+  .nav-in > .dk{display:none}
+  .dkx-l{display:grid;gap:5px}
+  .dkx-h{margin:2px 2px 10px;font-family:var(--f-hud);font-size:20px;font-weight:700;letter-spacing:.04em;color:var(--title);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dkx{appearance:none;position:relative;display:flex;align-items:center;gap:9px;width:100%;min-height:34px;padding:4px 10px 4px 5px;border-radius:4px;border:1px solid #070D16;background:linear-gradient(180deg,#2C4260 0%,#1A2B42 52%,#142235 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(0,0,0,.5);color:#C9D6E6;font-family:var(--f-hud);font-size:14.5px;font-weight:600;text-align:left;cursor:pointer}
+  .dkx:hover{filter:brightness(1.15)}
+  .dkx[aria-current="page"]{background:linear-gradient(180deg,#5A7FA8,#33557C 55%,#2A4769);color:#fff;text-shadow:0 1px 0 #000}
+  .dkx-i{width:24px;height:24px;flex:none;display:grid;place-items:center;border-radius:3px;background:#0A1320;box-shadow:inset 0 0 0 1px #2B4462}
+  .dkx-i svg{width:17px;height:17px;fill:none;stroke:#9CC3EE;stroke-width:1.8}
+  .dkx .bd{position:static;margin-left:auto}
+  .top,.app,.strip{margin-left:212px}
+  .top .wrap,.app.wrap{max-width:900px}
+  .app{padding-bottom:40px}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(118px,1fr))}
+  .dp-top{grid-template-columns:200px minmax(0,1fr)}
+  .dp-img{width:200px;height:200px}
+  .dp::after{height:200px}
+  .dp-info h2{font-size:26px}
+  .modal{left:212px}
+}
+/* charte classique : ajustements téléphone */
+.r{display:grid;grid-template-rows:auto auto;gap:2px;padding:3px}
+.r .top2{display:grid;grid-template-rows:20px auto;gap:2px}
+.rimg{width:100%;height:20px}
+.rtx{text-align:center}
+.rn{display:none}
+.r .v{font-size:13.5px;text-align:center}
+.vh-sub{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sub-chip.wide{grid-column:auto}
+.sub-chip{grid-template-columns:18px minmax(0,1fr);column-gap:6px;padding:6px 7px}
+.sub-chip svg{width:18px;height:18px}
+.sub-chip span{font-size:10px;letter-spacing:.06em}
+.sub-chip b{font-size:13.5px}
+.alert{padding:7px 10px;font-size:12.5px;gap:7px}
+.quest{padding:8px 10px}
+@media (min-width:980px){
+  .rn{display:block;font-size:10.5px}
+  .r .top2{grid-template-rows:30px auto}
+  .rimg{height:30px}
+  .r .v{font-size:15px}
+}
 </style>
 </head>
 <body>
@@ -2419,7 +2557,7 @@ function alertsHtml(r) {
   if (r.staff < 1) a.push(['hab', 'pop', `Pas assez de colons : postes pourvus à <b>${pct(r.staff)}</b>. Agrandissez l’Habitat.`]);
   if (st.res.ore >= r.store * 0.999 || st.res.ice >= r.store * 0.999) a.push(['depot', 'ore', 'Entrepôt plein : la production s’arrête. Agrandissez l’Entrepôt.']);
   let x = '';
-  if (shieldOn(st.t)) x += `<button class="alert" data-act="leave" style="--c:var(--data)"><span class="dot"></span><span>Bouclier de veille actif jusqu’à <b>${clock(shieldEnd(st.t))}</b> : aucun raid ne passera, la production tourne à 50 %.</span></button>`;
+  if (false) x += `<button class="alert" data-act="leave" style="--c:var(--data)"><span class="dot"></span><span>Bouclier de veille actif jusqu’à <b>${clock(shieldEnd(st.t))}</b> : aucun raid ne passera, la production tourne à 50 %.</span></button>`;
   if (threatVisible() && !shieldOn(st.raid.at)) { const sm = simRaid(), p = 1 - sm.win; x += `<button class="alert raid" data-act="activity" style="--c:var(--danger)"><span class="dot"></span><span>${raidName()} : arrivée dans <b data-eta="${st.raid.at}"></b>. Chances de tenir : <b class="${p >= 0.75 ? 'ok' : p >= 0.4 ? 'mid' : 'bad'}">${pct(p)}</b>.</span></button>`; }
   if (orbitTotal() >= 1) x += `<button class="alert" data-act="cell" data-k="${homeKey()}" style="--c:var(--ore)"><span class="dot"></span><span>Débris en orbite : <b>${fmtS(st.orbit.ore)}</b> minerai et <b>${fmtS(st.orbit.ice)}</b> glace. Envoyez des Drones foreurs les ramasser.</span></button>`;
   return x + a.map(([id, col, t]) => `<button class="alert" data-act="item" data-kind="mod" data-id="${id}" style="--c:var(--${col})"><span class="dot"></span><span>${t}</span></button>`).join('');
@@ -2463,12 +2601,12 @@ const VIEWS = {
       ${cur ? `<button class="quest" data-act="quest-go"><span class="quest-k">Objectif</span><span class="quest-t">${cur.title}</span><span class="quest-d">${cur.text}</span><span class="quest-go">${curTarget() ? 'Y aller' : 'Voir'}</span></button>` : ''}
       <div id="alerts">${alertsHtml(r)}</div>
       ${segsHtml('station', [['prod', 'Production'], ['inst', 'Installations']])}
-      <div class="list">${ids.map((id, i) => rowHtml('mod', id, i)).join('')}</div>`;
+      ${detailPanel('mod', curPick('mod'))}${tileGrid('mod', ids)}`;
   },
   research() {
     return `<div class="vh"><h1>Laboratoire</h1><span>${lvl('lab') ? '+' + fmt(rates().data) + ' données/h' : 'Non construit'}</span></div>
       ${lvl('lab') ? '' : '<p class="note">Construisez le Laboratoire (Station › Installations) pour lancer des recherches.</p>'}
-      <div class="list">${TECH_ORDER.map((id, i) => rowHtml('tech', id, i)).join('')}</div>`;
+      ${detailPanel('tech', curPick('tech'))}${tileGrid('tech', TECH_ORDER)}`;
   },
   yard() {
     const n = SHIP_ORDER.reduce((a, id) => a + (st.ships[id] || 0), 0), nd = DEF_ORDER.reduce((a, id) => a + (st.def[id] || 0), 0), d = seg.yard === 'def';
@@ -2476,7 +2614,7 @@ const VIEWS = {
       ${lvl('yard') ? '' : '<p class="note">Construisez le Chantier orbital (Station › Installations) pour fabriquer des vaisseaux et des défenses.</p>'}
       ${segsHtml('yard', [['ships', 'Vaisseaux'], ['def', nd ? `Défenses · ${fmt(nd)}` : 'Défenses']])}
       ${d ? `<p class="hint-s">Les défenses ne quittent pas la station. Après un raid, les drones de maintenance en remettent <b>${pct(repairFrac())}</b> en état (plus avec les Ateliers).</p>` : ''}
-      <div class="list">${(d ? DEF_ORDER : SHIP_ORDER).map((id, i) => rowHtml(d ? 'def' : 'ship', id, i)).join('')}</div>`;
+      ${detailPanel(d ? 'def' : 'ship', curPick(d ? 'def' : 'ship'))}${tileGrid(d ? 'def' : 'ship', d ? DEF_ORDER : SHIP_ORDER)}`;
   },
   sector() {
     const r = radarRange(), nf = st.fleets.length;
@@ -2500,11 +2638,12 @@ const VIEWS = {
 const GEAR = `<button class="gear" data-act="settings" aria-label="Paramètres"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="3.5"/><circle cx="14" cy="14" r="8"/><path d="M14 2.5v3.5M14 22v3.5M2.5 14H6M22 14h3.5M5.9 5.9l2.4 2.4M19.7 19.7l2.4 2.4M22.1 5.9l-2.4 2.4M8.3 19.7l-2.4 2.4"/></svg></button>`;
 const XBTN = '<button class="sh-x" data-act="close" aria-label="Fermer">×</button>';
 function openItem(kind, id) {
-  if (!(kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : UNIT(id))) return;
+  if (!defOf(kind, id)) return;
   advanceTo(Date.now());
-  itemSel = { kind, id };
-  openModal('item', itemSheet());
-  paintThumbs(); updateDynamic();
+  setPick(kind, id);
+  const t = kind === 'mod' ? 'station' : kind === 'tech' ? 'research' : 'yard';
+  if (tab !== t) setTab(t); else { renderView(true); updateDynamic(); }
+  paintThumbs(); setTimeout(scrollToDp, 60);
 }
 function openActivity() { advanceTo(Date.now()); openModal('activity', activitySheet()); updateDynamic(); }
 function activitySheet() {
@@ -2665,7 +2804,7 @@ function rankingHtml() {
 }
 function leaveBtn() {
   const on = shieldOn(st.t);
-  return `<button class="sub-chip wide${on ? ' on' : ''}" data-act="leave" style="--c:var(--${on ? 'data' : 'ice'})">${svg('moon')}<span>${on ? 'Bouclier de veille actif' : 'Avant de partir'}</span><b>${on ? 'Jusqu’à ' + clock(shieldEnd(st.t)) : 'Prévisions, bouclier et mise à l’abri'}</b></button>`;
+  return `<button class="sub-chip wide${on ? ' on' : ''}" data-act="leave" style="--c:var(--${on ? 'data' : 'ice'})">${svg('moon')}<span>${on ? 'Bouclier' : 'Départ'}</span><b>${on ? clock(shieldEnd(st.t)) : 'Prévoir'}</b></button>`;
 }
 let leaveH = 8;
 function openLeave() { advanceTo(Date.now()); openModal('leave', leaveSheet()); }
@@ -2789,11 +2928,12 @@ function refreshSheet() {
 }
 
 /* ---- barres ---- */
+const RES_ART = { ore: 'drill', ice: 'ice', data: 'lab', energy: 'sail', pop: 'hab' };
 function renderRes() {
   if (document.getElementById('v-ore')) return;
   loadPhotos(); makeTextures();
   const defs = document.getElementById('defs'); if (defs) defs.innerHTML = mapDefs();
-  $('#res').innerHTML = RES_HUD.map(([k, n]) => `<button class="r${k === 'data' ? ' nometer' : ''}" id="r-${k}" style="--c:var(--${k})" data-act="res" aria-label="${n}, voir le détail"><span class="top2">${ri(k)}<span class="v" id="v-${k}">0</span></span><span class="meter"><i id="m-${k}"></i></span></button>`).join('');
+  $('#res').innerHTML = RES_HUD.map(([k, n]) => `<button class="r${k === 'data' ? ' nometer' : ''}" id="r-${k}" style="--c:var(--${k})" data-act="res" aria-label="${n}, voir le détail"><span class="top2"><span class="rimg">${thumbImg('mod', RES_ART[k], '96x96')}</span><span class="rtx"><span class="rn">${n}</span><span class="v" id="v-${k}">0</span></span></span><span class="meter"><i id="m-${k}"></i></span></button>`).join('');
 }
 function renderAll(force) {
   renderRes(); renderStrip(); renderDock(); renderView(force); refreshSheet();
@@ -2947,6 +3087,64 @@ function spawnFloat(k, txt, cls) {
 }
 
 /* ---- lignes, fiches et barres refaites ---- */
+/* ---- charte classique : sélection, vignettes et fiche de détail ---- */
+const pick = { prod: 'drill', inst: 'lab', tech: 'deep', ships: 'drone', def: 'flak' };
+function pickKey(kind) { return kind === 'mod' ? (seg.station === 'inst' ? 'inst' : 'prod') : kind === 'tech' ? 'tech' : kind === 'def' ? 'def' : 'ships'; }
+function curPick(kind) { return pick[pickKey(kind)]; }
+function setPick(kind, id) {
+  if (kind === 'mod') seg.station = INST.includes(id) ? 'inst' : 'prod';
+  if (kind === 'ship' || kind === 'def') seg.yard = kind === 'def' ? 'def' : 'ships';
+  pick[pickKey(kind)] = id;
+}
+function scrollToDp() { const p = document.getElementById('dp'); if (!p) return; const r = p.getBoundingClientRect(); if (r.top < 60 || r.top > innerHeight * 0.45) p.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function defOf(kind, id) { return kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : UNIT(id); }
+function tileGrid(kind, ids) { const cur = curPick(kind); return `<div class="tiles">${ids.map(id => tileHtml(kind, id, id === cur)).join('')}</div>`; }
+function tileHtml(kind, id, on) {
+  const it = itemState(kind, id), def = defOf(kind, id), b = it.busy;
+  const L = kind === 'mod' ? lvl(id) : kind === 'tech' ? tech(id) : unitCount(id);
+  const maxed = kind === 'mod' ? !!(def.max && pendingB(id) >= def.max) : kind === 'def' ? defFull(id) : false;
+  const tg = curTarget(), obj = !!(tg && tg[0] === kind && tg[1] === id);
+  const corner = !it.ok ? `<span class="t-c t-lock">${LOCK_SVG}</span>` : maxed ? '<span class="t-c t-max">MAX</span>' : it.block ? '' : `<span class="t-c t-up" data-need="${it.need}">${UP_SVG}</span>`;
+  const ring = b ? `<span class="tring"><svg viewBox="0 0 40 40" aria-hidden="true"><circle class="tr-bg" cx="20" cy="20" r="17"/><circle class="tr-fg" cx="20" cy="20" r="17" pathLength="100" data-ring="${b.start},${b.end}"/></svg><b data-short="${b.end}"></b></span>` : '';
+  const lvTxt = kind === 'ship' || kind === 'def' ? fmtS(L) : String(L) + (it.queued ? '+' + it.queued : '');
+  return `<button class="tile${on ? ' on' : ''}${it.ok ? '' : ' locked'}${b ? ' busy' : ''}${obj ? ' obj' : ''}" data-act="pick" data-kind="${kind}" data-id="${id}" style="--c:var(--${it.color})" aria-pressed="${on}" aria-label="${esc(def.name)}, ${kind === 'ship' || kind === 'def' ? fmt(L) + ' en service' : 'niveau ' + L}"><span class="t-img">${thumbImg(kind, id, '240x240')}${ring}</span>${corner}<span class="t-lv">${lvTxt}</span><span class="t-n">${def.name}</span></button>`;
+}
+const DP_KIND = { mod: 'Bâtiment', tech: 'Recherche', ship: 'Vaisseau', def: 'Défense' };
+function dpCost(c) { return `<div class="dp-cost">${Object.entries(c).map(([k, v]) => `<span class="cm dpc" data-k="${k}" data-v="${v}" style="--c:var(--${k})">${ri(k)}<b>${fmtS(v)}</b></span>`).join('')}</div>`; }
+function detailPanel(kind, id) {
+  const def = defOf(kind, id); if (!def) return '';
+  const it = itemState(kind, id), b = it.busy, pano = kind === 'mod' ? panoUrl(id) : '';
+  let lvLine = '', durLine = '', gain = '', action = '', extra = '';
+  if (kind === 'mod') {
+    const L = lvl(id), P = pendingB(id), N = P + 1, maxed = def.max && P >= def.max, ok = reqOk(def.req), full = st.q.build.length >= 3, c = cost(def.cost(N)), blocked = !ok || maxed || full;
+    lvLine = `Niveau <b>${L}</b>${def.max ? ' sur ' + def.max : ''}${P > L ? ` · ${P - L} en file` : ''}`;
+    durLine = maxed ? '' : `${ri('time')}Durée : <b>${fmtDur(bTime(c))}</b>`;
+    gain = maxed ? 'Tous les niveaux sont achevés' : shortGain('mod', id);
+    action = maxed ? '' : `${dpCost(c)}<button class="dp-go" data-act="build" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'File pleine (3 chantiers)' : (P === 0 ? 'Construire' : `Améliorer au niveau ${N}`)}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
+    extra = maxed ? '' : `<p class="hud-k">Au niveau ${N}</p><div style="--c:var(--${def.color})">${modEffect(id, P, N)}</div>`;
+  } else if (kind === 'tech') {
+    const L = tech(id), P = pendingT(id), N = P + 1, ok = reqOk(def.req), full = st.q.research.length >= 2, c = cost(def.cost(N)), blocked = !ok || full;
+    lvLine = `Niveau <b>${L}</b>${P > L ? ` · ${P - L} en file` : ''}`;
+    durLine = `${ri('time')}Durée : <b>${fmtDur(rTime(c))}</b>`;
+    gain = def.eff(N);
+    action = `${dpCost(c)}<button class="dp-go" data-act="research" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : full ? 'Deux recherches déjà prévues' : (P ? `Rechercher le niveau ${N}` : 'Lancer la recherche')}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
+  } else {
+    const isDef = kind === 'def', have = unitCount(id), ok = reqOk(def.req), n = qty[id] || 1;
+    lvLine = isDef ? `<b>${fmt(have)}</b> en place` : `<b>${fmt(have)}</b> à quai`;
+    durLine = `${ri('time')}Par unité : <b>${fmtDur(sTime(id))}</b>`;
+    gain = `${CLS_ONE[def.cls] || ''} · ${roleText(def).toLowerCase()}`;
+    extra = `<div class="stats"><span class="stat">Feu <b>${fmt(unitAtk(id))}</b></span><span class="stat">Coque <b>${fmt(unitHull(id))}</b></span><span class="stat">Bouclier <b>${fmt(unitShield(id))}</b></span>${isDef ? '' : `<span class="stat">Vitesse <b>${NF1.format(shipSpeed(id))}</b></span><span class="stat">Soute <b>${fmt(shipCargo(id))}</b></span>`}</div>`;
+    action = ok ? `<div class="qrow"><div class="stepper"><button type="button" data-act="qty-step" data-id="${id}" data-d="-1" aria-label="Un de moins">−</button><input id="qty-${id}" data-qty="${id}" type="number" inputmode="numeric" min="1" max="9999" value="${n}" aria-label="Quantité de ${def.pl}"><button type="button" data-act="qty-step" data-id="${id}" data-d="1" aria-label="Un de plus">+</button></div><div class="quick"><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="10">×10</button><button type="button" class="chipbtn" data-act="qty-set" data-id="${id}" data-v="max">Max</button></div></div><div id="sf-${id}" style="display:contents">${shipFoot(id)}</div>` : '';
+  }
+  const busy = b ? `<div class="dp-busy"><span>${kind === 'tech' ? 'Recherche' : kind === 'mod' ? 'Construction' : 'Assemblage'} en cours · <b data-eta="${b.end}"></b></span><span class="dp-bar"><i data-prog="${b.start},${b.end}"></i></span></div>` : '';
+  const req = it.ok ? '' : reqPills(def.req);
+  return `<section class="dp" id="dp" style="--c:var(--${it.color})${pano ? `;--pano:url(${pano})` : ''}">
+    <div class="dp-top"><div class="dp-img">${thumbImg(kind, id, '240x240')}<span class="dp-kind">${DP_KIND[kind]}</span></div>
+      <div class="dp-info"><h2>${def.name}</h2><p class="dp-lv">${lvLine}</p>${durLine ? `<p class="dp-dur">${durLine}</p>` : ''}<p class="dp-gain">${gain}</p></div></div>
+    ${busy}${req}${action}
+    <details class="dp-more"${kind === 'ship' || kind === 'def' ? ' open' : ''}><summary><span class="dp-q">?</span>${def.desc || 'Détails'}</summary>${extra}</details>
+  </section>`;
+}
 function rowHtml(kind, id, i) {
   const it = itemState(kind, id), def = kind === 'mod' ? MOD[id] : kind === 'tech' ? TECH[id] : UNIT(id);
   const maxed = kind === 'mod' ? !!(def.max && pendingB(id) >= def.max) : kind === 'def' ? defFull(id) : false;
@@ -2981,7 +3179,7 @@ function costBars(c) {
 }
 function shipFoot(id) {
   const n = qty[id] || 1, c = shipCost(id, n), ok = reqOk(UNIT(id).req), full = st.q.yard.length >= 5, cap = defFull(id), blocked = !ok || full || cap;
-  return `<p class="hud-k">Coût pour ${fmt(n)} ${unitName(id, n)}</p>${costBars(c)}<p class="dur-line">${ri('time')}Assemblage : ${fmtDur(sTime(id) * n)}</p><button class="btn block ${blocked ? '' : 'primary'}" data-act="ships" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : cap ? 'Déjà en place' : full ? 'Chantier complet' : `${DEF[id] ? 'Construire' : 'Fabriquer'} ${fmt(n)} ${unitName(id, n)}`}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
+  return `${dpCost(c)}<p class="dp-dur">${ri('time')}Assemblage de ${fmt(n)} : <b>${fmtDur(sTime(id) * n)}</b></p><button class="dp-go" data-act="ships" data-id="${id}" data-need="${costAttr(c)}"${blocked ? ' data-block="1" disabled' : ''}>${!ok ? 'Verrouillé' : cap ? 'Déjà en place' : full ? 'Chantier complet' : `${DEF[id] ? 'Construire' : 'Fabriquer'} ${fmt(n)} ${unitName(id, n)}`}</button><p class="wait" data-wait="${costAttr(c)}"></p>`;
 }
 function itemSheet() {
   const { kind, id } = itemSel, it = itemState(kind, id), b = it.busy;
@@ -3042,7 +3240,9 @@ function renderDock() {
     if (id === 'journal' && unread && cur !== 'journal') return `<span class="bd new">${unread > 9 ? '9+' : unread}</span>`;
     return '';
   };
-  $('#dock').innerHTML = TABS.map(t => `<button class="dk" data-act="tab" data-id="${t.id}"${t.id === cur ? ' aria-current="page"' : ''}><span class="dki">${svg(t.icon)}</span><span>${t.label}</span>${badge(t.id)}</button>`).join('');
+  const NAVX = [['station', 'station', 'prod', 'Production', 'drill'], ['station', 'station', 'inst', 'Installations', 'works'], ['research', '', '', 'Laboratoire', 'lab'], ['yard', 'yard', 'ships', 'Vaisseaux', 'lancer'], ['yard', 'yard', 'def', 'Défenses', 'flak'], ['sector', 'sector', 'map', 'Carte du secteur', 'hexmap'], ['sector', 'sector', 'fleets', 'Flottes', 'scout'], ['journal', 'journal', 'quests', 'Objectifs', 'radar'], ['journal', 'journal', 'log', 'Événements', 'beacon'], ['journal', 'journal', 'rank', 'Classement', 'sheet']];
+  const navx = `<div class="dkx-l"><p class="dkx-h">${esc(st.name)}</p>${NAVX.map(([t, k, v, l, ic]) => `<button class="dkx" data-act="navx" data-id="${t}"${k ? ` data-k="${k}" data-v="${v}"` : ''}${cur === t && (!k || seg[k] === v) ? ' aria-current="page"' : ''}><span class="dkx-i">${svg(ic)}</span><span>${l}</span>${!k || NAVX.find(x => x[0] === t)[2] === v ? badge(t) : ''}</button>`).join('')}</div>`;
+  $('#dock').innerHTML = navx + TABS.map(t => `<button class="dk" data-act="tab" data-id="${t.id}"${t.id === cur ? ' aria-current="page"' : ''}><span class="dki">${svg(t.icon)}</span><span>${t.label}</span>${badge(t.id)}</button>`).join('');
 }
 let lastViewKey = '';
 function renderView(force) {
@@ -3097,6 +3297,7 @@ function updateDynamic() {
     if (t && t.textContent !== tt) t.textContent = tt;
   }
   for (const el of $$('[data-wait]')) setText2(el, waitText(parseCost(el.dataset.wait), r));
+  for (const el of $$('.t-up[data-need]')) el.classList.toggle('go', afford(parseCost(el.dataset.need)));
   for (const el of $$('.fdot')) {
     const f = st.fleets.find(x => x.id === +el.dataset.f); if (!f) continue;
     const c = st.map[f.k]; if (!c) continue; const [tx, ty] = hexXY(c.q, c.r);
@@ -3125,6 +3326,8 @@ document.addEventListener('click', e => {
   switch (a) {
     case 'tab': setTab(id); break;
     case 'item': openItem(el.dataset.kind, id); break;
+    case 'pick': setPick(el.dataset.kind, id); renderView(true); updateDynamic(); paintThumbs(); scrollToDp(); break;
+    case 'navx': if (el.dataset.k) seg[el.dataset.k] = el.dataset.v; if (tab !== id) setTab(id); else { renderView(true); updateDynamic(); } window.scrollTo({ top: 0 }); break;
     case 'seg': seg[el.dataset.k] = el.dataset.v; renderView(true); updateDynamic(); break;
     case 'activity': openActivity(); break;
     case 'quest-go': goQuest(); break;
