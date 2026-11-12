@@ -743,6 +743,90 @@ body{font-size:14.5px}
   .rimg{height:30px}
   .r .v{font-size:15px}
 }
+/* ============ charte classique : téléphone ============ */
+:root{--nav-h:54px}
+/* barre du bas : boutons d'acier comme le menu d'ordinateur */
+.nav{background:linear-gradient(180deg,#14233A,#0A1220);border-top:1px solid var(--frame);box-shadow:0 -2px 0 rgba(0,0,0,.6),0 -8px 20px rgba(0,0,0,.45)}
+.nav-in{gap:4px;padding:5px 6px 5px}
+.dk{height:var(--nav-h);border-radius:4px;border:1px solid #070D16;background:linear-gradient(180deg,#2C4260 0%,#1A2B42 52%,#142235 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(0,0,0,.5);color:#AFC0D4;font-size:11.5px;letter-spacing:.02em;text-transform:none;font-weight:600;gap:1px}
+.dk::before{display:none}
+.dki{width:30px;height:24px;border-radius:3px}
+.dk svg{width:20px;height:20px;stroke:#9CC3EE}
+.dk[aria-current="page"]{background:linear-gradient(180deg,#5A7FA8,#33557C 55%,#2A4769);color:#fff;text-shadow:0 1px 0 #000}
+.dk[aria-current="page"] svg{stroke:#fff;filter:none}
+.dk .bd{top:3px;left:calc(50% + 8px);clip-path:none;border-radius:3px}
+/* pastilles d'activité en haut */
+.chipx{clip-path:none;border-radius:4px;border:1px solid var(--frame);background:linear-gradient(180deg,#22364F,#101D30);height:32px}
+.chipx .cth{clip-path:none;border-radius:3px}
+.chipx b{text-shadow:none}
+.chipx.raid{background:linear-gradient(180deg,#7A1E1E,#3A0C0E);border-color:#A33}
+/* fenêtres du bas */
+.sheet{background:linear-gradient(180deg,#17273E,#0C1625 38%,#0A1220);border-top:1px solid var(--frame-hi);box-shadow:0 -2px 0 rgba(0,0,0,.6),0 -16px 40px var(--shadow);clip-path:none;border-radius:8px 8px 0 0}
+.sheet::before{background:var(--frame-hi);box-shadow:none;opacity:.6}
+.sh-x{border-radius:4px;background:linear-gradient(180deg,#3A5576,#1A2A40);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 0 0 1px #0A121D;color:#E6EEF8}
+.eyebrow{color:#8FB6E2}
+.sheet h2{color:var(--title);text-shadow:0 1px 0 #000}
+.sheet-art{clip-path:none;border-radius:4px}
+.quest-go{clip-path:none;border-radius:4px;text-transform:none;letter-spacing:.02em;font-size:13.5px;padding:7px 12px}
+/* fiche de détail : description sur une ligne tant qu'elle est repliée */
+.dp-more summary{align-items:center}
+.dp-s{min-width:0}
+.dp-more:not([open]) .dp-s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-more .stats{margin-top:2px}
+/* la fiche ne déborde jamais : sa colonne peut rétrécir */
+.dp{grid-template-columns:minmax(0,1fr)}
+.dp > *{min-width:0}
+.dp-more summary{min-width:0}
+/* niveau calé sur l'image */
+.t-lv{top:auto;bottom:4px;right:4px}
+@media (max-width:560px){
+  .app{padding-top:8px}
+  .view{gap:7px}
+  /* en-tête resserré */
+  .vh{padding-bottom:4px}
+  .vh h1{font-size:19px}
+  .vh span{font-size:12.5px}
+  .vh-sub{gap:5px}
+  .sub-chip{padding:5px 6px;column-gap:5px;grid-template-columns:16px minmax(0,1fr)}
+  .sub-chip svg{width:16px;height:16px}
+  .sub-chip b{font-size:13px}
+  .quest{padding:6px 9px;gap:0 8px}
+  .quest-k{font-size:10px}
+  .quest-t{font-size:15px}
+  .quest-d{font-size:12px}
+  .alert{padding:5px 9px;font-size:12px;line-height:1.3}
+  .alert > span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .segs button{min-height:32px;font-size:14px}
+  /* fiche compacte */
+  .dp{gap:7px;padding:8px;scroll-margin-top:88px}
+  .dp::after{height:96px}
+  .dp-top{grid-template-columns:92px minmax(0,1fr);gap:9px}
+  .dp-img{width:92px;height:92px}
+  .dp-kind{font-size:9.5px;padding:1px 5px}
+  .dp-info{gap:1px}
+  .dp-info h2{font-size:18px}
+  .dp-lv,.dp-dur,.dp-gain{font-size:12.5px}
+  .dp-cost{gap:4px}
+  .dpc{padding:3px 7px 3px 5px;font-size:13px}
+  .dp-go{min-height:42px;font-size:15.5px;padding:6px 10px}
+  .dp .qrow .stepper{grid-template-columns:38px minmax(0,1fr) 38px}
+  .dp .stepper button{min-height:36px}
+  .dp .stepper input{font-size:17px}
+  .dp .chipbtn{min-height:36px;padding:0 9px;font-size:13.5px}
+  .dp-more{font-size:12.5px}
+  .dp-q{width:16px;height:16px;font-size:11px}
+  /* vignettes par 4 */
+  .tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .tile{border-radius:3px;box-shadow:0 0 0 1px #000,0 0 0 1.5px #2B4462,0 2px 5px rgba(0,0,0,.5)}
+  .tile.on{box-shadow:0 0 0 1px #000,0 0 0 2.5px var(--title),0 0 10px rgba(242,181,68,.45)}
+  .t-n{font-size:10.5px;padding:3px 4px 4px;min-height:2.45em;line-height:1.12}
+  .t-lv{font-size:12px;line-height:16px;min-width:17px;padding:0 4px;bottom:3px;right:3px}
+  .t-c{top:3px;left:3px}
+  .t-up,.t-lock{width:17px;height:17px}
+  .t-up svg,.t-lock svg{width:10px;height:10px}
+  .t-max{font-size:9px;padding:0 4px}
+  .tile .tring b{font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -3107,7 +3191,7 @@ function tileHtml(kind, id, on) {
   const corner = !it.ok ? `<span class="t-c t-lock">${LOCK_SVG}</span>` : maxed ? '<span class="t-c t-max">MAX</span>' : it.block ? '' : `<span class="t-c t-up" data-need="${it.need}">${UP_SVG}</span>`;
   const ring = b ? `<span class="tring"><svg viewBox="0 0 40 40" aria-hidden="true"><circle class="tr-bg" cx="20" cy="20" r="17"/><circle class="tr-fg" cx="20" cy="20" r="17" pathLength="100" data-ring="${b.start},${b.end}"/></svg><b data-short="${b.end}"></b></span>` : '';
   const lvTxt = kind === 'ship' || kind === 'def' ? fmtS(L) : String(L) + (it.queued ? '+' + it.queued : '');
-  return `<button class="tile${on ? ' on' : ''}${it.ok ? '' : ' locked'}${b ? ' busy' : ''}${obj ? ' obj' : ''}" data-act="pick" data-kind="${kind}" data-id="${id}" style="--c:var(--${it.color})" aria-pressed="${on}" aria-label="${esc(def.name)}, ${kind === 'ship' || kind === 'def' ? fmt(L) + ' en service' : 'niveau ' + L}"><span class="t-img">${thumbImg(kind, id, '240x240')}${ring}</span>${corner}<span class="t-lv">${lvTxt}</span><span class="t-n">${def.name}</span></button>`;
+  return `<button class="tile${on ? ' on' : ''}${it.ok ? '' : ' locked'}${b ? ' busy' : ''}${obj ? ' obj' : ''}" data-act="pick" data-kind="${kind}" data-id="${id}" style="--c:var(--${it.color})" aria-pressed="${on}" aria-label="${esc(def.name)}, ${kind === 'ship' || kind === 'def' ? fmt(L) + ' en service' : 'niveau ' + L}"><span class="t-img">${thumbImg(kind, id, '240x240')}${ring}<span class="t-lv">${lvTxt}</span></span>${corner}<span class="t-n">${def.name}</span></button>`;
 }
 const DP_KIND = { mod: 'Bâtiment', tech: 'Recherche', ship: 'Vaisseau', def: 'Défense' };
 function dpCost(c) { return `<div class="dp-cost">${Object.entries(c).map(([k, v]) => `<span class="cm dpc" data-k="${k}" data-v="${v}" style="--c:var(--${k})">${ri(k)}<b>${fmtS(v)}</b></span>`).join('')}</div>`; }
@@ -3142,7 +3226,7 @@ function detailPanel(kind, id) {
     <div class="dp-top"><div class="dp-img">${thumbImg(kind, id, '240x240')}<span class="dp-kind">${DP_KIND[kind]}</span></div>
       <div class="dp-info"><h2>${def.name}</h2><p class="dp-lv">${lvLine}</p>${durLine ? `<p class="dp-dur">${durLine}</p>` : ''}<p class="dp-gain">${gain}</p></div></div>
     ${busy}${req}${action}
-    <details class="dp-more"${kind === 'ship' || kind === 'def' ? ' open' : ''}><summary><span class="dp-q">?</span>${def.desc || 'Détails'}</summary>${extra}</details>
+    <details class="dp-more"><summary><span class="dp-q">?</span><span class="dp-s">${def.desc || 'Détails'}</span></summary>${extra}</details>
   </section>`;
 }
 function rowHtml(kind, id, i) {
